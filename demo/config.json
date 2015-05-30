@@ -1,0 +1,14 @@
+{
+	"database": {
+
+	},
+	"directories": {
+		"Sloth2\\Demo\\Model": "model",
+		"Sloth2\\Demo\\Resource": "resource"
+	},
+	"routes": {
+		"controller": "Sloth2\\Demo\\Controller",
+		"model": "Sloth2\\Controller\\ModelController",
+		"resource": "Sloth2\\Controller\\ResourceController"
+	}
+}

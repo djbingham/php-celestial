@@ -1,0 +1,14 @@
+{
+	"name": "User",
+	"type": "simple",
+	"table": {
+		"alias": "User"
+	},
+	"attributes": {
+		"id": "string",
+		"forename": "string",
+		"surname": "string",
+		"username": "string"
+	},
+	"primaryKeys": ["id"]
+}

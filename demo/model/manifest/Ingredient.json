@@ -1,0 +1,16 @@
+{
+	"name": "Ingredient",
+	"type": "simple",
+	"table": {
+		"alias": "Ingredient"
+	},
+	"attributes": {
+		"id": "string",
+		"name": "string",
+		"description": "string"
+	},
+	"primaryKeys": ["id"],
+	"views": {
+		"default": ""
+	}
+}

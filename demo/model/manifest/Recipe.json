@@ -1,0 +1,13 @@
+{
+	"name": "Recipe",
+	"type": "simple",
+	"table": {
+		"alias": "Recipe"
+	},
+	"attributes": {
+		"id": "string",
+		"name": "string",
+		"description": "string"
+	},
+	"primaryKeys": ["id"]
+}

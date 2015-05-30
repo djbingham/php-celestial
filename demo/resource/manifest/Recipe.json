@@ -1,0 +1,78 @@
+{
+	"name": "Recipe",
+	"attributes": {
+		"id": "Recipe.id",
+		"name": "Recipe.name",
+		"description": "Recipe.description",
+		"ingredients": {
+			"id": "Ingredients.id",
+			"name": "Ingredients.name",
+			"description": "Ingredients.description",
+			"quantity": "RecipeIngredients.quantity",
+			"notes": "RecipeIngredients.notes"
+		},
+		"steps": {
+			"id": "Steps.id",
+			"number": "Steps.number",
+			"instruction": "Steps.instruction",
+			"notes": "Steps.notes"
+		},
+		"authors": {
+			"id": "Authors.id",
+			"name": "Authors.name"
+		}
+	},
+	"autoAttribute": "id",
+	"primaryAttribute": "name",
+	"views": {
+		"item": "recipe/item",
+		"list": "recipe/list",
+		"create": "recipe/createForm",
+		"update": "recipe/updateForm",
+		"search": "recipe/searchForm",
+		"deleted": "recipe/deleted",
+		"definition": "recipe/definition"
+	},
+	"tables": {
+		"Recipe": {
+			"name": "Recipe",
+			"type": "primary",
+			"links": {
+				"Recipe.id": "RecipeIngredients.recipeId",
+				"Recipe.id": "RecipeAuthors.recipeId",
+				"Recipe.id": "AuthorPublications.id"
+			}
+		},
+		"RecipeSteps": {
+			"canEdit": true,
+			"name": "RecipeStep",
+			"type": "list"
+		},
+		"RecipeIngredients": {
+			"canEdit": true,
+			"name": "RecipeIngredient",
+			"type": "list",
+			"links": {
+				"RecipeIngredients.ingredientId": "Ingredients.id"
+			}
+		},
+		"RecipeAuthors": {
+			"canEdit": true,
+			"name": "RecipeAuthor",
+			"type": "list",
+			"links": {
+				"RecipeAuthors.authorId": "Authors.id"
+			}
+		},
+		"Ingredients": {
+			"canEdit": false,
+			"name": "Ingredient",
+			"type": "reference"
+		},
+		"Authors": {
+			"canEdit": false,
+			"name": "User",
+			"type": "reference"
+		}
+	}
+}
