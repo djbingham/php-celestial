@@ -84,7 +84,7 @@ class ResourceDefinition implements Base\ResourceDefinition
         $tables = $this->tables();
         if (!array_key_exists($name, $tables)) {
             throw new InvalidArgumentException(
-                sprintf('Unrecognised model requested from resource definition: %s', $name)
+                sprintf('Unrecognised table requested from resource definition: %s', $name)
             );
         }
         return $tables[$name];
@@ -94,7 +94,7 @@ class ResourceDefinition implements Base\ResourceDefinition
     {
         if (!isset($this->primaryTableName)) {
             foreach ($this->getManifestProperty('tables') as $table){
-                if ($table['type'] === 'primary') {
+                if (array_key_exists('primary', $table) && $table['primary'] === true) {
                     $this->primaryTableName = $table['name'];
                 }
             }

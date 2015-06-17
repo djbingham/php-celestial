@@ -1,5 +1,5 @@
 {
-	"name": "Recipe",
+	"name": "Derivation",
 	"attributes": {
 		"id": "Derivation.id",
 		"name": "Derivation.name",
@@ -21,7 +21,8 @@
 	"tables": {
 		"Derivation": {
 			"name": "Derivation",
-			"type": "primary"
+			"type": "simple",
+			"primary": true
 		}
 	}
 }
