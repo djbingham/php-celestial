@@ -7,21 +7,26 @@ $primaryAttribute = $definition->primaryAttribute();
 ?>
 <h2><?= $definition->name() ?></h2>
 <ul>
-    <?php foreach ($definition->attributes() as $attributeName => $attributeAlias) { ?>
-        <?php
-            $details = array();
-            if ($attributeName === $autoAttribute) {
+    <?php foreach ($definition->attributeList()->getAll() as $attributeName => $attribute) { ?>
+        <?php $details = array(); ?>
+        <?php if ($attribute instanceof \Sloth\Module\Resource\Definition\AttributeList) { ?>
+            <li>
+                <?= $attributeName ?> (list)
+            </li>
+        <?php } else { ?>
+            <?php
+            if ($attribute->getName() === $autoAttribute) {
                 $details[] = 'auto-increment';
-            }
-            if ($attributeName === $primaryAttribute) {
+            } elseif ($attribute->getName() === $primaryAttribute) {
                 $details[] = 'primary key';
             }
-        ?>
-        <li>
-            <?= $attributeName ?>
-            <?php if (count($details) > 0) { ?>
-                <?= sprintf('(%s)', implode (', ', $details)) ?>
-            <?php } ?>
-        </li>
+            ?>
+            <li>
+                <?= $attribute->getName() ?>
+                <?php if (count($details) > 0) { ?>
+                    <?= sprintf('(%s)', implode (', ', $details)) ?>
+                <?php } ?>
+            </li>
+        <?php } ?>
     <?php } ?>
 </ul>

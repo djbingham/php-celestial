@@ -11,13 +11,33 @@ class ResourceDefinition implements Base\ResourceDefinition
     private $manifest;
 
     /**
-     * @var string
+     * @var Definition\Table
      */
-    private $primaryTableName;
+    private $primaryTable;
+
+    /**
+     * @var Definition\AttributeList
+     */
+    private $attributeList;
+
+    /**
+     * @var Definition\TableList
+     */
+    private $tableList;
+
+    /**
+     * @var array
+     */
+    private $views = array();
 
     public function __construct(array $manifest)
     {
         $this->manifest = $manifest;
+        $this->attributeList = new Definition\AttributeList($manifest['attributes']);
+        $this->tableList = new Definition\TableList($manifest['tables']);
+        foreach ($manifest['views'] as $viewName => $viewPath) {
+            $this->views[$viewName] = $viewPath;
+        }
     }
 
     public function name()
@@ -25,9 +45,9 @@ class ResourceDefinition implements Base\ResourceDefinition
         return $this->getManifestProperty('name');
     }
 
-    public function attributes()
+    public function attributeList()
     {
-        return $this->getManifestProperty('attributes');
+        return $this->attributeList;
     }
 
     public function autoAttribute()
@@ -52,7 +72,7 @@ class ResourceDefinition implements Base\ResourceDefinition
 
     public function views()
     {
-        return $this->getManifestProperty('views');
+        return $this->views;
     }
 
     public function view($name)
@@ -66,40 +86,31 @@ class ResourceDefinition implements Base\ResourceDefinition
         return $views[$name];
     }
 
-    public function tables()
+    public function tableList()
     {
-        return $this->getManifestProperty('tables');
-    }
-
-    public function tableNames()
-    {
-        if (!isset($this->modelNames)) {
-            $this->modelNames = array_keys($this->tables());
-        }
-        return $this->modelNames;
+        return $this->tableList;
     }
 
     public function table($name)
     {
-        $tables = $this->tables();
-        if (!array_key_exists($name, $tables)) {
-            throw new InvalidArgumentException(
-                sprintf('Unrecognised table requested from resource definition: %s', $name)
-            );
-        }
-        return $tables[$name];
+        return $this->tableList->getByName($name);
     }
 
-    public function primaryTableName()
+    public function primaryTable()
     {
-        if (!isset($this->primaryTableName)) {
-            foreach ($this->getManifestProperty('tables') as $table){
-                if (array_key_exists('primary', $table) && $table['primary'] === true) {
-                    $this->primaryTableName = $table['name'];
+        if (!isset($this->primaryTable)) {
+            foreach ($this->tableList->getAll() as $table) {
+                if ($this->tableIsPrimary($table)) {
+                    $this->primaryTable = $table;
                 }
             }
         }
-        return $this->primaryTableName;
+        return $this->primaryTable;
+    }
+
+    private function tableIsPrimary(Definition\Table $table)
+    {
+        return $table->isPrimary();
     }
 
     /**

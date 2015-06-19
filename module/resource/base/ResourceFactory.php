@@ -19,7 +19,7 @@ interface ResourceFactory
 	public function getDefinition();
 
     /**
-     * Fetch resources form the database whose attributes exactly match the supplied values
+     * Fetch resources form the database whose attributeList exactly match the supplied values
      * @param array $attributes
      * @return ResourceList
      */

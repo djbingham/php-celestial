@@ -7,14 +7,14 @@ use Sloth\Module\Resource\Base\Resource as BaseResource;
 interface ResourceList extends BaseResource
 {
     /**
-     * Append a new Resource to this list, with given attributes
+     * Append a new Resource to this list, with given attributeList
      * @param BaseResource $resource
      * @return $this
      */
     public function push(BaseResource $resource);
 
     /**
-     * Append several new Resources to this list, with given sets of attributes
+     * Append several new Resources to this list, with given sets of attributeList
      * @param array $resources
      * @return $this
      */
@@ -35,14 +35,14 @@ interface ResourceList extends BaseResource
     public function shift($quantity = 1);
 
     /**
-     * Prepend a new Resource to this list, with given attributes
+     * Prepend a new Resource to this list, with given attributeList
      * @param BaseResource $resource
      * @return $this
      */
     public function unshift(BaseResource $resource);
 
     /**
-     * Append several new Resources to this list, with given sets of attributes
+     * Append several new Resources to this list, with given sets of attributeList
      * @param array $resources
      * @return $this
      */

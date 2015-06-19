@@ -1,6 +1,10 @@
 <?php
 namespace Sloth\Module\Resource\Base;
 
+use Sloth\Module\Resource\Definition\AttributeList;
+use Sloth\Module\Resource\Definition\Table;
+use Sloth\Module\Resource\Definition\TableList;
+
 interface ResourceDefinition
 {
     /**
@@ -9,9 +13,9 @@ interface ResourceDefinition
     public function name();
 
     /**
-     * @return array
+     * @return AttributeList
      */
-    public function attributes();
+    public function attributeList();
 
 	/**
 	 * @return string
@@ -45,23 +49,12 @@ interface ResourceDefinition
     public function view($name);
 
     /**
-     * @return array
+     * @return TableList
      */
-    public function tables();
+    public function tableList();
 
     /**
-     * @return array
+     * @return Table
      */
-    public function tableNames();
-
-    /**
-     * @param string $name
-     * @return array
-     */
-    public function table($name);
-
-    /**
-     * @return string
-     */
-    public function primaryTableName();
+    public function primaryTable();
 }

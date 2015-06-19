@@ -34,16 +34,33 @@
 		"deleted": "recipe/deleted",
 		"definition": "recipe/definition"
 	},
+	"tableInsertOrder": ["Recipe", "Steps", "Ingredients", "RecipeIngredients", "Authors", "RecipeAuthors"],
+	"tableSelectOrder": ["Recipe", "Steps", ["RecipeIngredients", "Ingredients"], ["RecipeAuthors", "Authors"]],
+	"tableDeleteOrder": ["Recipe"],
 	"tables": {
 		"Recipe": {
 			"name": "Recipe",
 			"primary": true,
-			"type": "simple"
+			"type": "simple",
+			"autoIncrement": "id",
+			"primaryKey": "id",
+			"attributes": {
+				"id": "id",
+				"name": "name",
+				"description": "description"
+			}
 		},
 		"Steps": {
-			"canEdit": true,
+			"editable": true,
 			"name": "RecipeStep",
 			"type": "list",
+			"primaryKey": ["recipeId", "number"],
+			"attributes": {
+				"id": "id",
+				"number": "number",
+				"instruction": "instruction",
+				"notes": "notes"
+			},
 			"links": {
 				"Recipe": {
 					"Recipe.id": "Steps.recipeId"
@@ -51,39 +68,58 @@
 			}
 		},
 		"RecipeIngredients": {
-			"canEdit": true,
+			"editable": true,
 			"name": "RecipeIngredient",
 			"type": "list",
+			"primaryKey": ["recipeId", "ingredientId"],
+			"attributes": {
+				"ingredient.quantity": "RecipeIngredients.quantity",
+				"ingredient.notes": "RecipeIngredients.notes"
+			},
 			"links": {
 				"Recipe": {
 					"Recipe.id": "RecipeIngredients.recipeId"
 				}
 			}
 		},
-		"RecipeAuthors": {
-			"canEdit": true,
-			"name": "RecipeAuthor",
-			"type": "list",
-			"links": {
-				"Recipe": {
-					"Recipe.id": "RecipeAuthors.recipeId"
-				}
-			}
-		},
 		"Ingredients": {
-			"canEdit": false,
+			"editable": false,
 			"name": "Ingredient",
 			"type": "reference",
+			"autoIncrement": "id",
+			"primaryKey": "id",
+			"attributes": {
+				"ingredient.id": "id",
+				"ingredient.name": "name",
+				"ingredient.description": "description"
+			},
 			"links": {
 				"Ingredients": {
 					"RecipeIngredients.ingredientId": "Ingredients.id"
 				}
 			}
 		},
+		"RecipeAuthors": {
+			"editable": true,
+			"name": "RecipeAuthor",
+			"type": "list",
+			"primaryKey": ["recipeId", "authorId"],
+			"links": {
+				"Recipe": {
+					"Recipe.id": "RecipeAuthors.recipeId"
+				}
+			}
+		},
 		"Authors": {
-			"canEdit": false,
+			"editable": false,
 			"name": "User",
 			"type": "reference",
+			"autoIncrement": "id",
+			"primaryKey": "id",
+			"attributes": {
+				"author.id": "id",
+				"author.name": "name"
+			},
 			"links": {
 				"RecipeAuthors": {
 					"RecipeAuthors.authorId": "Authors.id"
