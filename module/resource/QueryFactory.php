@@ -2,8 +2,9 @@
 namespace Sloth\Module\Resource;
 
 use Sloth\Module\Resource\Base\ResourceDefinition;
+use Sloth\Module\Resource\Definition\AttributeList;
+use Sloth\Module\Resource\Definition\TableList;
 use SlothMySql\DatabaseWrapper;
-use SlothMySql\QueryBuilder\Abstractory\MySqlQuery;
 
 class QueryFactory
 {
@@ -20,6 +21,12 @@ class QueryFactory
     public function getDatabase()
     {
         return $this->database;
+    }
+
+    public function select(TableList $tableList, AttributeList $attributeList, array $attributeValues)
+    {
+        $queryBuilder = new QueryBuilder\Select($this->database);
+        return $queryBuilder->createQuery($tableList, $attributeList, $attributeValues);
     }
 
     public function selectByAttributes(ResourceDefinition $definition, array $attributes)

@@ -1,6 +1,9 @@
 <?php
 namespace Sloth\Module\Resource;
 
+use Sloth\Module\Resource\Definition\Table;
+use Sloth\Module\Resource\Definition\TableList;
+
 class ResourceFactory implements Base\ResourceFactory
 {
     /**
@@ -9,14 +12,14 @@ class ResourceFactory implements Base\ResourceFactory
     protected $definition;
 
     /**
-     * @var QueryFactory
+     * @var QuerySetFactory
      */
-	protected $queryFactory;
+	protected $querySetFactory;
 
-	public function __construct(Base\ResourceDefinition $definition, QueryFactory $queryFactory)
+	public function __construct(Base\ResourceDefinition $definition, QuerySetFactory $querySetFactory)
 	{
 		$this->definition = $definition;
-		$this->queryFactory = $queryFactory;
+		$this->querySetFactory = $querySetFactory;
 	}
 
 	public function getDefinition()
@@ -33,19 +36,17 @@ class ResourceFactory implements Base\ResourceFactory
 
 	public function getBy(array $attributes)
 	{
-        $database = $this->queryFactory->getDatabase();
-
-        $query = $this->queryFactory->selectByAttributes($this->definition, $attributes);
-        $database->execute($query);
-
-        return $this->createResourceList($database->getData());
+        $querySet = $this->querySetFactory->getBy();
+        $querySet->setResourceDefinition($this->definition)
+            ->setAttributeValues($attributes);
+        return $this->createResourceList($querySet->execute());
 	}
 
 	public function search(array $filters)
 	{
-        $database = $this->queryFactory->getDatabase();
+        $database = $this->querySetFactory->getDatabase();
 
-        $query = $this->queryFactory->search($this->definition, $filters);
+        $query = $this->querySetFactory->search($this->definition, $filters);
         $database->execute($query);
 
 		return $this->createResourceList($database->getData());
@@ -53,10 +54,10 @@ class ResourceFactory implements Base\ResourceFactory
 
 	public function create(array $attributes)
 	{
-        $database = $this->queryFactory->getDatabase();
+        $database = $this->querySetFactory->getDatabase();
 
         $attributes = $this->encodeAttributes($attributes);
-        $query = $this->queryFactory->insertSingle($this->definition, $attributes);
+        $query = $this->querySetFactory->insertSingle($this->definition, $attributes);
         $database->execute($query);
 
         $attributes = $this->decodeAttributes($attributes);
@@ -66,18 +67,18 @@ class ResourceFactory implements Base\ResourceFactory
 
 	public function update(Base\Resource $resource)
 	{
-        $database = $this->queryFactory->getDatabase();
+        $database = $this->querySetFactory->getDatabase();
         $attributes = $this->encodeAttributes($resource->getAttributes());
-        $query = $this->queryFactory->updateById($this->definition, $attributes);
+        $query = $this->querySetFactory->updateById($this->definition, $attributes);
         $database->execute($query);
         return $resource;
 	}
 
 	public function delete(Base\Resource $resource)
 	{
-        $database = $this->queryFactory->getDatabase();
+        $database = $this->querySetFactory->getDatabase();
         $attributes = $this->encodeAttributes($resource->getAttributes());
-        $query = $this->queryFactory->deleteByAttributes($this->definition, $attributes);
+        $query = $this->querySetFactory->deleteByAttributes($this->definition, $attributes);
         $database->execute($query);
         return $resource;
 	}
@@ -103,7 +104,11 @@ class ResourceFactory implements Base\ResourceFactory
     protected function decodeAttributes(array $attributes)
     {
         foreach ($attributes as $name => $value) {
-            $attributes[$name] = utf8_decode($value);
+            if (is_array($value)) {
+                $attributes[$name] = $this->decodeAttributes($value);
+            } else {
+                $attributes[$name] = utf8_decode($value);
+            }
         }
         return $attributes;
     }

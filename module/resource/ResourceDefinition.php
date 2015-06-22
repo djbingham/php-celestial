@@ -11,11 +11,6 @@ class ResourceDefinition implements Base\ResourceDefinition
     private $manifest;
 
     /**
-     * @var Definition\Table
-     */
-    private $primaryTable;
-
-    /**
      * @var Definition\AttributeList
      */
     private $attributeList;
@@ -28,6 +23,11 @@ class ResourceDefinition implements Base\ResourceDefinition
     /**
      * @var array
      */
+    private $tableSelectOrder = array();
+
+    /**
+     * @var array
+     */
     private $views = array();
 
     public function __construct(array $manifest)
@@ -35,6 +35,7 @@ class ResourceDefinition implements Base\ResourceDefinition
         $this->manifest = $manifest;
         $this->attributeList = new Definition\AttributeList($manifest['attributes']);
         $this->tableList = new Definition\TableList($manifest['tables']);
+        $this->tableSelectOrder = $manifest['tableSelectOrder'];
         foreach ($manifest['views'] as $viewName => $viewPath) {
             $this->views[$viewName] = $viewPath;
         }
@@ -96,21 +97,14 @@ class ResourceDefinition implements Base\ResourceDefinition
         return $this->tableList->getByName($name);
     }
 
-    public function primaryTable()
+    public function tableSelectOrder()
     {
-        if (!isset($this->primaryTable)) {
-            foreach ($this->tableList->getAll() as $table) {
-                if ($this->tableIsPrimary($table)) {
-                    $this->primaryTable = $table;
-                }
-            }
-        }
-        return $this->primaryTable;
+        return $this->tableSelectOrder;
     }
 
-    private function tableIsPrimary(Definition\Table $table)
+    public function primaryTable()
     {
-        return $table->isPrimary();
+        return $this->tableList->getPrimaryTable();
     }
 
     /**

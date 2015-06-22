@@ -41,4 +41,22 @@ class Attribute
     {
         return $this->fieldName;
     }
+
+    public function belongsToTableList(TableList $tableList)
+    {
+        $response = false;
+        foreach ($tableList->getAll() as $table) {
+            if ($table instanceof TableList) {
+                $response = $response || $this->belongsToTableList($table);
+            } else {
+                $response = $response || $this->belongsToTable($table);
+            }
+        }
+        return $response;
+    }
+
+    public function belongsToTable(Table $table)
+    {
+        return $this->getTableName() === $table->getName();
+    }
 }

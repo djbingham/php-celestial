@@ -5,21 +5,21 @@
 		"name": "Recipe.name",
 		"description": "Recipe.description",
 		"ingredients": {
-			"ingredient.id": "Ingredients.id",
-			"ingredient.name": "Ingredients.name",
-			"ingredient.description": "Ingredients.description",
-			"ingredient.quantity": "RecipeIngredients.quantity",
-			"ingredient.notes": "RecipeIngredients.notes"
+			"id": "RecipeIngredient.ingredientId",
+			"quantity": "RecipeIngredient.quantity",
+			"notes": "RecipeIngredient.notes",
+			"name": "Ingredient.name",
+			"description": "Ingredient.description"
 		},
 		"steps": {
-			"step.id": "Steps.id",
-			"step.number": "Steps.number",
-			"step.instruction": "Steps.instruction",
-			"step.notes": "Steps.notes"
+			"id": "RecipeStep.id",
+			"number": "RecipeStep.number",
+			"instruction": "RecipeStep.instruction",
+			"notes": "RecipeStep.notes"
 		},
 		"authors": {
-			"author.id": "Authors.id",
-			"author.name": "Authors.name"
+			"id": "RecipeAuthor.authorId",
+			"name": "Author.name"
 		}
 	},
 	"autoAttribute": "id",
@@ -34,95 +34,69 @@
 		"deleted": "recipe/deleted",
 		"definition": "recipe/definition"
 	},
-	"tableInsertOrder": ["Recipe", "Steps", "Ingredients", "RecipeIngredients", "Authors", "RecipeAuthors"],
-	"tableSelectOrder": ["Recipe", "Steps", ["RecipeIngredients", "Ingredients"], ["RecipeAuthors", "Authors"]],
-	"tableDeleteOrder": ["Recipe"],
 	"tables": {
 		"Recipe": {
 			"name": "Recipe",
 			"primary": true,
 			"type": "simple",
 			"autoIncrement": "id",
-			"primaryKey": "id",
-			"attributes": {
-				"id": "id",
-				"name": "name",
-				"description": "description"
-			}
+			"primaryKey": "id"
 		},
-		"Steps": {
+		"RecipeStep": {
 			"editable": true,
 			"name": "RecipeStep",
 			"type": "list",
 			"primaryKey": ["recipeId", "number"],
-			"attributes": {
-				"id": "id",
-				"number": "number",
-				"instruction": "instruction",
-				"notes": "notes"
-			},
+			"fetchOrder": {"number": "asc"},
 			"links": {
 				"Recipe": {
-					"Recipe.id": "Steps.recipeId"
+					"Recipe.id": "RecipeStep.recipeId"
 				}
 			}
 		},
-		"RecipeIngredients": {
+		"RecipeIngredient": {
 			"editable": true,
 			"name": "RecipeIngredient",
 			"type": "list",
 			"primaryKey": ["recipeId", "ingredientId"],
-			"attributes": {
-				"ingredient.quantity": "RecipeIngredients.quantity",
-				"ingredient.notes": "RecipeIngredients.notes"
-			},
 			"links": {
 				"Recipe": {
-					"Recipe.id": "RecipeIngredients.recipeId"
+					"Recipe.id": "RecipeIngredient.recipeId"
 				}
 			}
 		},
-		"Ingredients": {
+		"Ingredient": {
 			"editable": false,
 			"name": "Ingredient",
 			"type": "reference",
 			"autoIncrement": "id",
 			"primaryKey": "id",
-			"attributes": {
-				"ingredient.id": "id",
-				"ingredient.name": "name",
-				"ingredient.description": "description"
-			},
 			"links": {
-				"Ingredients": {
-					"RecipeIngredients.ingredientId": "Ingredients.id"
+				"RecipeIngredient": {
+					"RecipeIngredient.ingredientId": "Ingredient.id"
 				}
 			}
 		},
-		"RecipeAuthors": {
+		"RecipeAuthor": {
 			"editable": true,
 			"name": "RecipeAuthor",
 			"type": "list",
 			"primaryKey": ["recipeId", "authorId"],
 			"links": {
 				"Recipe": {
-					"Recipe.id": "RecipeAuthors.recipeId"
+					"Recipe.id": "RecipeAuthor.recipeId"
 				}
 			}
 		},
-		"Authors": {
+		"Author": {
 			"editable": false,
-			"name": "User",
+			"name": "Author",
 			"type": "reference",
 			"autoIncrement": "id",
 			"primaryKey": "id",
-			"attributes": {
-				"author.id": "id",
-				"author.name": "name"
-			},
 			"links": {
-				"RecipeAuthors": {
-					"RecipeAuthors.authorId": "Authors.id"
+				"RecipeAuthor": {
+					"RecipeAuthor.authorId": "Author.id"
 				}
 			}
 		}

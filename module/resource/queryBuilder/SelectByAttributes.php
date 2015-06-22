@@ -35,11 +35,12 @@ class SelectByAttributes
     public function createQuery(ResourceDefinition $resourceDefinition, array $attributes)
     {
         $primaryTable = $resourceDefinition->primaryTable();
+        $fields = $this->createQueryFields($resourceDefinition->attributeList(), $resourceDefinition);
         $joins = $this->createQueryJoins($resourceDefinition->tableList());
         $constraints = $this->createQueryConstraints($primaryTable, $attributes);
 
         $query = $this->database->query()->select()
-            ->setFields($this->createQueryFields($resourceDefinition->attributeList(), $resourceDefinition))
+            ->setFields($fields)
             ->from($this->getDatabaseTable($primaryTable->getName()))
             ->setJoins($joins);
 
@@ -83,7 +84,7 @@ class SelectByAttributes
     protected function createJoin(Table $tableDefinition, TableList $tableList)
     {
         $join = null;
-        $linksToParent = $tableDefinition->getLinksToParent();
+        $linksToParent = $tableDefinition->getLinksToParents();
         if (count($linksToParent) > 0) {
             if ($tableDefinition->getType() === 'list') {
                 $join = $this->database->query()->join()->left();

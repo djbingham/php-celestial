@@ -54,6 +54,11 @@ interface ResourceDefinition
     public function tableList();
 
     /**
+     * @return array
+     */
+    public function tableSelectOrder();
+
+    /**
      * @return Table
      */
     public function primaryTable();

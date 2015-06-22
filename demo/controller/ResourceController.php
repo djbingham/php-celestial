@@ -4,6 +4,7 @@ namespace Sloth\Demo\Controller;
 use Sloth\Request;
 use Sloth\Exception;
 use Sloth\Controller\RestfulController;
+use Sloth\Module\Resource\QuerySetFactory;
 use Sloth\Module\Resource\QueryFactory;
 use Sloth\Module\Resource\Base;
 use Sloth\Module\Resource\ResourceDefinition as DefaultDefinition;
@@ -198,13 +199,14 @@ class ResourceController extends RestfulController
     protected function instantiateResourceFactory(ParsedRequest $parsedRequest)
     {
         $queryFactory = new QueryFactory($this->app->database());
+        $querySetFactory = new QuerySetFactory($queryFactory);
         $manifest = $parsedRequest->getManifest();
         $definition = new DefaultDefinition($manifest);
         $factoryClass = $parsedRequest->getFactoryClass();
         if (is_null($factoryClass)) {
             $factoryClass = $definition->factoryClass();
         }
-        return new $factoryClass($definition, $queryFactory);
+        return new $factoryClass($definition, $querySetFactory);
     }
 
     protected function getById(Base\ResourceFactory $resourceFactory, $resourceId)

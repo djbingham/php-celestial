@@ -24,9 +24,14 @@ class Table
     private $primaryKey;
 
     /**
+     * @var AttributeList
+     */
+    private $attributes;
+
+    /**
      * @var array
      */
-    private $attributes = array();
+    private $fetchOrder = array();
 
     /**
      * @var array
@@ -45,6 +50,37 @@ class Table
 
     public function __construct(array $properties)
     {
+//        if (array_key_exists('attributes', $properties)) {
+//            $attributes = array();
+//            foreach ($properties['attributes'] as $attributeName => $fieldName) {
+//                $attributes[$attributeName] = new Attribute(array(
+//                    'name' => $attributeName,
+//                    'tableName' => $properties['name'],
+//                    'fieldName' => $fieldName
+//                ));
+//            }
+//        } else {
+//            $attributes = array();
+//        }
+//        $properties['attributes'] = new AttributeList($attributes);
+
+        if (array_key_exists('links', $properties)) {
+            foreach ($properties['links'] as $parentTable => $linksToParent) {
+                $links = array();
+                foreach ($linksToParent as $parentTableField => $childTableField) {
+                    list($parentTable, $parentField) = explode('.', $parentTableField);
+                    list($childTable, $childField) = explode('.', $childTableField);
+                    $links[] = new TableLink(array(
+                        'parentTable' => $parentTable,
+                        'parentField' => $parentField,
+                        'childTable' => $childTable,
+                        'childField' => $childField
+                    ));
+                }
+                $properties['links'][$parentTable] = $links;
+            }
+        }
+
         foreach ($properties as $name => $value) {
             if (property_exists($this, $name)) {
                 $this->$name = $value;
@@ -72,14 +108,31 @@ class Table
         return $this->primaryKey;
     }
 
-    public function getAttributes()
+    public function getAttributeList()
     {
         return $this->attributes;
     }
 
-    public function getLinksToParent()
+    public function getFetchOrder()
     {
-        return $this->links;
+        return $this->fetchOrder;
+    }
+
+    public function getLinksToParents(TableList $possibleParents = null)
+    {
+        if (!is_null($possibleParents)) {
+            $links = array();
+            foreach ($this->links as $parent => $linksToParent) {
+                foreach ($linksToParent as $link) {
+                    if ($possibleParents->isJoinedByLink($link)) {
+                        $links[$parent][] = $link;
+                    }
+                }
+            }
+        } else {
+            $links = $this->links;
+        }
+        return $links;
     }
 
     public function isPrimary()

@@ -2,16 +2,15 @@
 namespace Sloth\Module\Resource\Base;
 
 use Sloth\Module\Resource\Base\Resource as BaseResource;
-use Sloth\Module\Resource\QueryFactory;
-use SlothMySql\DatabaseWrapper;
+use Sloth\Module\Resource\QuerySetFactory;
 
 interface ResourceFactory
 {
     /**
      * @param ResourceDefinition $definition
-     * @param QueryFactory $queryFactory
+     * @param QuerySetFactory $querySetFactory
      */
-    public function __construct(ResourceDefinition $definition, QueryFactory $queryFactory);
+    public function __construct(ResourceDefinition $definition, QuerySetFactory $querySetFactory);
 
 	/**
 	 * @return ResourceDefinition
