@@ -3,7 +3,7 @@
  * @var Sloth\App $app
  */
 ?>
-<form action="<?= $app->createUrl(array('resource', 'recipe', 'simpleSearch')) ?>" method="get">
+<form action="<?= $app->createUrl(array('resource', 'recipe')) ?>" method="get">
     <h2>Search Recipes</h2>
     <div>
         <label for="id">ID</label>

@@ -60,12 +60,7 @@ class ResourceController extends RestfulController
                 break;
             case 'simpleSearch':
                 if (!empty($requestParams)) {
-                    $attributes = array();
-                    foreach ($requestParams as $name => $value) {
-                        if ((is_string($value) && strlen($value) > 0) || (is_array($value) && count($value) > 0)) {
-                            $attributes[$name] = $value;
-                        }
-                    }
+                    $attributes = $this->convertRequestParamsToSimpleSearchFilters($requestParams);
                     $resourceList = $resourceFactory->getBy($attributes);
                     $output = $resourceModule->renderer()->renderResourceList($resourceFactory, $resourceList, $outputFormat);
                 } else {
@@ -89,7 +84,8 @@ class ResourceController extends RestfulController
                     $resource = $this->getById($resourceFactory, $resourceId);
                     $output = $resourceModule->renderer()->renderResource($resourceFactory, $resource, $outputFormat);
                 } else {
-                    $resourceList = $resourceFactory->getBy($requestParams);
+                    $attributes = $this->convertRequestParamsToSimpleSearchFilters($requestParams);
+                    $resourceList = $resourceFactory->getBy($attributes);
                     $output = $resourceModule->renderer()->renderResourceList($resourceFactory, $resourceList, $outputFormat);
                 }
                 break;
@@ -97,6 +93,17 @@ class ResourceController extends RestfulController
 
         return $output;
 	}
+
+    protected function convertRequestParamsToSimpleSearchFilters(array $requestParams)
+    {
+        $attributes = array();
+        foreach ($requestParams as $name => $value) {
+            if ((is_string($value) && strlen($value) > 0) || (is_array($value) && count($value) > 0)) {
+                $attributes[$name] = $value;
+            }
+        }
+        return $attributes;
+    }
 
     protected function stripUnusedFilters(array $filters)
     {
