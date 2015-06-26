@@ -16,3 +16,9 @@
     <br>
     <button type="submit">Create</button>
 </form>
+<p>
+    <a href="<?= $this->app->createUrl(array("resource", 'recipe')) ?>">
+        Index
+    </a>
+    <br>
+</p>

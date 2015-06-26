@@ -71,3 +71,9 @@
     <br>
     <button type="submit">Search</button>
 </form>
+<p>
+    <a href="<?= $this->app->createUrl(array("resource", 'recipe')) ?>">
+        Index
+    </a>
+    <br>
+</p>
