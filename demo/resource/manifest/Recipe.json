@@ -32,7 +32,7 @@
 		"simpleSearch": "recipe/simpleSearchForm",
 		"search": "recipe/searchForm",
 		"deleted": "recipe/deleted",
-		"definition": "recipe/definition"
+		"definition": "default/definition"
 	},
 	"tables": {
 		"Recipe": {

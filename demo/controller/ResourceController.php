@@ -19,7 +19,10 @@ class ResourceController extends RestfulController
         $requestPath = $request->path();
         $lastPathPartPos = strrpos($requestPath, '/') + 1;
         $function = strtolower(substr($requestPath, $lastPathPartPos));
-        if (in_array($function, array('get', 'post', 'put', 'delete'))) {
+        if (empty($function)) {
+            $function = 'index';
+        }
+        if (in_array($function, array('get', 'post', 'put', 'delete', 'index'))) {
             $requestProperties = $request->toArray();
             $requestProperties['method'] = $function;
             $requestProperties['uri'] = substr($request->uri(), 0, $lastPathPartPos);
@@ -29,7 +32,29 @@ class ResourceController extends RestfulController
         return parent::execute($request, $route);
     }
 
-	protected function get(Request $request, $route) {
+    protected function index()
+    {
+        $manifestDirectory = implode(DIRECTORY_SEPARATOR, array($this->app->rootDirectory(), 'resource', 'manifest'));
+        $resources = $this->getResourceNames($manifestDirectory);
+        return $this->render('resource/index.html', array(
+            'resources' => $resources
+        ));
+    }
+
+    protected function getResourceNames($directory)
+    {
+        $directoryContents = scandir($directory);
+        $resourceNames = array();
+        foreach ($directoryContents as $fileName) {
+            if (!in_array($fileName, array('.', '..')) && preg_match('/.json$/', $fileName)) {
+                $resourceNames[] = basename($fileName, '.json');
+            }
+        }
+        return $resourceNames;
+    }
+
+	protected function get(Request $request, $route)
+    {
         $resourceModule = $this->getResourceModule();
         $parsedRequest = $resourceModule->parser()->parse($request, $route);
         $resourceFactory = $this->instantiateResourceFactory($parsedRequest);

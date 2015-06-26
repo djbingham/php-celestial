@@ -16,7 +16,7 @@
 		"simpleSearch": "derivation/simpleSearchForm",
 		"search": "derivation/searchForm",
 		"deleted": "derivation/deleted",
-		"definition": "derivation/definition"
+		"definition": "default/definition"
 	},
 	"tables": {
 		"Derivation": {
