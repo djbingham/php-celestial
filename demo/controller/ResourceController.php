@@ -74,7 +74,7 @@ class ResourceController extends RestfulController
                 break;
             case 'search':
                 if (array_key_exists('filters', $requestParams)) {
-                    $filters = $requestParams['filters'];
+                    $filters = $this->stripUnusedFilters($requestParams['filters']);
                     $resourceList = $resourceFactory->search($filters);
                     $output = $resourceModule->renderer()->renderResourceList($resourceFactory, $resourceList, $outputFormat);
                 } else {
@@ -97,6 +97,16 @@ class ResourceController extends RestfulController
 
         return $output;
 	}
+
+    protected function stripUnusedFilters(array $filters)
+    {
+        foreach ($filters as $index => $filter) {
+            if ($filter['comparator'] === '') {
+                unset($filters[$index]);
+            }
+        }
+        return $filters;
+    }
 
 	protected function post(Request $request, $route)
 	{

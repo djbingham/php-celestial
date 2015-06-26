@@ -45,7 +45,7 @@ class GetBy
 	public function execute()
     {
         $tableNames = $this->resourceDefinition->attributeList()->getTables();
-        $primaryData = $this->fetchDataFromTables($tableNames, array());
+        $primaryData = $this->fetchDataFromTables($tableNames);
 
         $rawData = array(
             $this->resourceDefinition->primaryTable()->getName() => $primaryData
@@ -65,7 +65,7 @@ class GetBy
         return $resourceData;
     }
 
-    private function fetchDataFromTables(array $tableNames, $constraintData)
+    private function fetchDataFromTables(array $tableNames, $constraintData = array())
     {
         $tableList = new TableList($this->mapTableNamesToTables($tableNames));
         $attributes = $this->filterAttributesByTableList($this->resourceDefinition->attributeList(), $tableList);
@@ -113,8 +113,9 @@ class GetBy
         $constraints = array();
         foreach ($attributes as $attributeName => $attributeValue) {
             $attribute = $this->resourceDefinition->attributeList()->getByName($attributeName);
-            if ($attribute->belongsToTableList($attribute, $tableList)) {
-                $constraints[$attributeName] = $attributeValue;
+            if ($attribute->belongsToTableList($tableList)) {
+                $tableField = sprintf('%s.%s', $attribute->getTableName(), $attribute->getFieldName());
+                $constraints[$tableField] = $attributeValue;
             }
         }
         return $constraints;

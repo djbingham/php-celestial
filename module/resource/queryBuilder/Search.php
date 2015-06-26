@@ -1,7 +1,12 @@
 <?php
 namespace Sloth\Module\Resource\QueryBuilder;
 
-use Sloth\Module\Resource\Base\ResourceDefinition;
+use Sloth\Module\Resource\Definition\Attribute;
+use Sloth\Module\Resource\Definition\AttributeList;
+use Sloth\Module\Resource\Definition\Table;
+use Sloth\Module\Resource\Definition\TableLink;
+use Sloth\Module\Resource\Definition\TableList;
+use SlothMySql\Abstractory\Value\ATable;
 use SlothMySql\DatabaseWrapper;
 use SlothMySql\QueryBuilder\Abstractory\MySqlQuery;
 
@@ -12,24 +17,34 @@ class Search
      */
     private $database;
 
+    /**
+     * @var array
+     */
+    private $cachedDatabaseTables = array();
+
     public function __construct(DatabaseWrapper $database)
     {
         $this->database = $database;
     }
 
     /**
-     * @param ResourceDefinition $resourceDefinition
+     * @param TableList $tableList
+     * @param AttributeList $attributeList
      * @param array $filters
      * @return MySqlQuery
      */
-    public function createQuery(ResourceDefinition $resourceDefinition, array $filters)
+    public function createQuery(TableList $tableList, AttributeList $attributeList, array $filters = array())
     {
-        $primaryTable = $resourceDefinition->primaryTableName();
-        $constraints = $this->createQueryConstraints($primaryTable, $filters);
+        $fields = $this->createQueryFields($attributeList);
+        $table = $this->getDatabaseTable($tableList->getPrimaryTable()->getName());
+        $joins = $this->createQueryJoins($tableList);
+        $constraints = $this->createQueryConstraints($attributeList, $filters);
+        $fetchOrder = $tableList->getFetchOrder();
 
         $query = $this->database->query()->select()
-            ->setFields($this->createQueryFields($resourceDefinition))
-            ->from($this->database->value()->table($primaryTable));
+            ->setFields($fields)
+            ->from($table)
+            ->setJoins($joins);
 
         if (count($constraints) > 0) {
             $query->where(array_shift($constraints));
@@ -38,34 +53,129 @@ class Search
             }
         }
 
+        if (count($fetchOrder) > 0) {
+            foreach ($fetchOrder as $attribute => $order) {
+                $query->orderBy($table->field($attribute));
+            }
+        }
+
         return $query;
     }
 
-    protected function createQueryFields(ResourceDefinition $resourceDefinition)
+    protected function createQueryFields(AttributeList $attributeList)
     {
         $fields = array();
-        foreach ($resourceDefinition->attributes() as $attributeName => $tableFieldString) {
-            $fieldParts = explode('.', $tableFieldString);
-            $tableName = '';
-            if (count($fieldParts) > 1) {
-                $tableName = array_shift($fieldParts);
+        foreach ($attributeList->getAll() as $attribute) {
+            if ($attribute instanceof AttributeList) {
+                $fields = array_merge($fields, $this->createQueryFields($attribute));
+            } else {
+                $fields[] = $this->createQueryFieldForAttribute($attribute);
             }
-            $fieldName = array_shift($fieldParts);
-            $fields[] = $this->database->value()->tableField($tableName, $fieldName);
         }
         return $fields;
     }
 
-    protected function createQueryConstraints($tableName, array $filters)
+    protected function createQueryFieldForAttribute(Attribute $attribute)
     {
-        $dbTable = $this->database->value()->table($tableName);
+        return $this->database->value()->tableField($attribute->getTableName(), $attribute->getFieldName());
+    }
+
+    protected function createQueryJoins(TableList $tableList)
+    {
+        $joins = array();
+        foreach ($tableList->getAll() as $tableDefinition) {
+            $tableJoin = $this->createJoin($tableDefinition, $tableList);
+            if (!is_null($tableJoin)) {
+                $joins[] = $tableJoin;
+            }
+        }
+        return $joins;
+    }
+
+    protected function createJoin(Table $tableDefinition, TableList $tableList)
+    {
+        $join = null;
+        $linksToParents = $tableDefinition->getLinksToParents($tableList);
+        if (count($linksToParents) > 0) {
+            if ($tableDefinition->getType() === 'list') {
+                $join = $this->database->query()->join()->left();
+            } else {
+                $join = $this->database->query()->join()->left();
+            }
+            $join->table($this->getDatabaseTable($tableDefinition->getName()))
+                ->on($this->createJoinConstraints($linksToParents, $tableList));
+        }
+        return $join;
+    }
+
+    protected function createJoinConstraints(array $linksGroupedByTable, TableList $tableList)
+    {
+        $firstTableLinks = array_shift($linksGroupedByTable);
+        $constraint = $this->createConstraintsForTableLinks($firstTableLinks, $tableList);
+        foreach ($linksGroupedByTable as $linkedTableName => $tableLinks) {
+            $constraint->andOn($this->createConstraintsForTableLinks($tableLinks, $tableList));
+        }
+        return $constraint;
+    }
+
+    protected function createConstraintsForTableLinks(array $tableLinks, TableList $tableList)
+    {
+        $firstLink = array_shift($tableLinks);
+        $constraint = $this->createConstraintForTableLink($firstLink, $tableList);
+
+        foreach ($tableLinks as $tableLink) {
+            $constraint->andOn($this->createConstraintForTableLink($tableLink, $tableList));
+        }
+        array_unshift($tableLinks, $firstLink);
+        return $constraint;
+    }
+
+    protected function createConstraintForTableLink(TableLink $tableLink, TableList $tableList)
+    {
+        $parentTable = $this->getDatabaseTable($tableList->getByName($tableLink->getParentTable())->getName());
+        $parentField = $parentTable->field($tableLink->getParentField());
+        $childTable = $this->getDatabaseTable($tableList->getByName($tableLink->getChildTable())->getName());
+        $childField = $childTable->field($tableLink->getChildField());
+
+        return $this->database->query()->constraint()
+            ->setSubject($parentField)
+            ->equals($childField);
+    }
+
+    protected function createQueryConstraints(AttributeList $attributeList, array $filters)
+    {
         $queryConstraints = array();
-        foreach ($filters as $filter) {
-            $queryConstraints[] = $this->database->query()->constraint()
-                ->setSubject($dbTable->field($filter['subject']))
+        foreach ($filters as $attributeName => $filter) {
+            $attributeName = $filter['subject'];
+            $attribute = $attributeList->getByName($attributeName);
+            $dbTable = $this->getDatabaseTable($attribute->getTableName());
+            if (is_array($filter['value'])) {
+                $values = array();
+                foreach ($filter['value'] as $index => $item) {
+                    $values[$index] = $this->database->value()->string($item);
+                }
+                $value = $this->database->value()->valueList($values);
+            } else {
+                $value = $this->database->value()->string($filter['value']);
+            }
+            $constraint = $this->database->query()->constraint()
+                ->setSubject($dbTable->field($attribute->getFieldName()))
                 ->setComparator($filter['comparator'])
-                ->setValue($this->database->value()->string($filter['value']));
+                ->setValue($value);
+            $queryConstraints[] = $constraint;
         }
         return $queryConstraints;
+    }
+
+    /**
+     * @param $tableName
+     * @return ATable
+     */
+    protected function getDatabaseTable($tableName)
+    {
+        if (!array_key_exists($tableName, $this->cachedDatabaseTables)) {
+            $this->cachedDatabaseTables[$tableName] = $this->database->value()->table($tableName);
+        }
+        return $this->cachedDatabaseTables[$tableName];
     }
 }

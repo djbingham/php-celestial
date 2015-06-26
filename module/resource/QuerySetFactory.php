@@ -17,4 +17,9 @@ class QuerySetFactory
     {
         return new QuerySet\GetBy($this->queryFactory);
     }
+
+    public function search()
+    {
+        return new QuerySet\Search($this->queryFactory);
+    }
 }

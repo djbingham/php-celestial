@@ -27,7 +27,7 @@ class ResourceFactory implements Base\ResourceFactory
 		return $this->definition;
 	}
 
-    public function createResource(array $attributes)
+    public function instantiateResource(array $attributes)
     {
         $resource = new Resource($this);
         $resource->setAttributes($attributes);
@@ -44,12 +44,10 @@ class ResourceFactory implements Base\ResourceFactory
 
 	public function search(array $filters)
 	{
-        $database = $this->querySetFactory->getDatabase();
-
-        $query = $this->querySetFactory->search($this->definition, $filters);
-        $database->execute($query);
-
-		return $this->createResourceList($database->getData());
+        $querySet = $this->querySetFactory->search();
+        $querySet->setResourceDefinition($this->definition)
+            ->setFilters($filters);
+        return $this->createResourceList($querySet->execute());
 	}
 
 	public function create(array $attributes)
@@ -62,7 +60,7 @@ class ResourceFactory implements Base\ResourceFactory
 
         $attributes = $this->decodeAttributes($attributes);
         $attributes[$this->definition->autoAttribute()] = $database->getInsertId();
-        return $this->createResource($attributes);
+        return $this->instantiateResource($attributes);
 	}
 
 	public function update(Base\Resource $resource)
@@ -88,7 +86,7 @@ class ResourceFactory implements Base\ResourceFactory
         $resourceList = new ResourceList($this);
         foreach ($data as $row) {
             $row = $this->decodeAttributes($row);
-            $resourceList->push($this->createResource($row));
+            $resourceList->push($this->instantiateResource($row));
         }
         return $resourceList;
     }

@@ -35,10 +35,10 @@ class QueryFactory
         return $queryBuilder->createQuery($definition, $attributes);
     }
 
-    public function search(ResourceDefinition $definition, array $filters)
+    public function search(TableList $tableList, AttributeList $attributeList, array $filters)
     {
         $queryBuilder = new QueryBuilder\Search($this->database);
-        return $queryBuilder->createQuery($definition, $filters);
+        return $queryBuilder->createQuery($tableList, $attributeList, $filters);
     }
 
     public function insertSingle(ResourceDefinition $definition, array $attributes)
