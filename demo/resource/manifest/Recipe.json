@@ -5,14 +5,12 @@
 		"name": "Recipe.name",
 		"description": "Recipe.description",
 		"ingredients": {
-			"id": "RecipeIngredient.ingredientId",
 			"quantity": "RecipeIngredient.quantity",
 			"notes": "RecipeIngredient.notes",
 			"name": "Ingredient.name",
 			"description": "Ingredient.description"
 		},
 		"steps": {
-			"id": "RecipeStep.id",
 			"number": "RecipeStep.number",
 			"instruction": "RecipeStep.instruction",
 			"notes": "RecipeStep.notes"

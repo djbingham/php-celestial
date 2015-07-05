@@ -19,7 +19,6 @@ abstract class RestfulController extends Controller
 		if (!method_exists($this, $method)) {
 			throw new Exception\InvalidRequestException(sprintf('Method not found: %s', $method));
 		}
-
 		return $this->$method($request, $route);
     }
 }

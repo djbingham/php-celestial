@@ -22,4 +22,9 @@ class QuerySetFactory
     {
         return new QuerySet\Search($this->queryFactory);
     }
+
+    public function insertRecord()
+    {
+        return new QuerySet\InsertRecord($this->queryFactory);
+    }
 }

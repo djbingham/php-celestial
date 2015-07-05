@@ -3,6 +3,7 @@ namespace Sloth\Module\Resource;
 
 use Sloth\Module\Resource\Base\ResourceDefinition;
 use Sloth\Module\Resource\Definition\AttributeList;
+use Sloth\Module\Resource\Definition\Table;
 use Sloth\Module\Resource\Definition\TableList;
 use SlothMySql\DatabaseWrapper;
 
@@ -29,22 +30,16 @@ class QueryFactory
         return $queryBuilder->createQuery($tableList, $attributeList, $attributeValues);
     }
 
-    public function selectByAttributes(ResourceDefinition $definition, array $attributes)
-    {
-        $queryBuilder = new QueryBuilder\SelectByAttributes($this->database);
-        return $queryBuilder->createQuery($definition, $attributes);
-    }
-
     public function search(TableList $tableList, AttributeList $attributeList, array $filters)
     {
         $queryBuilder = new QueryBuilder\Search($this->database);
         return $queryBuilder->createQuery($tableList, $attributeList, $filters);
     }
 
-    public function insertSingle(ResourceDefinition $definition, array $attributes)
+    public function insertSingle(Table $table, array $attributes)
     {
         $queryBuilder = new QueryBuilder\InsertSingle($this->database);
-        return $queryBuilder->createQuery($definition, $attributes);
+        return $queryBuilder->createQuery($table, $attributes);
     }
 
     public function updateById(ResourceDefinition $definition, array $attributes)

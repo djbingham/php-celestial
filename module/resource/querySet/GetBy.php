@@ -57,8 +57,6 @@ class GetBy
                 $rawData[$alias] = $this->fetchDataFromTables($attribute->getTables(), $rawData);
                 $tableList = new TableList($this->mapTableNamesToTables($attribute->getTables()));
                 $resourceData = $this->mergeLinkedDataIntoResourceData($resourceData, $rawData[$alias], $tableList, $alias);
-            } else {
-
             }
         }
 

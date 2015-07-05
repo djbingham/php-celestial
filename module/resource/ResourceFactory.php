@@ -39,7 +39,7 @@ class ResourceFactory implements Base\ResourceFactory
         $querySet = $this->querySetFactory->getBy();
         $querySet->setResourceDefinition($this->definition)
             ->setAttributeValues($attributes);
-        return $this->createResourceList($querySet->execute());
+        return $this->instantiateResourceList($querySet->execute());
 	}
 
 	public function search(array $filters)
@@ -47,20 +47,15 @@ class ResourceFactory implements Base\ResourceFactory
         $querySet = $this->querySetFactory->search();
         $querySet->setResourceDefinition($this->definition)
             ->setFilters($filters);
-        return $this->createResourceList($querySet->execute());
+        return $this->instantiateResourceList($querySet->execute());
 	}
 
 	public function create(array $attributes)
 	{
-        $database = $this->querySetFactory->getDatabase();
-
-        $attributes = $this->encodeAttributes($attributes);
-        $query = $this->querySetFactory->insertSingle($this->definition, $attributes);
-        $database->execute($query);
-
-        $attributes = $this->decodeAttributes($attributes);
-        $attributes[$this->definition->autoAttribute()] = $database->getInsertId();
-        return $this->instantiateResource($attributes);
+        $querySet = $this->querySetFactory->insertRecord();
+        $querySet->setResourceDefinition($this->definition)
+            ->setAttributeValues($attributes);
+        return $this->instantiateResource($querySet->execute());
 	}
 
 	public function update(Base\Resource $resource)
@@ -81,7 +76,7 @@ class ResourceFactory implements Base\ResourceFactory
         return $resource;
 	}
 
-    protected function createResourceList(array $data)
+    protected function instantiateResourceList(array $data)
     {
         $resourceList = new ResourceList($this);
         foreach ($data as $row) {

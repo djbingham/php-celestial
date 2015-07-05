@@ -1,10 +1,12 @@
 <?php
 namespace Sloth\Module\Resource\QueryBuilder;
 
-use Sloth\Module\Resource\Base\ResourceDefinition;
+use Sloth\Module\Resource\Definition\AttributeList;
+use Sloth\Module\Resource\Definition\Table;
+use SlothMySql\Abstractory\AValue;
+use SlothMySql\Abstractory\Value\ATable;
 use SlothMySql\DatabaseWrapper;
 use SlothMySql\QueryBuilder\Abstractory\MySqlQuery;
-use SlothMySql\QueryBuilder\Value\Table;
 
 class InsertSingle
 {
@@ -19,22 +21,22 @@ class InsertSingle
     }
 
     /**
-     * @param ResourceDefinition $resourceDefinition
+     * @param Table $table
      * @param array $data
      * @return MySqlQuery
      */
-    public function createQuery(ResourceDefinition $resourceDefinition, array $data)
+    public function createQuery(Table $table, array $data)
     {
-        $primaryTable = $this->database->value()->table($resourceDefinition->primaryTableName());
+        $sqlTable = $this->database->value()->table($table->getName());
 
         $query = $this->database->query()->insert()
-            ->data($this->createQueryData($primaryTable, $data))
-            ->into($primaryTable);
+            ->data($this->createQueryData($sqlTable, $data))
+            ->into($sqlTable);
 
         return $query;
     }
 
-    protected function createQueryData(Table $primaryTable, array $attributes)
+    protected function createQueryData(AValue $primaryTable, array $attributes)
     {
         $queryData = $this->database->value()->tableData()->beginRow();
         foreach ($attributes as $field => $value) {
@@ -43,5 +45,15 @@ class InsertSingle
         $queryData->endRow();
 
         return $queryData;
+    }
+
+    protected function insertIntoPrimaryTable()
+    {
+
+    }
+
+    protected function insertIntoTable($table, array $data)
+    {
+
     }
 }

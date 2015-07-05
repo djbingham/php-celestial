@@ -33,6 +33,10 @@ class AttributeList
     public function append($alias, Attribute $attribute)
     {
         $this->attributes[$alias] = $attribute;
+        $table = $attribute->getTableName();
+        if (!in_array($table, $this->tables)) {
+            $this->tables[] = $table;
+        }
         return $this;
     }
 
