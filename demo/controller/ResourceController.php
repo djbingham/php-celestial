@@ -1,6 +1,7 @@
 <?php
 namespace Sloth\Demo\Controller;
 
+use Sloth\Module\Resource\AttributeMapper;
 use Sloth\Request;
 use Sloth\Exception;
 use Sloth\Controller\RestfulController;
@@ -22,7 +23,7 @@ class ResourceController extends RestfulController
         if (empty($function)) {
             $function = 'index';
         }
-        if (in_array($function, array('get', 'post', 'put', 'delete', 'index'))) {
+        if (in_array($function, array('getChild', 'post', 'put', 'delete', 'index'))) {
             $requestProperties = $request->toArray();
             $requestProperties['method'] = $function;
             $requestProperties['uri'] = substr($request->uri(), 0, $lastPathPartPos);
@@ -244,14 +245,14 @@ class ResourceController extends RestfulController
      */
     protected function instantiateResourceFactory(ParsedRequest $parsedRequest)
     {
-        $queryFactory = new QueryFactory($this->app->database());
-        $querySetFactory = new QuerySetFactory($queryFactory);
-        $manifest = $parsedRequest->getManifest();
-        $definition = new DefaultDefinition($manifest);
+        $definition = new DefaultDefinition($parsedRequest->getManifest());
         $factoryClass = $parsedRequest->getFactoryClass();
         if (is_null($factoryClass)) {
             $factoryClass = $definition->factoryClass();
         }
+        $queryFactory = new QueryFactory($this->app->database());
+        $attributeMapper = new AttributeMapper($definition);
+        $querySetFactory = new QuerySetFactory($queryFactory, $attributeMapper);
         return new $factoryClass($definition, $querySetFactory);
     }
 
@@ -269,7 +270,7 @@ class ResourceController extends RestfulController
         if ($resourceList->count() !== 1) {
             throw new Exception\NotFoundException(
                 sprintf(
-                    'Request to get by resource ID did not lead to exactly one resource. Resources found: %s',
+                    'Request to getChild by resource ID did not lead to exactly one resource. Resources found: %s',
                     $resourceList->count()
                 )
             );

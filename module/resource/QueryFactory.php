@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Resource;
 
-use Sloth\Module\Resource\Base\ResourceDefinition;
+//use Sloth\Module\Resource\Base\ResourceDefinition;
 use Sloth\Module\Resource\Definition\AttributeList;
 use Sloth\Module\Resource\Definition\Table;
 use Sloth\Module\Resource\Definition\TableList;
@@ -42,15 +42,15 @@ class QueryFactory
         return $queryBuilder->createQuery($table, $attributes);
     }
 
-    public function updateById(ResourceDefinition $definition, array $attributes)
-    {
-        $queryBuilder = new QueryBuilder\UpdateById($this->database);
-        return $queryBuilder->createQuery($definition, $attributes);
-    }
-
-    public function deleteByAttributes(ResourceDefinition $definition, array $attributes)
-    {
-        $queryBuilder = new QueryBuilder\DeleteByAttributes($this->database);
-        return $queryBuilder->createQuery($definition, $attributes);
-    }
+//    public function updateById(ResourceDefinition $definition, array $attributes)
+//    {
+//        $queryBuilder = new QueryBuilder\UpdateById($this->database);
+//        return $queryBuilder->createQuery($definition, $attributes);
+//    }
+//
+//    public function deleteByAttributes(ResourceDefinition $definition, array $attributes)
+//    {
+//        $queryBuilder = new QueryBuilder\DeleteByAttributes($this->database);
+//        return $queryBuilder->createQuery($definition, $attributes);
+//    }
 }

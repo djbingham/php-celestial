@@ -1,6 +1,7 @@
 <?php
 namespace Sloth\Module\Resource\QuerySet;
 
+use Sloth\Module\Resource\AttributeMapper;
 use Sloth\Module\Resource\Definition\Attribute;
 use Sloth\Module\Resource\Definition\AttributeList;
 use Sloth\Module\Resource\Definition\Table;
@@ -17,6 +18,11 @@ class InsertRecord
     private $queryFactory;
 
     /**
+     * @var AttributeMapper
+     */
+    private $attributeMapper;
+
+    /**
      * @var ResourceDefinition
      */
     private $resourceDefinition;
@@ -31,9 +37,10 @@ class InsertRecord
      */
     private $tableMap;
 
-    public function __construct(QueryFactory $queryFactory)
+    public function __construct(QueryFactory $queryFactory, AttributeMapper $attributeMapper)
     {
         $this->queryFactory = $queryFactory;
+        $this->attributeMapper = $attributeMapper;
     }
 
     public function setResourceDefinition(ResourceDefinition $definition)
@@ -53,8 +60,7 @@ class InsertRecord
         var_dump($this->attributeValues);
         echo "<hr>";
 
-        $coreAttributeList = $this->resourceDefinition->attributeList();
-        $this->tableMap = $this->constructTableMap($coreAttributeList);
+        $this->tableMap = $this->attributeMapper->mapTablesToAttributes();
         $insertedData = $this->insertAttributeList($this->resourceDefinition->attributeList());
 
         echo "<hr>";
@@ -63,25 +69,11 @@ class InsertRecord
         return $insertedData;
     }
 
-    private function constructTableMap(AttributeList $attributeList, $prefix = null)
-    {
-        $map = array();
-        foreach ($attributeList->getAll() as $attributeName => $attribute) {
-            if ($attribute instanceof AttributeList) {
-                $map = array_merge_recursive($map, $this->constructTableMap($attribute, $attributeName));
-            } else {
-                /** @var Attribute $attribute */
-                $map[$attribute->getTableName()] = $prefix;
-            }
-        }
-        return $map;
-    }
-
     private function insertAttributeList(AttributeList $attributeList, $prefix = null, array $linkData = array())
     {
-        $tableAttributes = $this->groupAttributeListByTable($attributeList);
+        $tableAttributes = $this->attributeMapper->mapAttributeSubsetByTable($attributeList);
+        $tableInsertOrder = $this->attributeMapper->getTableInsertOrderForAttributeSubset($attributeList);
         $tableAttributeValues = $this->groupAttributeValuesByTable($attributeList, $prefix, false);
-        $tableInsertOrder = $this->getTableInsertOrder($attributeList);
         $tableAttributeValues = $this->addLinkDataToTableAttributeValues($tableAttributeValues, $linkData);
 
         $attributeLists = array();
@@ -109,8 +101,8 @@ class InsertRecord
 
     private function insertAttributeListRows(AttributeList $attributeList, $prefix, array $linkData = array())
     {
-        $tableAttributes = $this->groupAttributeListByTable($attributeList);
-        $tableInsertOrder = $this->getTableInsertOrder($attributeList);
+        $tableAttributes = $this->attributeMapper->mapAttributeSubsetByTable($attributeList);
+        $tableInsertOrder = $this->attributeMapper->getTableInsertOrderForAttributeSubset($attributeList);
         $tableAttributeValues = $this->groupAttributeValuesByTable($attributeList, $prefix, true);
         $tableAttributeValues = $this->addLinkDataToTableAttributeValues($tableAttributeValues, $linkData);
         $insertedData = array();
@@ -127,6 +119,10 @@ class InsertRecord
             $tableAttributes = $this->addLinkFieldsToTableAttributes($tableAttributes, $table, $linkFields);
             $attributeLists[$tableName] = new AttributeList($tableAttributes[$tableName]);
             $autoIncrementFields = $this->getAutoFields($attributeLists[$tableName]);
+
+            echo "<p>$tableName</p>";
+            var_dump($tableAttributeValues);
+
             foreach ($tableAttributeValues[$tableName] as $rowIndex => $rowAttributeValues) {
                 $insertedData[$tableName][$rowIndex] = $this->insertRowIntoTable($table, $attributeLists[$tableName], $rowAttributeValues);
                 $linkData = $this->addToLinkDataFromInsertedRow($linkData, $insertedData[$tableName][$rowIndex], $table, $autoIncrementFields, $rowIndex);
@@ -257,18 +253,6 @@ class InsertRecord
         }
 
         return $linkData;
-    }
-
-    private function groupAttributeListByTable(AttributeList $attributeList)
-    {
-        $tableAttributes = array();
-        foreach ($attributeList->getAll() as $alias => $attribute) {
-            if ($attribute instanceof Attribute && !($attribute instanceof AttributeList)) {
-                $tableName = $attribute->getTableName();
-                $tableAttributes[$tableName][$alias] = $attribute;
-            }
-        }
-        return $tableAttributes;
     }
 
     private function filterAttributesToLists(AttributeList $attributeList, $aliasPrefix)
@@ -421,87 +405,5 @@ class InsertRecord
             }
         }
         return $attributeValues;
-    }
-
-    private function mapTableNamesToTables(array $tableNames)
-    {
-        $groups = array();
-        foreach ($tableNames as $alias => $tableName) {
-            if (is_array($tableName)) {
-                $groups[$alias] = new TableList($this->mapTableNamesToTables($tableName));
-            } else {
-                $groups[$tableName] = $this->resourceDefinition->tableList()->getByName($tableName);
-            }
-        }
-        return $groups;
-    }
-
-    private function getTableInsertOrder(AttributeList $attributeList)
-    {
-        $tableList = new TableList(array());
-        foreach ($attributeList->getTables() as $alias => $tableName) {
-            $tableList->append($tableName, $this->resourceDefinition->tableList()->getByName($tableName));
-        }
-
-        $tableOrder = array();
-        foreach ($tableList->getAll() as $table) {
-            /** @var Table $table */
-            $tableOrder[] = array(
-                'tableName' => $table->getName(),
-                'table' => $table,
-                'linksToParents' => $table->getLinksToParents(),
-                'parents' => $this->getTableParentNames($table)
-            );
-        }
-
-        usort($tableOrder, function(array $a, array $b) use ($tableList, $tableOrder) {
-            if (empty($a['parents'])) {
-                return 1;
-            } elseif (empty($b['parents'])) {
-                return -1;
-            } else {
-                if (in_array($b['tableName'], $a['parents'])) {
-                    foreach ($b['linksToParents'] as $parentOfB => $links) {
-                        foreach ($links as $link) {
-                            /** @var TableLink $link */
-                            if ($link->getParentField() === $a['table']->getAutoIncrement()) {
-                                return -1;
-                            }
-                        }
-                    }
-                    foreach ($a['linksToParents'] as $parentOfA => $links) {
-                        foreach ($links as $link) {
-                            if ($link->getParentField() === $b['table']->getAutoIncrement()) {
-                                return 1;
-                            }
-                        }
-                    }
-                    return -1;
-                } else {
-                    return 1;
-                }
-            }
-        });
-
-        $tableOrder = array_map(function($tableParams) use ($tableList) {
-            return $tableList->getByName($tableParams['tableName']);
-        }, $tableOrder);
-
-        return $tableOrder;
-    }
-
-    private function getTableParentNames(Table $table)
-    {
-        $parents = array();
-        foreach ($table->getLinksToParents() as $parent => $linksToParent) {
-            foreach ($linksToParent as $link) {
-                $parents[] = $this->getParentTableFromLink($link)->getName();
-            }
-        }
-        return $parents;
-    }
-    private function getParentTableFromLink(TableLink $link)
-    {
-        return $this->resourceDefinition->tableList()->getByName($link->getParentTable());
     }
 }

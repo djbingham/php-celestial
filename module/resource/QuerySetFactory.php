@@ -8,9 +8,15 @@ class QuerySetFactory
      */
     private $queryFactory;
 
-    public function __construct(QueryFactory $queryFactory)
+    /**
+     * @var AttributeMapper
+     */
+    private $attributeMapper;
+
+    public function __construct(QueryFactory $queryFactory, AttributeMapper $attributeMapper)
     {
         $this->queryFactory = $queryFactory;
+        $this->attributeMapper = $attributeMapper;
     }
 
 	public function getBy()
@@ -25,6 +31,6 @@ class QuerySetFactory
 
     public function insertRecord()
     {
-        return new QuerySet\InsertRecord($this->queryFactory);
+        return new QuerySet\InsertRecord($this->queryFactory, $this->attributeMapper);
     }
 }

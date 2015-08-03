@@ -1,9 +1,6 @@
 <?php
 namespace Sloth\Module\Resource;
 
-use Sloth\Module\Resource\Definition\Table;
-use Sloth\Module\Resource\Definition\TableList;
-
 class ResourceFactory implements Base\ResourceFactory
 {
     /**

@@ -46,13 +46,13 @@ class Router extends Base\Router
 
 	protected function canCache(Request $request)
 	{
-		return $request->method() === 'get';
+		return $request->method() === 'getChild';
 	}
 
 	protected function searchCache($uri)
 	{
 		$output = null;
-		if (array_key_exists($this->cache, $uri)) {
+		if (array_key_exists($uri, $this->cache)) {
 			$output = $this->cache[$uri];
 		}
 		return $output;

@@ -8,9 +8,9 @@ class RequestParser extends \Sloth\Module\Resource\Restful\RequestParser
         return sprintf('SlothDemo\\Resource\\%sFactory', $resourceRoute);
     }
 
-    protected function getManifestFile($resourceRoot)
+    protected function getManifestFile($resourceRoute)
     {
-        $pathParts = array($this->app->rootDirectory(), 'resource', 'manifest', $resourceRoot);
+        $pathParts = array($this->app->rootDirectory(), 'resource', 'manifest', $resourceRoute);
         return sprintf('%s.json', implode(DIRECTORY_SEPARATOR, $pathParts));
     }
 }

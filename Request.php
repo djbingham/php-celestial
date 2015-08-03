@@ -51,7 +51,7 @@ class Request
         $requestUri = urldecode($_SERVER['REQUEST_URI']);
 		$urlParts = parse_url(urldecode($requestUri));
         $properties = array(
-            'method' => $_SERVER['REQUEST_METHOD'],
+            'method' => strtolower($_SERVER['REQUEST_METHOD']),
             'uri' => urldecode($requestUri),
             'path' => $urlParts['path'],
             'queryString' => $urlParts['query'],
@@ -122,7 +122,7 @@ class Request
             'queryString' => $this->queryString(),
             'fragment' => $this->fragment(),
             'params' => array(
-                'get' => $this->params()->get(),
+                'getChild' => $this->params()->get(),
                 'post' => $this->params()->post(),
                 'cookie' => $this->params()->cookie(),
                 'server' => $this->params()->server(),

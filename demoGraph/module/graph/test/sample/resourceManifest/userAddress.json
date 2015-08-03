@@ -1,0 +1,39 @@
+{
+	"table": {
+		"name": "UserAddress"
+	},
+	"attributes": {
+		"userId": {
+			"type": "integer(11)",
+			"field": "userId",
+			"validators": []
+		},
+		"houseName": {
+			"type": "text(50)",
+			"field": "houseName",
+			"validators": []
+		},
+		"postcode": {
+			"type": "text(50)",
+			"field": "postcode",
+			"validators": []
+		},
+		"landlordId": {
+			"type": "integer(11)",
+			"field": "landlordId",
+			"validators": []
+		}
+	},
+	"links": {
+		"landlord": {
+			"type": "oneToOne",
+			"resource": "User",
+			"joins": {
+				"this.landlordId": "landlord.id"
+			}
+		}
+	},
+	"views": {
+	},
+	"validators": []
+}

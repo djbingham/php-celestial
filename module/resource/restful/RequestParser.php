@@ -1,10 +1,10 @@
 <?php
-namespace Sloth\Module\Resource\Restful;
+namespace DemoGraph\Module\Graph\Restful;
 
 use Sloth\App;
 use Sloth\Request;
 use Sloth\Exception;
-use Sloth\Module\Resource\Base;
+//use Sloth\Module\Resource\Base;
 
 abstract class RequestParser implements Base\RequestParser
 {

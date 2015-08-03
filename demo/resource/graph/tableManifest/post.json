@@ -1,0 +1,42 @@
+{
+	"table": {
+		"name": "Post"
+	},
+	"attributes": {
+		"id": {
+			"type": "integer(11)",
+			"field": "id",
+			"validators": []
+		},
+		"authorId": {
+			"type": "integer(11)",
+			"field": "authorId",
+			"validators": []
+		},
+		"content": {
+			"type": "text",
+			"field": "content",
+			"validators": []
+		}
+	},
+	"links": {
+		"author": {
+			"type": "manyToOne",
+			"resource": "User",
+			"joins": {
+				"this.authorId": "author.id"
+			}
+		}
+	},
+	"views": {
+		"index.json": {
+			"engine": "json",
+			"path": "user/index"
+		},
+		"index.html": {
+			"engine": "moustache",
+			"path": "user/index.html"
+		}
+	},
+	"validators": []
+}

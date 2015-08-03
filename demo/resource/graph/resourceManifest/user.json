@@ -1,0 +1,31 @@
+{
+	"primaryResource": "user",
+	"attributes": {
+		"id": true,
+		"forename": true,
+		"surname": true,
+		"address": {
+			"houseName": true,
+			"postCode": true
+		}
+	},
+	"views": {
+		"item": "default/item",
+		"list": "default/list",
+		"create": "default/createForm",
+		"update": "default/updateForm",
+		"simpleSearch": "default/simpleSearchForm",
+		"search": "default/searchForm",
+		"deleted": "default/deleted",
+		"definition": "default/definition",
+
+		"index.json": {
+			"engine": "json",
+			"path": "user/index"
+		},
+		"index.html": {
+			"engine": "moustache",
+			"path": "user/index.html"
+		}
+	}
+}

@@ -1,0 +1,60 @@
+{
+	"table": {
+		"name": "User"
+	},
+	"attributes": {
+		"id": {
+			"type": "integer(11)",
+			"field": "id",
+			"validators": []
+		},
+		"forename": {
+			"type": "text(50)",
+			"field": "forename",
+			"validators": []
+		},
+		"surname": {
+			"type": "text(100)",
+			"field": "surname",
+			"validators": []
+		}
+	},
+	"links": {
+		"friends": {
+			"type": "manyToMany",
+			"resource": "User",
+			"via": {
+				"friendLink": "UserFriend"
+			},
+			"joins": {
+				"this.id": "userFriends.friendId1",
+				"userFriends.friendId2": "friends.id"
+			}
+		},
+		"posts": {
+			"type": "oneToMany",
+			"resource": "Post",
+			"joins": {
+				"this.id": "Post.authorId"
+			}
+		},
+		"address": {
+			"type": "oneToOne",
+			"resource": "UserAddress",
+			"joins": {
+				"this.id": "address.userId"
+			}
+		}
+	},
+	"views": {
+		"index.json": {
+			"engine": "json",
+			"path": "user/index"
+		},
+		"index.html": {
+			"engine": "moustache",
+			"path": "user/index.html"
+		}
+	},
+	"validators": []
+}

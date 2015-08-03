@@ -1,0 +1,66 @@
+{
+	"table": {
+		"name": "PostComment"
+	},
+	"attributes": {
+		"id": {
+			"type": "integer(11)",
+			"field": "id",
+			"validators": []
+		},
+		"postId": {
+			"type": "integer(11)",
+			"field": "postId",
+			"validators": []
+		},
+		"parentId": {
+			"type": "integer(11)",
+			"field": "parentId",
+			"validators": []
+		},
+		"authorId": {
+			"type": "integer(11)",
+			"field": "authorId",
+			"validators": []
+		},
+		"content": {
+			"type": "text",
+			"field": "content",
+			"validators": []
+		}
+	},
+	"links": {
+		"author": {
+			"type": "manyToOne",
+			"resource": "User",
+			"joins": {
+				"this.authorId": "author.id"
+			}
+		},
+		"post": {
+			"type": "manyToOne",
+			"resource": "Post",
+			"joins": {
+				"this.postId": "Post.id"
+			}
+		},
+		"replies": {
+			"type": "oneToMany",
+			"resource": "Comment",
+			"joins": {
+				"this.id": "replies.parentId"
+			}
+		}
+	},
+	"views": {
+		"index.json": {
+			"engine": "json",
+			"path": "user/index"
+		},
+		"index.html": {
+			"engine": "moustache",
+			"path": "user/index.html"
+		}
+	},
+	"validators": []
+}

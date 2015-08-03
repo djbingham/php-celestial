@@ -1,0 +1,71 @@
+{
+	"name": "User",
+	"attributes": {
+		"id": {
+			"type": "integer",
+			"field": "id",
+			"validators": []
+		},
+		"forename": {
+			"type": "string",
+			"field": "forename",
+			"validators": []
+		},
+		"surname": {
+			"type": "string",
+			"field": "surname",
+			"validators": []
+		},
+		"birthday": {
+			"attributes": {
+				"year": {
+					"type": "integer",
+					"field": "id",
+					"validators": []
+				},
+				"month": {
+					"type": "integer",
+					"field": "id",
+					"validators": []
+				},
+				"day": {
+					"type": "integer",
+					"field": "id",
+					"validators": []
+				}
+			},
+			"table": "UserBirthday as birthday",
+			"joins": {
+				"this.id": "birthday.userId"
+			}
+		}
+	},
+	"connections": {
+		"friends": {
+			"resource": "User",
+			"alias": "friend",
+			"joins": {
+				"this.id": "userFriends.friendId1",
+				"userFriends.friendId2": "friend.friendId2"
+			}
+		},
+		"posts": {
+			"resource": "Post",
+			"joins": {
+				"this.id": "Post.authorId"
+			}
+		}
+	},
+	"table": "User",
+	"views": {
+		"index.json": {
+			"engine": "json",
+			"path": "user/index"
+		},
+		"index.html": {
+			"engine": "moustache",
+			"path": "user/index.html"
+		}
+	},
+	"validators": []
+}
