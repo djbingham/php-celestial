@@ -22,7 +22,7 @@ class LinkListBuilder
 			$link = new ResourceDefinition\Link($this->resourceBuilder);
 			$link->name = $name;
 			if (array_key_exists('via', $linkManifest)) {
-				$link->intermediaryTables = $this->buildTableList($linkManifest['via']);
+				$link->intermediaryResources = $this->buildIntermediaryResources($linkManifest['via']);
 			}
 			$link->type = $linkManifest['type'];
 			$link->parentResource = $resource;
@@ -33,15 +33,16 @@ class LinkListBuilder
 		return $links;
 	}
 
-	private function buildTableList(array $manifest)
+	private function buildIntermediaryResources(array $manifest)
 	{
-		$tables = new ResourceDefinition\TableList();
-		foreach ($manifest as $alias => $tableName) {
-			$table = new ResourceDefinition\Table();
-			$table->alias = $alias;
-			$table->name = $tableName;
-			$tables->push($table);
+		$resources = new ResourceDefinition\ResourceList();
+		foreach ($manifest as $alias => $resourceName) {
+			$resourceManifest = array(
+				'name' => $resourceName
+			);
+			$resource = $this->resourceBuilder->buildFromManifest($resourceManifest, $alias);
+			$resources->push($resource);
 		}
-		return $tables;
+		return $resources;
 	}
 }

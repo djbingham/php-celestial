@@ -22,11 +22,6 @@ class ResourceDefinitionBuilder
 	private $viewListBuilder;
 
 	/**
-	 * @var TableBuilder
-	 */
-	private $tableBuilder;
-
-	/**
 	 * @var ValidatorListBuilder
 	 */
 	private $validatorListBuilder;
@@ -53,7 +48,6 @@ class ResourceDefinitionBuilder
 		$this->attributeListBuilder = $builders['attributeListBuilder'];
 		$this->linkListBuilder = $builders['linkListBuilder'];
 		$this->viewListBuilder = $builders['viewListBuilder'];
-		$this->tableBuilder = $builders['tableBuilder'];
 		return $this;
 	}
 
@@ -71,22 +65,22 @@ class ResourceDefinitionBuilder
 		$fileName = basename($filePath, '.json');
 		$manifest = json_decode($fileContents, true);
 		$manifest['name'] = ucfirst($fileName);
-		$manifest = $this->padManifest($manifest);
-		$this->assertManifestIsValid($manifest);
 		return $this->buildFromManifest($manifest, $alias);
 	}
 
 	public function buildFromManifest(array $manifest, $alias = null)
 	{
+		$manifest = $this->padManifest($manifest);
+		$this->assertManifestIsValid($manifest);
 		$resource = new ResourceDefinition\Resource();
 
 		if (!is_null($alias)) {
 			$resource->alias = $alias;
-			$manifest['table']['alias'] = $alias;
+		} else {
+			$resource->alias = $manifest['name'];
 		}
 
 		$resource->name = $manifest['name'];
-		$resource->table = $this->tableBuilder->build($manifest['table']);
 		$resource->attributes = $this->attributeListBuilder->build($resource, $manifest['attributes']);
 		$resource->views = $this->viewListBuilder->build($resource, $manifest['views']);
 		$resource->links = $this->linkListBuilder->build($resource, $manifest['links']);
@@ -112,6 +106,9 @@ class ResourceDefinitionBuilder
 
 	private function padManifest(array $manifest)
 	{
+		if (!array_key_exists('attributes', $manifest)) {
+			$manifest['attributes'] = array();
+		}
 		if (!array_key_exists('links', $manifest)) {
 			$manifest['links'] = array();
 		}

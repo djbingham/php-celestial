@@ -5,33 +5,39 @@ use DemoGraph\Module\Graph\ResourceDefinition\Resource as GraphResource;
 
 class Attribute
 {
-    /**
-     * @var string
-     */
-    public $name;
-
-    /**
-     * @var string
-     */
-    public $type;
-
-    /**
-     * @var GraphResource
-     */
+	/**
+	 * @var GraphResource
+	 */
 	public $resource;
 
-    /**
-     * @var Table
-     */
-    public $table;
+	/**
+	 * @var string
+	 */
+	public $name;
 
-    /**
-     * @var TableField
-     */
-    public $field;
+	/**
+	 * @var string
+	 */
+	public $alias;
 
-    /**
-     * @var ValidatorList
-     */
-    public $validators = array();
+	/**
+	 * @var string
+	 */
+	public $type;
+
+	/**
+	 * @var ValidatorList
+	 */
+	public $validators = array();
+
+	public function getAlias()
+	{
+		$alias = null;
+		if ($this->alias !== null) {
+			$alias = $this->alias;
+		} else {
+			$alias = $this->name;
+		}
+		return $alias;
+	}
 }

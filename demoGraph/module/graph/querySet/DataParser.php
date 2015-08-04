@@ -22,19 +22,19 @@ class DataParser
 		$linkData = array();
 		foreach ($link->constraints as $constraint) {
 			/** @var ResourceDefinition\LinkConstraint $constraint */
-			if ($constraint->subJoins instanceof ResourceDefinition\TableJoinList && $constraint->subJoins->length() > 0) {
+			if ($constraint->subJoins instanceof ResourceDefinition\LinkSubJoinList && $constraint->subJoins->length() > 0) {
 				foreach ($constraint->subJoins as $subJoin) {
-					/** @var ResourceDefinition\TableJoin $subJoin */
-					$parentFieldAlias = $subJoin->parentField->getAlias();
-					$childFieldAlias = $subJoin->childField->getAlias();
+					/** @var ResourceDefinition\LinkSubJoin $subJoin */
+					$parentFieldAlias = $subJoin->parentAttribute->getAlias();
+					$childFieldAlias = $subJoin->childAttribute->getAlias();
 					$values = $this->getFieldValues($parentFieldAlias, $data);
 					if (!empty($values)) {
 						$linkData[$childFieldAlias] = $values;
 					}
 				}
 			} else {
-				$parentFieldAlias = $constraint->parentAttribute->field->getAlias();
-				$childFieldAlias = $constraint->childAttribute->field->getAlias();
+				$parentFieldAlias = $constraint->parentAttribute->getAlias();
+				$childFieldAlias = $constraint->childAttribute->getAlias();
 				$values = $this->getFieldValues($parentFieldAlias, $data);
 				$linkData[$childFieldAlias] = $values;
 			}
@@ -66,9 +66,9 @@ class DataParser
 			/** @var ResourceDefinition\Attribute $attribute */
 			if ($this->rowMatchesExpectedData($rowData, $filters)) {
 				foreach ($resourceDefinition->attributes as $attribute) {
-					$fieldAlias = $attribute->field->getAlias();
-					if (array_key_exists($fieldAlias, $rowData)) {
-						$attributeData[$rowIndex][$attribute->name] = $rowData[$fieldAlias];
+					$attributeAlias = $attribute->getAlias();
+					if (array_key_exists($attributeAlias, $rowData)) {
+						$attributeData[$rowIndex][$attribute->name] = $rowData[$attributeAlias];
 					}
 				}
 			}
@@ -76,9 +76,9 @@ class DataParser
 			foreach ($resourceDefinition->links as $link) {
 				if (in_array($link->type, array(ResourceDefinition\Link::ONE_TO_ONE, ResourceDefinition\Link::MANY_TO_ONE))) {
 					foreach ($link->getChildResource()->attributes as $attribute) {
-						$fieldAlias = $attribute->field->getAlias();
-						if (array_key_exists($fieldAlias, $rowData)) {
-							$attributeData[$rowIndex][$link->name][$attribute->name] = $rowData[$fieldAlias];
+						$attributeAlias = $attribute->getAlias();
+						if (array_key_exists($attributeAlias, $rowData)) {
+							$attributeData[$rowIndex][$link->name][$attribute->name] = $rowData[$attributeAlias];
 						}
 					}
 				} else {
@@ -100,8 +100,8 @@ class DataParser
 	private function rowMatchesExpectedData(array $rowData, array $expectedValues)
 	{
 		$matches = 0;
-		foreach ($expectedValues as $childFieldAlias => $parentValue) {
-			if ($rowData[$childFieldAlias] === $parentValue) {
+		foreach ($expectedValues as $childAttributeAlias => $parentValue) {
+			if ($rowData[$childAttributeAlias] === $parentValue) {
 				$matches++;
 			}
 		}
@@ -114,18 +114,18 @@ class DataParser
 		/** @var ResourceDefinition\LinkConstraint $constraint */
 		foreach ($link->getConstraints() as $constraint) {
 			if ($constraint->subJoins !== null && $constraint->subJoins->length() > 0) {
-				/** @var ResourceDefinition\TableJoin $subJoin */
+				/** @var ResourceDefinition\LinkSubJoin $subJoin */
 				foreach ($constraint->subJoins as $subJoin) {
-					$parentAlias = $subJoin->parentField->getAlias();
-					$childAlias = $subJoin->childField->getAlias();
+					$parentAlias = $subJoin->parentAttribute->getAlias();
+					$childAlias = $subJoin->childAttribute->getAlias();
 					$value = $parentRowData[$parentAlias];
-					if ($subJoin->parentTable->getAlias() === $link->parentResource->table->getAlias()) {
+					if ($subJoin->parentResource->getAlias() === $link->parentResource->getAlias()) {
 						$linkData[$childAlias] = $value;
 					}
 				}
 			} else {
-				$parentAlias = $constraint->parentAttribute->field->getAlias();
-				$childAlias = $constraint->childAttribute->field->getAlias();
+				$parentAlias = $constraint->parentAttribute->getAlias();
+				$childAlias = $constraint->childAttribute->getAlias();
 				$value = $parentRowData[$parentAlias];
 				$linkData[$childAlias] = $value;
 			}

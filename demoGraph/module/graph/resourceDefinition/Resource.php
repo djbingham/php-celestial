@@ -16,11 +16,6 @@ class Resource
 	public $name;
 
 	/**
-	 * @var Table
-	 */
-	public $table;
-
-	/**
 	 * @var AttributeList
 	 */
 	public $attributes;
@@ -43,7 +38,6 @@ class Resource
 	public function setAlias($alias)
 	{
 		$this->alias = $alias;
-		$this->table->alias = $alias;
 		return $this;
 	}
 
@@ -57,17 +51,17 @@ class Resource
 		return $alias;
 	}
 
-	public function getAttributeByFieldName($fieldName)
+	public function getAttributeByName($attributeName)
 	{
 		$foundAttribute = null;
 		foreach ($this->attributes as $attribute) {
-			if ($attribute->field->name === $fieldName) {
+			if ($attribute->name === $attributeName) {
 				$foundAttribute = $attribute;
 			}
 		}
 		if (is_null($foundAttribute)) {
 			throw new InvalidArgumentException(
-				sprintf('Failed to find resource attribute with table field = `%s`', $fieldName)
+				sprintf('Failed to find resource attribute with name = `%s`', $attributeName)
 			);
 		}
 		return $foundAttribute;

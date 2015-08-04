@@ -105,9 +105,9 @@ class Conductor
 		foreach ($link->getConstraints() as $constraintDefinition) {
 			if ($constraintDefinition->subJoins !== null && $constraintDefinition->subJoins->length() > 0) {
 				foreach ($constraintDefinition->subJoins as $subJoin) {
-					/** @var ResourceDefinition\TableJoin $subJoin */
-					$tableName = $subJoin->childTable->getAlias();
-					$field = $subJoin->childField;
+					/** @var ResourceDefinition\LinkSubJoin $subJoin */
+					$tableName = $subJoin->childResource->getAlias();
+					$field = $subJoin->childAttribute;
 					$queryField = $this->database->value()
 						->table($tableName)
 						->field($field->name);
@@ -126,16 +126,16 @@ class Conductor
 					}
 				}
 			} else {
-				$tableName = $constraintDefinition->childAttribute->table->getAlias();
-				$field = $constraintDefinition->childAttribute->field;
+				$tableName = $constraintDefinition->childAttribute->resource->getAlias();
+				$attribute = $constraintDefinition->childAttribute;
 				$queryField = $this->database->value()
 					->table($tableName)
-					->field($field->name);
-				$fieldValues = $linkData[$field->getAlias()];
+					->field($attribute->name);
+				$attributeValues = $linkData[$attribute->getAlias()];
 
 				$queryConstraint = $this->database->query()->constraint()->setSubject($queryField);
 				$queryValues = array();
-				foreach (array_unique($fieldValues) as $value) {
+				foreach (array_unique($attributeValues) as $value) {
 					$queryValues[] = $this->database->value()->guess($value);
 				}
 				$queryValue = $this->database->value()->valueList($queryValues);

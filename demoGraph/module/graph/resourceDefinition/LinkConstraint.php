@@ -19,7 +19,7 @@ class LinkConstraint
     public $childAttribute;
 
     /**
-     * @var TableJoinList
+     * @var LinkSubJoinList
      */
     public $subJoins;
 }

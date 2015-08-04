@@ -103,7 +103,7 @@ class Composer
 	{
 		$query = $this->database->query()->select()
 			->setFields($this->buildQueryFieldsFromResource($resourceDefinition))
-			->from($this->getQueryTable($resourceDefinition->table->name, $resourceDefinition->table->getAlias()))
+			->from($this->getQueryTable($resourceDefinition->name, $resourceDefinition->getAlias()))
 			->setJoins($this->buildQueryJoinsFromResource($resourceDefinition));
 
 		$constraint = $this->buildQueryConstraintFromFilters($filters, $resourceDefinition, $resourceDefinition->getAlias());
@@ -124,7 +124,7 @@ class Composer
 
 				foreach ($link->getConstraints() as $constraint) {
 					/** @var ResourceDefinition\LinkConstraint $constraint */
-					$joinConstraints[] = $this->buildJoinConstraint($constraint->parentAttribute->field, $constraint->childAttribute->field);
+					$joinConstraints[] = $this->buildJoinConstraint($constraint->parentAttribute, $constraint->childAttribute);
 				}
 				$firstJoinConstraint = array_shift($joinConstraints);
 				foreach ($joinConstraints as $constraint) {
@@ -132,7 +132,7 @@ class Composer
 				}
 
 				$joins[] = $this->database->query()->join()->inner()
-					->table($this->getQueryTable($childResource->table->name, $childResource->table->getAlias()))
+					->table($this->getQueryTable($childResource->name, $childResource->getAlias()))
 					->on($firstJoinConstraint);
 
 				$joins = array_merge($joins, $this->buildQueryJoinsFromResource($childResource));
@@ -158,13 +158,13 @@ class Composer
 		return $this->cache['queryTable'][$tableAlias];
 	}
 
-	private function buildJoinConstraint(ResourceDefinition\TableField $parentField, ResourceDefinition\TableField $childField)
+	private function buildJoinConstraint(ResourceDefinition\Attribute $parentField, ResourceDefinition\Attribute $childField)
 	{
-		$parentTable = $this->getQueryTable($parentField->table->name, $parentField->table->getAlias());
-		$childTable = $this->getQueryTable($childField->table->name, $childField->table->getAlias());
+		$parentTable = $this->getQueryTable($parentField->resource->name, $parentField->resource->getAlias());
+		$childResource = $this->getQueryTable($childField->resource->name, $childField->resource->getAlias());
 		$joinConstraint = $this->database->query()->constraint()
 			->setSubject($parentTable->field($parentField->name))
-			->equals($childTable->field($childField->name));
+			->equals($childResource->field($childField->name));
 		return $joinConstraint;
 	}
 
@@ -188,7 +188,7 @@ class Composer
 		foreach ($filters as $filterName => $filter) {
 			if ($filter instanceof Filter) {
 				$attribute = $filter->attribute;
-				$field = $this->buildQueryFieldFromAlias($attribute->field->getAlias(), $parentAlias);
+				$field = $this->buildQueryFieldFromAlias($attribute->getAlias(), $parentAlias);
 				$fieldConstraint = $this->database->query()->constraint()
 					->setSubject($field);
 				if (is_array($filter->value)) {
@@ -235,10 +235,10 @@ class Composer
 		$queryFields = array();
 		foreach ($attributes as $attribute) {
 			/** @var ResourceDefinition\Attribute $attribute */
-			$tableName = $attribute->table->name;
-			$tableAlias = $attribute->table->getAlias();
-			$fieldName = $attribute->field->name;
-			$queryField = $this->getQueryTable($tableName, $tableAlias)->field($fieldName)->setAlias($attribute->field->getAlias());
+			$tableName = $attribute->resource->name;
+			$tableAlias = $attribute->resource->getAlias();
+			$fieldName = $attribute->name;
+			$queryField = $this->getQueryTable($tableName, $tableAlias)->field($fieldName)->setAlias($attribute->getAlias());
 			$queryFields[] = $queryField;
 		}
 		return $queryFields;
@@ -302,9 +302,9 @@ class Composer
 		$subJoinGroups = $this->groupSubJoinsByChild($link);
 
 		$queryJoins = array();
-		foreach ($subJoinGroups as $childTableAlias => $subJoins) {
+		foreach ($subJoinGroups as $childResourceAlias => $subJoins) {
 			$join = $this->database->query()->join()->inner();
-			$join->table($this->getQueryTable($link->getChildResource()->table->name, $link->getChildResource()->table->getAlias()));
+			$join->table($this->getQueryTable($link->getChildResource()->name, $link->getChildResource()->getAlias()));
 
 			if (!isset($firstSubJoin)) {
 				$firstSubJoinName = array_keys($subJoins)[0];
@@ -313,12 +313,12 @@ class Composer
 
 			$joinConstraints = array();
 			foreach ($subJoins as $joinDefinition) {
-				/** @var ResourceDefinition\TableJoin $joinDefinition */
-				if ($joinDefinition->parentTable->getAlias() !== $link->parentResource->getAlias()) {
-					$parentTable = $this->getQueryTable($joinDefinition->parentTable->name, $joinDefinition->parentTable->getAlias());
-					$parentField = $parentTable->field($joinDefinition->parentField->name);
-					$childTable = $this->getQueryTable($joinDefinition->childTable->name, $joinDefinition->childTable->getAlias());
-					$childField = $childTable->field($joinDefinition->childField->name);
+				/** @var ResourceDefinition\LinkSubJoin $joinDefinition */
+				if ($joinDefinition->parentResource->getAlias() !== $link->parentResource->getAlias()) {
+					$parentTable = $this->getQueryTable($joinDefinition->parentResource->name, $joinDefinition->parentResource->getAlias());
+					$parentField = $parentTable->field($joinDefinition->parentAttribute->name);
+					$childResource = $this->getQueryTable($joinDefinition->childResource->name, $joinDefinition->childResource->getAlias());
+					$childField = $childResource->field($joinDefinition->childAttribute->name);
 					$joinConstraint = $this->database->query()->constraint()
 						->setSubject($parentField)
 						->equals($childField);
@@ -338,13 +338,12 @@ class Composer
 		$queryJoins = array_merge($queryJoins, $this->buildQueryJoinsFromResource($resourceDefinition));
 		$query->setJoins($queryJoins);
 
-		$firstTableAlias = $firstSubJoin->childTable->getAlias();
-		$linkField = $this->getQueryTable($firstTableAlias, $firstTableAlias)->field($firstSubJoin->childField->name);
-
+		$firstTableAlias = $firstSubJoin->childResource->getAlias();
+		$linkField = $this->getQueryTable($firstTableAlias, $firstTableAlias)->field($firstSubJoin->childAttribute->name);
 		$queryFields = $this->buildQueryFieldsFromResource($resourceDefinition);
 		$queryFields[] = $linkField;
 
-		$table = $firstSubJoin->childTable;
+		$table = $firstSubJoin->childResource;
 		$query->setFields($queryFields)
 			->from($this->getQueryTable($table->name, $table->getAlias()));
 
@@ -362,8 +361,8 @@ class Composer
 		foreach ($resourceLink->constraints as $constraint) {
 			/** @var ResourceDefinition\LinkConstraint $constraint */
 			foreach ($constraint->subJoins as $subJoin) {
-				/** @var ResourceDefinition\TableJoin $subJoin */
-				$childAlias = $subJoin->childTable->getAlias();
+				/** @var ResourceDefinition\LinkSubJoin $subJoin */
+				$childAlias = $subJoin->childResource->getAlias();
 				if (!array_key_exists($childAlias, $groupedJoins)) {
 					$groupedJoins[$childAlias] = array();
 				}

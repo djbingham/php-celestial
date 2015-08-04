@@ -3,16 +3,16 @@ namespace DemoGraph\Module\Graph\ResourceDefinition;
 
 use DemoGraph\Module\Graph\Helper\ObjectList;
 
-class TableJoinList extends ObjectList
+class LinkSubJoinList extends ObjectList
 {
-    public function push(TableJoin $view)
+    public function push(LinkSubJoin $view)
     {
         $this->items[] = $view;
         return $this;
     }
 
     /**
-     * @return TableJoin
+     * @return LinkSubJoin
      */
     public function shift()
     {
@@ -22,19 +22,19 @@ class TableJoinList extends ObjectList
 
     /**
      * @param string $index
-     * @return TableJoin
+     * @return LinkSubJoin
      */
     public function getByIndex($index)
     {
         return parent::getByIndex($index);
     }
 
-    public function getByParentTableAlias($parentAlias)
+    public function getByParentResourceAlias($parentAlias)
     {
         $foundJoin = null;
         foreach ($this as $join) {
-            /** @var TableJoin $join */
-            if ($join->parentTable->getAlias() === $parentAlias) {
+            /** @var LinkSubJoin $join */
+            if ($join->parentResource->getAlias() === $parentAlias) {
                 $foundJoin = $join;
             }
         }

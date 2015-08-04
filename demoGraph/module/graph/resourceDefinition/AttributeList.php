@@ -46,23 +46,6 @@ class AttributeList extends ObjectList
 	}
 
 	/**
-	 * @param string $alias
-	 * @return Attribute
-	 */
-	public function getByFieldAlias($alias)
-	{
-		$foundAttribute = null;
-		foreach ($this as $attribute) {
-			/** @var Attribute $attribute */
-			if ($attribute->field->alias === $alias) {
-				$foundAttribute = $attribute;
-				break;
-			}
-		}
-		return $foundAttribute;
-	}
-
-	/**
 	 * @param string $resourceAlias
 	 * @return AttributeList
 	 */
@@ -111,15 +94,5 @@ class AttributeList extends ObjectList
 			}
 		}
 		return $foundIndex;
-	}
-
-	public function getFields()
-	{
-		$fields = new TableFieldList();
-		foreach ($this as $attribute) {
-			/** @var Attribute $attribute */
-			$fields->push($attribute->field);
-		}
-		return $fields;
 	}
 }

@@ -34,9 +34,9 @@ class Link
 	public $type = Link::ONE_TO_ONE;
 
 	/**
-	 * @var TableList
+	 * @var ResourceList
 	 */
-	public $intermediaryTables;
+	public $intermediaryResources;
 
 	/**
 	 * @var array
@@ -81,23 +81,22 @@ class Link
 
 	private function load()
 	{
-		$childResourceAlias = $this->buildUniqueTableAlias($this->name, $this->parentResource->getAlias());
+		$childResourceAlias = $this->buildUniqueResourceAlias($this->name, $this->parentResource->getAlias());
 		$this->childResource = $this->resourceBuilder->buildFromName($this->childResourceName, $childResourceAlias);
-		$this->childResource->table->alias = $childResourceAlias;
 		$this->constraints = $this->buildJoinList();
 	}
 
-	private function buildUniqueTableAlias($tableAlias, $parentAlias = null)
+	private function buildUniqueResourceAlias($defaultAlias, $parentAlias = null)
 	{
 		if ($parentAlias !== null) {
-			$tableAlias = $parentAlias . '_' . $tableAlias;
+			$defaultAlias = $parentAlias . '_' . $defaultAlias;
 		}
-		return $tableAlias;
+		return $defaultAlias;
 	}
 
 	private function buildJoinList()
 	{
-		if (!empty($this->intermediaryTables)) {
+		if (!empty($this->intermediaryResources)) {
 			$joins = new LinkConstraintList();
 			$joins->push($this->buildJoinViaIntermediary());
 		} else {
@@ -111,107 +110,110 @@ class Link
 		$join = new LinkConstraint();
 		$join->link = $this;
 
-		$tables = new TableList();
-		$tables->push($this->parentResource->table);
-		$parentAlias = $this->parentResource->table->getAlias();
-		foreach ($this->intermediaryTables as $table) {
-			/** @var Table $table */
-			$table->alias = $this->buildUniqueTableAlias($table->getAlias(), $parentAlias);
-			$tables->push($table);
+		$resources = new ResourceList();
+		$resources->push($this->parentResource);
+		$parentAlias = $this->parentResource->getAlias();
+		foreach ($this->intermediaryResources as $resource) {
+			/** @var GraphResource $resource */
+			$resource->alias = $this->buildUniqueResourceAlias($resource->alias, $parentAlias);
+			$resources->push($resource);
 		}
-		$tables->push($this->childResource->table);
+		$resources->push($this->childResource);
 
-		$join->subJoins = new TableJoinList();
-		while ($tables->length() >= 2) {
-			$firstTable = $tables->shift();
-			$secondTable = $tables->getByIndex(0);
-			$tablePair = new TableList();
-			$tablePair->push($firstTable);
-			$tablePair->push($secondTable);
-			$join->subJoins->push($this->buildSubJoin($join, $tablePair));
+		$join->subJoins = new LinkSubJoinList();
+		while ($resources->length() >= 2) {
+			$resourcePair = $resources->slice(0, 2);
+			$resources->shift();
+
+			$subJoin = $this->buildSubJoin($join, $resourcePair);
+			$join->subJoins->push($subJoin);
 		}
 
-		$parentField = $this->getParentFieldFromSubJoins($join->subJoins);
-		$childField = $this->getChildFieldFromSubJoins($join->subJoins);
+		$parentAttribute = $this->getParentAttributeFromSubJoins($join->subJoins);
+		$childAttribute = $this->getChildAttributeFromSubJoins($join->subJoins);
 
-		$join->parentAttribute = $this->parentResource->getAttributeByFieldName($parentField->name);
-		$join->childAttribute = $this->childResource->getAttributeByFieldName($childField->name);
+		$join->parentAttribute = $this->parentResource->getAttributeByName($parentAttribute->name);
+		$join->childAttribute = $this->childResource->getAttributeByName($childAttribute->name);
 
 		return $join;
 	}
 
-	private function getParentFieldFromSubJoins(TableJoinList $joins)
+	private function getParentAttributeFromSubJoins(LinkSubJoinList $joins)
 	{
-		$parentField = null;
+		$parentAttribute = null;
+		/** @var LinkSubJoin $join */
 		foreach ($joins as $join) {
-			if ($join->parentTable->name === $this->parentResource->name) {
-				$parentField = $join->parentField;
+			if ($join->parentResource->name === $this->parentResource->name) {
+				$parentAttribute = $join->parentAttribute;
 				break;
-			} elseif ($join->childTable->name === $this->parentResource->name) {
-				$parentField = $join->childField;
+			} elseif ($join->childResource->name === $this->parentResource->name) {
+				$parentAttribute = $join->childAttribute;
 				break;
 			}
 		}
-		if (is_null($parentField)) {
+		if (is_null($parentAttribute)) {
 			throw new InvalidResourceException(
-				'No parent field from resource found in sub-joins: ' . json_encode($joins)
+				'No parent attribute from resource found in sub-joins: ' . json_encode($joins)
 			);
 		}
-		return $parentField;
+		return $parentAttribute;
 	}
 
-	private function getChildFieldFromSubJoins(TableJoinList $joins)
+	private function getChildAttributeFromSubJoins(LinkSubJoinList $joins)
 	{
-		$childField = null;
+		$childAttribute = null;
+		/** @var LinkSubJoin $join */
 		foreach ($joins as $join) {
-			if ($join->parentTable->name === $this->childResource->table->name) {
-				$childField = $join->parentField;
-			} elseif ($join->childTable->name === $this->childResource->table->name) {
-				$childField = $join->childField;
+			if ($join->parentResource->name === $this->childResource->name) {
+				$childAttribute = $join->parentAttribute;
+			} elseif ($join->childResource->name === $this->childResource->name) {
+				$childAttribute = $join->childAttribute;
 			}
 		}
-		if (is_null($childField)) {
+		if (is_null($childAttribute)) {
 			throw new InvalidResourceException(
-				'No child field from resource found in sub-joins: ' . json_encode($joins)
+				'No child attribute from resource found in sub-joins: ' . json_encode($joins)
 			);
 		}
-		return $childField;
+		return $childAttribute;
 	}
 
-	private function buildSubJoin(LinkConstraint $parentJoin, TableList $tables)
+	private function buildSubJoin(LinkConstraint $parentJoin, ResourceList $resources)
 	{
-		if ($tables->length() !== 2) {
+		if ($resources->length() !== 2) {
 			throw new InvalidArgumentException(
-				'Attempted to join an invalid number of tables: ' . json_encode($tables)
+				'Attempted to build a sub-join from an invalid number of resources: ' . json_encode($resources)
 			);
 		}
 
-		$firstTable = $tables->getByIndex(0);
-		$secondTable = $tables->getByIndex(1);
+		$firstResource = $resources->getByIndex(0);
+		$secondResource = $resources->getByIndex(1);
 
-		$join = new TableJoin();
+		$join = new LinkSubJoin();
 		$join->parentJoin = $parentJoin;
 
 		foreach ($this->joinManifest as $parentAlias => $childAlias) {
-			$parentTableAlias = rtrim(strstr($parentAlias, '.', true), '.');
-			$parentTableAlias = $this->getTableNameFromAlias($parentTableAlias);
+			$parentResourceAlias = rtrim(strstr($parentAlias, '.', true), '.');
+			$parentResourceAlias = $this->getResourceNameFromAlias($parentResourceAlias);
 			$parentAttributeAlias = ltrim(strstr($parentAlias, '.'), '.');
 
-			$childTableAlias = rtrim(strstr($childAlias, '.', true), '.');
-			$childTableAlias = $this->getTableNameFromAlias($childTableAlias);
+			$childResourceAlias = rtrim(strstr($childAlias, '.', true), '.');
+			$childResourceAlias = $this->getResourceNameFromAlias($childResourceAlias);
 			$childAttributeAlias = ltrim(strstr($childAlias, '.'), '.');
 
-			if ($parentTableAlias === $firstTable->getAlias()) {
-				$join->parentTable = $firstTable;
-				$join->parentField = $this->buildTableField($firstTable, $parentAttributeAlias);
-				$join->childTable = $secondTable;
-				$join->childField = $this->buildTableField($secondTable, $childAttributeAlias);
+			if ($parentResourceAlias === $firstResource->getAlias()) {
+				$join->parentResource = $firstResource;
+				$join->parentAttribute = $this->buildResourceAttribute($firstResource, $parentAttributeAlias);
+				$join->childResource = $secondResource;
+				$join->childAttribute = $this->buildResourceAttribute($secondResource, $childAttributeAlias);
+				$join->childResource->attributes->push($join->childAttribute);
 				break;
-			} elseif ($childTableAlias === $secondTable->getAlias()) {
-				$join->childTable = $secondTable;
-				$join->childField = $this->buildTableField($secondTable, $childAttributeAlias);
-				$join->parentTable = $firstTable;
-				$join->parentField = $this->buildTableField($firstTable, $parentAttributeAlias);
+			} elseif ($childResourceAlias === $secondResource->getAlias()) {
+				$join->childResource = $secondResource;
+				$join->childAttribute = $this->buildResourceAttribute($secondResource, $childAttributeAlias);
+				$join->parentResource = $firstResource;
+				$join->parentAttribute = $this->buildResourceAttribute($firstResource, $parentAttributeAlias);
+				$join->parentResource->attributes->push($join->parentAttribute);
 				break;
 			}
 		}
@@ -238,24 +240,24 @@ class Link
 		return $joins;
 	}
 
-	private function buildTableField(Table $table, $fieldName)
+	private function buildResourceAttribute(GraphResource $resource, $attributeName)
 	{
-		$field = new TableField();
-		$field->table = $table;
-		$field->name = $fieldName;
-		$field->alias = sprintf('%s.%s', $table->getAlias(), $fieldName);
-		return $field;
+		$attribute = new Attribute();
+		$attribute->resource = $resource;
+		$attribute->name = $attributeName;
+		$attribute->alias = sprintf('%s.%s', $resource->getAlias(), $attributeName);
+		return $attribute;
 	}
 
-	private function getTableNameFromAlias($alias)
+	private function getResourceNameFromAlias($alias)
 	{
 		if ($alias === 'this') {
-			$tableName = $this->parentResource->table->getAlias();
+			$resourceName = $this->parentResource->getAlias();
 		} elseif ($alias === $this->name) {
-			$tableName = $this->childResource->table->getAlias();
+			$resourceName = $this->childResource->getAlias();
 		} else {
-			$tableName = $alias;
+			$resourceName = $alias;
 		}
-		return $tableName;
+		return $resourceName;
 	}
 }

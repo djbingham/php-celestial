@@ -11,7 +11,7 @@ class ViewListBuilder
 		foreach ($manifestViews as $viewName => $filePath) {
 			$view = new ResourceDefinition\View();
 			$view->name = $viewName;
-            $view->filePath = $filePath;
+            $view->path = $filePath;
 			$views->push($view);
 		}
         return $views;

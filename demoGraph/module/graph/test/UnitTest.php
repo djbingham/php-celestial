@@ -51,7 +51,6 @@ abstract class UnitTest extends \PHPUnit_Framework_TestCase
 		$resourceDefinitionBuilder->setSubBuilders(array(
 			'attributeListBuilder' => new AttributeListBuilder($attributeBuilder),
 			'linkListBuilder' => new LinkListBuilder($resourceDefinitionBuilder),
-			'tableBuilder' => new TableBuilder(),
 			'validatorListBuilder' => $validatorListBuilder,
 			'viewListBuilder' => new ViewListBuilder()
 		));

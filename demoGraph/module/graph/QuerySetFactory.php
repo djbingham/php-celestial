@@ -11,21 +11,6 @@ class QuerySetFactory
 	 * @var DatabaseWrapper
 	 */
 	private $database;
-	/**
-	 * @var QueryFactory
-	 */
-	private $queryFactory;
-
-	/**
-	 * @var AttributeMapper
-	 */
-	private $attributeMapper;
-
-	public function __construct(QueryFactory $queryFactory, AttributeMapper $attributeMapper)
-	{
-		$this->queryFactory = $queryFactory;
-		$this->attributeMapper = $attributeMapper;
-	}
 
 	public function setDatabase(DatabaseWrapper $database)
 	{

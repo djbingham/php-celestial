@@ -2,13 +2,12 @@
 namespace DemoGraph\Module\Graph\ResourceDefinition;
 
 use DemoGraph\Module\Graph\Helper\ObjectList;
-use Sloth\Exception\InvalidArgumentException;
 
 class ResourceList extends ObjectList
 {
-	public function push(Resource $connection)
+	public function push(Resource $resource)
 	{
-		$this->items[] = $connection;
+		$this->items[] = $resource;
 		return $this;
 	}
 
@@ -19,6 +18,29 @@ class ResourceList extends ObjectList
 	public function getByIndex($index)
 	{
 		return parent::getByIndex($index);
+	}
+
+	/**
+	 * @return Resource
+	 */
+	public function shift()
+	{
+		return array_shift($this->items);
+	}
+
+	/**
+	 * @param int $start
+	 * @param int $quantity
+	 * @return ResourceList
+	 */
+	public function slice($start, $quantity)
+	{
+		$resources = array_slice($this->items, $start, $quantity);
+		$resourceList = new self();
+		foreach ($resources as $resource) {
+			$resourceList->push($resource);
+		}
+		return $resourceList;
 	}
 
 	/**

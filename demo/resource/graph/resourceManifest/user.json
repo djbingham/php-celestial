@@ -1,5 +1,5 @@
 {
-	"primaryResource": "user",
+	"primaryResource": "User",
 	"attributes": {
 		"id": true,
 		"forename": true,
@@ -21,11 +21,11 @@
 
 		"index.json": {
 			"engine": "json",
-			"path": "user/index"
+			"path": "default/index"
 		},
 		"index.html": {
 			"engine": "moustache",
-			"path": "user/index.html"
+			"path": "default/index.html"
 		}
 	}
 }

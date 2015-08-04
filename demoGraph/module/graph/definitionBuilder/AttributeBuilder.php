@@ -26,24 +26,14 @@ class AttributeBuilder
         if (is_null($attribute)) {
             $attribute = new ResourceDefinition\Attribute();
             $attribute->resource = $resource;
-            $attribute->table = $resource->table;
             $attribute->name = $attributeManifest['name'];
-            $attribute->field = $this->buildTableField($resource->table, $attributeManifest['field']);
+            $attribute->alias = sprintf('%s.%s', $resource->getAlias(), $attributeManifest['field']);
             $attribute->type = $attributeManifest['type'];
             $validatorManifest = array_key_exists('validators', $attributeManifest) ? $attributeManifest['validators'] : array();
             $attribute->validators = $this->validatorListBuilder->build($resource, $validatorManifest);
             $this->cacheAttribute($attribute);
         }
         return $attribute;
-    }
-
-    private function buildTableField(ResourceDefinition\Table $table, $fieldName)
-    {
-        $field = new ResourceDefinition\TableField();
-        $field->table = $table;
-        $field->name = $fieldName;
-        $field->alias = sprintf('%s.%s', $table->getAlias(), $fieldName);
-        return $field;
     }
 
     private function cacheAttribute(ResourceDefinition\Attribute $attribute)

@@ -1,7 +1,4 @@
 {
-	"table": {
-		"name": "User"
-	},
 	"attributes": {
 		"id": {
 			"type": "integer(11)",
