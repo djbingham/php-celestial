@@ -20,7 +20,7 @@ class Table
 	/**
 	 * @var FieldList
 	 */
-	public $attributes;
+	public $fields;
 
 	/**
 	 * @var JoinList

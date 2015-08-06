@@ -94,6 +94,7 @@ class ResourceDefinitionBuilder
 
 		$resource = new Resource();
 		$resource->name = $manifest['name'];
+		$resource->attributes = $manifest['attributes'];
 		$resource->table = $this->tableBuilder->buildFromName($manifest['table']);
 		$resource->validators = $this->validatorListBuilder->build($manifest['validators']);
 		$resource->views = $this->viewListBuilder->build($manifest['views']);

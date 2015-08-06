@@ -85,7 +85,7 @@ class TableDefinitionBuilder
 			$table->alias = $manifest['name'];
 		}
 		$table->name = $manifest['name'];
-		$table->attributes = $this->tableFieldListBuilder->build($table, $manifest['attributes']);
+		$table->fields = $this->tableFieldListBuilder->build($table, $manifest['attributes']);
 		$table->links = $this->linkListBuilder->build($table, $manifest['links']);
 		$table->validators = $this->validatorListBuilder->build($manifest['validators']);
 		$table->views = $this->viewListBuilder->build($manifest['views']);

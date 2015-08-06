@@ -18,8 +18,8 @@ trait ResourceBuilderAssertions
 	{
 		$this->assertEquals('User', $resource->name);
 		$this->assertEquals('User', $resource->table->name);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\AttributeList', $resource->attributes);
-		$this->assertEquals(3, $resource->attributes->length());
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\AttributeList', $resource->fields);
+		$this->assertEquals(3, $resource->fields->length());
 		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\LinkList', $resource->links);
 		$this->assertEquals(3, $resource->links->length());
 		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->validators);
@@ -27,29 +27,29 @@ trait ResourceBuilderAssertions
 		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ViewList', $resource->views);
 		$this->assertEquals(0, $resource->views->length());
 
-		$this->assertEquals('id', $resource->attributes->getByIndex(0)->name);
-		$this->assertEquals('integer(11)', $resource->attributes->getByIndex(0)->type);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\TableField', $resource->attributes->getByIndex(0)->field);
-		$this->assertSame($resource->table, $resource->attributes->getByIndex(1)->field->resource);
-		$this->assertEquals('id', $resource->attributes->getByIndex(0)->field->name);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->attributes->getByIndex(0)->validators);
-		$this->assertEquals(0, $resource->attributes->getByIndex(0)->validators->length());
+		$this->assertEquals('id', $resource->fields->getByIndex(0)->name);
+		$this->assertEquals('integer(11)', $resource->fields->getByIndex(0)->type);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\TableField', $resource->fields->getByIndex(0)->field);
+		$this->assertSame($resource->table, $resource->fields->getByIndex(1)->field->resource);
+		$this->assertEquals('id', $resource->fields->getByIndex(0)->field->name);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->fields->getByIndex(0)->validators);
+		$this->assertEquals(0, $resource->fields->getByIndex(0)->validators->length());
 
-		$this->assertEquals('forename', $resource->attributes->getByIndex(1)->name);
-		$this->assertEquals('text(50)', $resource->attributes->getByIndex(1)->type);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\TableField', $resource->attributes->getByIndex(1)->field);
-		$this->assertSame($resource->table, $resource->attributes->getByIndex(1)->field->resource);
-		$this->assertEquals('forename', $resource->attributes->getByIndex(1)->field->name);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->attributes->getByIndex(1)->validators);
-		$this->assertEquals(0, $resource->attributes->getByIndex(1)->validators->length());
+		$this->assertEquals('forename', $resource->fields->getByIndex(1)->name);
+		$this->assertEquals('text(50)', $resource->fields->getByIndex(1)->type);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\TableField', $resource->fields->getByIndex(1)->field);
+		$this->assertSame($resource->table, $resource->fields->getByIndex(1)->field->resource);
+		$this->assertEquals('forename', $resource->fields->getByIndex(1)->field->name);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->fields->getByIndex(1)->validators);
+		$this->assertEquals(0, $resource->fields->getByIndex(1)->validators->length());
 
-		$this->assertEquals('surname', $resource->attributes->getByIndex(2)->name);
-		$this->assertEquals('text(100)', $resource->attributes->getByIndex(2)->type);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\TableField', $resource->attributes->getByIndex(2)->field);
-		$this->assertSame($resource->table, $resource->attributes->getByIndex(2)->field->resource);
-		$this->assertEquals('surname', $resource->attributes->getByIndex(2)->field->name);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->attributes->getByIndex(2)->validators);
-		$this->assertEquals(0, $resource->attributes->getByIndex(2)->validators->length());
+		$this->assertEquals('surname', $resource->fields->getByIndex(2)->name);
+		$this->assertEquals('text(100)', $resource->fields->getByIndex(2)->type);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\TableField', $resource->fields->getByIndex(2)->field);
+		$this->assertSame($resource->table, $resource->fields->getByIndex(2)->field->resource);
+		$this->assertEquals('surname', $resource->fields->getByIndex(2)->field->name);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->fields->getByIndex(2)->validators);
+		$this->assertEquals(0, $resource->fields->getByIndex(2)->validators->length());
 	}
 
 	public function assertBuiltUserResourceLinksToFriendsSubResource(Definition\Table $resource)
@@ -80,7 +80,7 @@ trait ResourceBuilderAssertions
 
 		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\TableJoin', $subJoinsToFriends->getByIndex(0));
 		$this->assertSame($resource->table, $subJoinsToFriends->getByIndex(0)->parentTable);
-		$this->assertEquals($resource->attributes->getByName('id')->field, $subJoinsToFriends->getByIndex(0)->parentAttribute);
+		$this->assertEquals($resource->fields->getByName('id')->field, $subJoinsToFriends->getByIndex(0)->parentAttribute);
 		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\Table', $subJoinsToFriends->getByIndex(0)->childTable);
 		$this->assertEquals('UserFriend', $subJoinsToFriends->getByIndex(0)->childTable->name);
 		$this->assertEquals('User_friendLink', $subJoinsToFriends->getByIndex(0)->childTable->alias);
@@ -120,7 +120,7 @@ trait ResourceBuilderAssertions
 		$this->assertNull($joinToPosts->subJoins);
 
 		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\Attribute', $joinToPosts->parentAttribute);
-		$this->assertSame($resource->attributes->getByName('id'), $joinToPosts->parentAttribute);
+		$this->assertSame($resource->fields->getByName('id'), $joinToPosts->parentAttribute);
 
 		$this->assertEquals('authorId', $joinToPosts->childAttribute->name);
 		$this->assertEquals('integer(11)', $joinToPosts->childAttribute->type);
@@ -151,7 +151,7 @@ trait ResourceBuilderAssertions
         $this->assertNull($joinToAddress->subJoins);
 
         $this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\Attribute', $joinToAddress->parentAttribute);
-        $this->assertSame($resource->attributes->getByName('id'), $joinToAddress->parentAttribute);
+        $this->assertSame($resource->fields->getByName('id'), $joinToAddress->parentAttribute);
 
         $this->assertEquals('userId', $joinToAddress->childAttribute->name);
         $this->assertEquals('integer(11)', $joinToAddress->childAttribute->type);
@@ -169,8 +169,8 @@ trait ResourceBuilderAssertions
 		$this->assertEquals('Post', $resource->name);
 		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\Table', $resource->table);
 		$this->assertEquals('Post', $resource->table->name);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\AttributeList', $resource->attributes);
-		$this->assertEquals(3, $resource->attributes->length());
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\AttributeList', $resource->fields);
+		$this->assertEquals(3, $resource->fields->length());
 		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\LinkList', $resource->links);
 		$this->assertEquals(1, $resource->links->length());
 		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->validators);
@@ -178,35 +178,35 @@ trait ResourceBuilderAssertions
 		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ViewList', $resource->views);
 		$this->assertEquals(0, $resource->views->length());
 
-		$this->assertSame($resource, $resource->attributes->getByIndex(0)->table);
-		$this->assertSame($resource->table, $resource->attributes->getByIndex(2)->table);
-		$this->assertEquals('id', $resource->attributes->getByIndex(0)->name);
-		$this->assertEquals('integer(11)', $resource->attributes->getByIndex(0)->type);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\TableField', $resource->attributes->getByIndex(0)->field);
-		$this->assertEquals('id', $resource->attributes->getByIndex(0)->field->name);
-		$this->assertEquals('Post.id', $resource->attributes->getByIndex(0)->field->alias);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->attributes->getByIndex(0)->validators);
-		$this->assertEquals(0, $resource->attributes->getByIndex(0)->validators->length());
+		$this->assertSame($resource, $resource->fields->getByIndex(0)->table);
+		$this->assertSame($resource->table, $resource->fields->getByIndex(2)->table);
+		$this->assertEquals('id', $resource->fields->getByIndex(0)->name);
+		$this->assertEquals('integer(11)', $resource->fields->getByIndex(0)->type);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\TableField', $resource->fields->getByIndex(0)->field);
+		$this->assertEquals('id', $resource->fields->getByIndex(0)->field->name);
+		$this->assertEquals('Post.id', $resource->fields->getByIndex(0)->field->alias);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->fields->getByIndex(0)->validators);
+		$this->assertEquals(0, $resource->fields->getByIndex(0)->validators->length());
 
-		$this->assertSame($resource, $resource->attributes->getByIndex(1)->table);
-		$this->assertSame($resource->table, $resource->attributes->getByIndex(2)->table);
-		$this->assertEquals('authorId', $resource->attributes->getByIndex(1)->name);
-		$this->assertEquals('integer(11)', $resource->attributes->getByIndex(1)->type);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\TableField', $resource->attributes->getByIndex(1)->field);
-		$this->assertEquals('authorId', $resource->attributes->getByIndex(1)->field->name);
-		$this->assertEquals('Post.authorId', $resource->attributes->getByIndex(1)->field->alias);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->attributes->getByIndex(1)->validators);
-		$this->assertEquals(0, $resource->attributes->getByIndex(1)->validators->length());
+		$this->assertSame($resource, $resource->fields->getByIndex(1)->table);
+		$this->assertSame($resource->table, $resource->fields->getByIndex(2)->table);
+		$this->assertEquals('authorId', $resource->fields->getByIndex(1)->name);
+		$this->assertEquals('integer(11)', $resource->fields->getByIndex(1)->type);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\TableField', $resource->fields->getByIndex(1)->field);
+		$this->assertEquals('authorId', $resource->fields->getByIndex(1)->field->name);
+		$this->assertEquals('Post.authorId', $resource->fields->getByIndex(1)->field->alias);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->fields->getByIndex(1)->validators);
+		$this->assertEquals(0, $resource->fields->getByIndex(1)->validators->length());
 
-		$this->assertSame($resource, $resource->attributes->getByIndex(2)->table);
-		$this->assertSame($resource->table, $resource->attributes->getByIndex(2)->table);
-		$this->assertEquals('content', $resource->attributes->getByIndex(2)->name);
-		$this->assertEquals('text', $resource->attributes->getByIndex(2)->type);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\TableField', $resource->attributes->getByIndex(2)->field);
-		$this->assertEquals('content', $resource->attributes->getByIndex(2)->field->name);
-		$this->assertEquals('Post.content', $resource->attributes->getByIndex(2)->field->alias);
-		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->attributes->getByIndex(2)->validators);
-		$this->assertEquals(0, $resource->attributes->getByIndex(2)->validators->length());
+		$this->assertSame($resource, $resource->fields->getByIndex(2)->table);
+		$this->assertSame($resource->table, $resource->fields->getByIndex(2)->table);
+		$this->assertEquals('content', $resource->fields->getByIndex(2)->name);
+		$this->assertEquals('text', $resource->fields->getByIndex(2)->type);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\TableField', $resource->fields->getByIndex(2)->field);
+		$this->assertEquals('content', $resource->fields->getByIndex(2)->field->name);
+		$this->assertEquals('Post.content', $resource->fields->getByIndex(2)->field->alias);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\ValidatorList', $resource->fields->getByIndex(2)->validators);
+		$this->assertEquals(0, $resource->fields->getByIndex(2)->validators->length());
 
 		$this->assertEquals('author', $resource->links->getByIndex(0)->name);
 		$this->assertSame($resource, $resource->links->getByIndex(0)->parentTable);
@@ -237,7 +237,7 @@ trait ResourceBuilderAssertions
 		$this->assertNull($joinToAuthor->subJoins);
 
 		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\LinkConstraint', $joinToAuthor);
-		$this->assertSame($resource->attributes->getByName('authorId'), $joinToAuthor->parentAttribute);
+		$this->assertSame($resource->fields->getByName('authorId'), $joinToAuthor->parentAttribute);
 
 		$this->assertInstanceOf('DemoGraph\Module\Graph\TableDefinition\Attribute', $joinToAuthor->childAttribute);
 		$this->assertBuiltResourceMatchesUserManifest($joinToAuthor->childAttribute->table);

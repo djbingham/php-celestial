@@ -66,12 +66,12 @@ class Conductor
 
 	private function executeQuerySetItem(QuerySetItem $item)
 	{
-		$data = $this->database->execute($item->getQuery())->getData();
+		$query = $item->getQuery();
+		$data = $this->database->execute($query)->getData();
 		$linkData = $this->dataParser->extractLinkListData($item->getLinks(), $data);
 
 		$this->fetchedData[$item->getResourceName()] = $data;
 		$this->applyLinkDataToQueries($linkData);
-
 		return $data;
 	}
 

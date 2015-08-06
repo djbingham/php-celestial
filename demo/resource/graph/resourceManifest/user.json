@@ -7,6 +7,18 @@
 		"address": {
 			"houseName": true,
 			"postCode": true
+		},
+		"posts": {
+			"content": true
+		},
+		"friends": {
+			"id": true,
+			"forename": true,
+			"surname": true,
+			"friends": {
+				"forename": true,
+				"surname": true
+			}
 		}
 	},
 	"views": {

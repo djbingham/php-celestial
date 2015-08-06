@@ -218,8 +218,8 @@ EOT;
 
 		$secondConstraint = new Definition\Table\Join\Constraint();
 		$secondConstraint->link = $addressLink;
-		$secondConstraint->parentAttribute = $table->attributes->getByName('id');
-		$secondConstraint->childAttribute = $addressTable->attributes->getByName('landlordId');
+		$secondConstraint->parentAttribute = $table->fields->getByName('id');
+		$secondConstraint->childAttribute = $addressTable->fields->getByName('landlordId');
 		$secondConstraint->subJoins = null;
 		$addressLink->constraints->push($secondConstraint);
 
@@ -412,7 +412,7 @@ SELECT `User`.`id` AS `User.id`,`User`.`forename` AS `User.forename`,`User`.`sur
 FROM `User`
 EOT;
 		$expectedQueries[] = <<<EOT
-SELECT `User_friends`.`id` AS `User_friends.id`,`User_friends`.`forename` AS `User_friends.forename`,`User_friends`.`surname` AS `User_friends.surname`,`User_friendLink`.`friendId1`
+SELECT `User_friends`.`id` AS `User_friends.id`,`User_friends`.`forename` AS `User_friends.forename`,`User_friends`.`surname` AS `User_friends.surname`,`User_friendLink`.`friendId1` AS `User_friendLink.friendId1`
 FROM `UserFriend` AS `User_friendLink`
 INNER JOIN `User` AS `User_friends` ON (`User_friendLink`.`friendId2` = `User_friends`.`id`)
 EOT;
@@ -479,12 +479,12 @@ SELECT `User`.`id` AS `User.id`,`User`.`forename` AS `User.forename`,`User`.`sur
 FROM `User`
 EOT;
 		$expectedQueries[] = <<<EOT
-SELECT `User_friends`.`id` AS `User_friends.id`,`User_friends`.`forename` AS `User_friends.forename`,`User_friends`.`surname` AS `User_friends.surname`,`User_friendLink`.`friendId1`
+SELECT `User_friends`.`id` AS `User_friends.id`,`User_friends`.`forename` AS `User_friends.forename`,`User_friends`.`surname` AS `User_friends.surname`,`User_friendLink`.`friendId1` AS `User_friendLink.friendId1`
 FROM `UserFriend` AS `User_friendLink`
 INNER JOIN `User` AS `User_friends` ON (`User_friendLink`.`friendId2` = `User_friends`.`id`)
 EOT;
 		$expectedQueries[] = <<<EOT
-SELECT `User_friends_friends`.`id` AS `User_friends_friends.id`,`User_friends_friends`.`forename` AS `User_friends_friends.forename`,`User_friends_friends`.`surname` AS `User_friends_friends.surname`,`User_friends_friendLink`.`friendId1`
+SELECT `User_friends_friends`.`id` AS `User_friends_friends.id`,`User_friends_friends`.`forename` AS `User_friends_friends.forename`,`User_friends_friends`.`surname` AS `User_friends_friends.surname`,`User_friends_friendLink`.`friendId1` AS `User_friends_friendLink.friendId1`
 FROM `UserFriend` AS `User_friends_friendLink`
 INNER JOIN `User` AS `User_friends_friends` ON (`User_friends_friendLink`.`friendId2` = `User_friends_friends`.`id`)
 EOT;
@@ -584,13 +584,13 @@ FROM `User`
 WHERE `User`.`forename` = "David"
 EOT;
 		$expectedQueries[] = <<<EOT
-SELECT `User_friends`.`id` AS `User_friends.id`,`User_friends`.`forename` AS `User_friends.forename`,`User_friends`.`surname` AS `User_friends.surname`,`User_friendLink`.`friendId1`
+SELECT `User_friends`.`id` AS `User_friends.id`,`User_friends`.`forename` AS `User_friends.forename`,`User_friends`.`surname` AS `User_friends.surname`,`User_friendLink`.`friendId1` AS `User_friendLink.friendId1`
 FROM `UserFriend` AS `User_friendLink`
 INNER JOIN `User` AS `User_friends` ON (`User_friendLink`.`friendId2` = `User_friends`.`id`)
 WHERE `User_friends`.`surname` = "Bingham"
 EOT;
 		$expectedQueries[] = <<<EOT
-SELECT `User_friends_friends`.`id` AS `User_friends_friends.id`,`User_friends_friends`.`forename` AS `User_friends_friends.forename`,`User_friends_friends`.`surname` AS `User_friends_friends.surname`,`User_friends_friendLink`.`friendId1`
+SELECT `User_friends_friends`.`id` AS `User_friends_friends.id`,`User_friends_friends`.`forename` AS `User_friends_friends.forename`,`User_friends_friends`.`surname` AS `User_friends_friends.surname`,`User_friends_friendLink`.`friendId1` AS `User_friends_friendLink.friendId1`
 FROM `UserFriend` AS `User_friends_friendLink`
 INNER JOIN `User` AS `User_friends_friends` ON (`User_friends_friendLink`.`friendId2` = `User_friends_friends`.`id`)
 WHERE `User_friends_friends`.`forename` = "Mike"
@@ -689,7 +689,7 @@ SELECT `User`.`id` AS `User.id`,`User`.`forename` AS `User.forename`,`User`.`sur
 FROM `User`
 EOT;
 		$expectedQueries[] = <<<EOT
-SELECT `User_friends`.`id` AS `User_friends.id`,`User_friends`.`forename` AS `User_friends.forename`,`User_friends`.`surname` AS `User_friends.surname`,`User_friendLink`.`friendId1`
+SELECT `User_friends`.`id` AS `User_friends.id`,`User_friends`.`forename` AS `User_friends.forename`,`User_friends`.`surname` AS `User_friends.surname`,`User_friendLink`.`friendId1` AS `User_friendLink.friendId1`
 FROM `UserFriend` AS `User_friendLink`
 INNER JOIN `User` AS `User_friends` ON (`User_friendLink`.`friendId2` = `User_friends`.`id`)
 EOT;
@@ -767,7 +767,7 @@ SELECT `User`.`id` AS `User.id`,`User`.`forename` AS `User.forename`,`User`.`sur
 FROM `User`
 EOT;
 		$expectedQueries[] = <<<EOT
-SELECT `User_friends`.`id` AS `User_friends.id`,`User_friends`.`forename` AS `User_friends.forename`,`User_friends`.`surname` AS `User_friends.surname`,`User_friendLink`.`friendId1`
+SELECT `User_friends`.`id` AS `User_friends.id`,`User_friends`.`forename` AS `User_friends.forename`,`User_friends`.`surname` AS `User_friends.surname`,`User_friendLink`.`friendId1` AS `User_friendLink.friendId1`
 FROM `UserFriend` AS `User_friendLink`
 INNER JOIN `User` AS `User_friends` ON (`User_friendLink`.`friendId2` = `User_friends`.`id`
 AND `User_friendLink`.`username2` = `User_friends`.`username`)

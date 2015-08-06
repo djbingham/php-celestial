@@ -129,7 +129,7 @@ class GraphController extends RestfulController
 				} else {
 					$filters = $this->convertRequestParamsToSimpleSearchFilters($requestParams);
 				}
-				$resourceList = $resourceFactory->getBy($resourceManifest['attributes'], $filters);
+				$resourceList = $resourceFactory->getBy($resourceDefinition->attributes, $filters);
 				$renderer = new Graph\Renderer($this->app, array(
 					'moustache' => new Graph\Renderer\Mustache(),
 					'php' => new Graph\Renderer\Php(),

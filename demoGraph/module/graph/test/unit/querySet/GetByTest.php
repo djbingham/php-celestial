@@ -22,9 +22,9 @@ class GetByTest extends UnitTest
 
 		$attributesToFetch = new Definition\Table\FieldList();
 		$attributesToFetch
-			->push($resource->attributes->getByName('id'))
-			->push($resource->attributes->getByName('forename'))
-			->push($resource->attributes->getByName('surname'));
+			->push($resource->fields->getByName('id'))
+			->push($resource->fields->getByName('forename'))
+			->push($resource->fields->getByName('surname'));
 
 		$querySet = new GetBy($queryFactory);
 		$querySet
@@ -66,10 +66,10 @@ EOT;
 
 		$attributesToFetch = new Definition\Table\FieldList();
 		$attributesToFetch
-			->push($userResource->attributes->getByName('id'))
-			->push($userResource->attributes->getByName('forename'))
-			->push($userResource->attributes->getByName('surname'))
-			->push($addressResource->attributes->getByName('postcode'));
+			->push($userResource->fields->getByName('id'))
+			->push($userResource->fields->getByName('forename'))
+			->push($userResource->fields->getByName('surname'))
+			->push($addressResource->fields->getByName('postcode'));
 
 		$querySet = new GetBy($queryFactory);
 		$querySet
@@ -124,11 +124,11 @@ EOT;
 
 		$attributesToFetch = new Definition\Table\FieldList();
 		$attributesToFetch
-			->push($userResource->attributes->getByName('id'))
-			->push($userResource->attributes->getByName('forename'))
-			->push($userResource->attributes->getByName('surname'))
-			->push($postResource->attributes->getByName('id'))
-			->push($postResource->attributes->getByName('content'));
+			->push($userResource->fields->getByName('id'))
+			->push($userResource->fields->getByName('forename'))
+			->push($userResource->fields->getByName('surname'))
+			->push($postResource->fields->getByName('id'))
+			->push($postResource->fields->getByName('content'));
 
 		$querySet = new GetBy($queryFactory);
 		$querySet
@@ -211,12 +211,12 @@ EOT;
 
 		$attributesToFetch = new Definition\Table\FieldList();
 		$attributesToFetch
-			->push($userResource->attributes->getByName('id'))
-			->push($userResource->attributes->getByName('forename'))
-			->push($userResource->attributes->getByName('surname'))
-			->push($friendResource->attributes->getByName('id'))
-			->push($friendResource->attributes->getByName('forename'))
-			->push($friendResource->attributes->getByName('surname'));
+			->push($userResource->fields->getByName('id'))
+			->push($userResource->fields->getByName('forename'))
+			->push($userResource->fields->getByName('surname'))
+			->push($friendResource->fields->getByName('id'))
+			->push($friendResource->fields->getByName('forename'))
+			->push($friendResource->fields->getByName('surname'));
 
 		$querySet = new GetBy($queryFactory);
 		$querySet

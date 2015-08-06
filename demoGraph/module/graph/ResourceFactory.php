@@ -36,7 +36,6 @@ class ResourceFactory implements ResourceFactoryInterface
 		$resourceDefinition = $this->filterResourceAttributes($this->resourceDefinition, $attributes);
 		$data = $this->querySetFactory->getBy()->execute($resourceDefinition, $filters);
         return $this->instantiateResourceList($data);
-		return $data;
 	}
 
 	public function search(array $filters)
@@ -105,9 +104,9 @@ class ResourceFactory implements ResourceFactoryInterface
 
     private function filterResourceAttributes(Definition\Table $resourceDefinition, array $attributeMap)
     {
-        foreach ($resourceDefinition->attributes as $attributeIndex => $attribute) {
+        foreach ($resourceDefinition->fields as $attributeIndex => $attribute) {
             if (!array_key_exists($attribute->name, $attributeMap)) {
-                $resourceDefinition->attributes->removeByIndex($attributeIndex);
+                $resourceDefinition->fields->removeByIndex($attributeIndex);
             }
         }
 		for ($linkIndex = 0; $linkIndex < $resourceDefinition->links->length(); $linkIndex++) {

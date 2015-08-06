@@ -65,7 +65,7 @@ class DataParser
 		foreach ($rawData[$resourceDefinition->getAlias()] as $rowIndex => $rowData) {
 			/** @var \DemoGraph\Module\Graph\Definition\Table\Field $attribute */
 			if ($this->rowMatchesExpectedData($rowData, $filters)) {
-				foreach ($resourceDefinition->attributes as $attribute) {
+				foreach ($resourceDefinition->fields as $attribute) {
 					$attributeAlias = $attribute->getAlias();
 					if (array_key_exists($attributeAlias, $rowData)) {
 						$attributeData[$rowIndex][$attribute->name] = $rowData[$attributeAlias];
@@ -75,7 +75,7 @@ class DataParser
 			/** @var \DemoGraph\Module\Graph\Definition\Table\Join $link */
 			foreach ($resourceDefinition->links as $link) {
 				if (in_array($link->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
-					foreach ($link->getChildTable()->attributes as $attribute) {
+					foreach ($link->getChildTable()->fields as $attribute) {
 						$attributeAlias = $attribute->getAlias();
 						if (array_key_exists($attributeAlias, $rowData)) {
 							$attributeData[$rowIndex][$link->name][$attribute->name] = $rowData[$attributeAlias];

@@ -8,7 +8,7 @@ class FilterParser
 	public function parse(Definition\Table $resourceDefinition, array $filters)
 	{
 		$parsedFilters = array();
-		foreach ($resourceDefinition->attributes as $attribute) {
+		foreach ($resourceDefinition->fields as $attribute) {
 			/** @var \DemoGraph\Module\Graph\Definition\Table\Field $attribute */
 			if (array_key_exists($attribute->name, $filters)) {
 				$parsedFilters[$attribute->name] = new Filter();

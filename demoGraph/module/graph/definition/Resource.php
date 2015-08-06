@@ -16,6 +16,11 @@ class Resource
 	public $table;
 
 	/**
+	 * @var array
+	 */
+	public $attributes;
+
+	/**
 	 * @var Definition\ViewList
 	 */
 	public $views;

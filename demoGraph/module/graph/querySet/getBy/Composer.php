@@ -225,7 +225,7 @@ class Composer
 
 	private function buildQueryFieldsFromResource(Definition\Table $resource)
 	{
-		$resourceFields = $this->buildQueryFieldsFromAttributes($resource->attributes);
+		$resourceFields = $this->buildQueryFieldsFromAttributes($resource->fields);
 		$linkFields = $this->buildQueryFieldsFromLinks($resource->links);
 		return array_merge($resourceFields, $linkFields);
 	}
@@ -339,7 +339,9 @@ class Composer
 		$query->setJoins($queryJoins);
 
 		$firstTableAlias = $firstSubJoin->childTable->getAlias();
-		$linkField = $this->getQueryTable($firstTableAlias, $firstTableAlias)->field($firstSubJoin->childAttribute->name);
+		$linkField = $this->getQueryTable($firstTableAlias, $firstTableAlias)
+			->field($firstSubJoin->childAttribute->name)
+			->setAlias($firstSubJoin->childAttribute->getAlias());
 		$queryFields = $this->buildQueryFieldsFromResource($resourceDefinition);
 		$queryFields[] = $linkField;
 

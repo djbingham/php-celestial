@@ -137,8 +137,8 @@ class Join
 		$parentAttribute = $this->getParentAttributeFromSubJoins($join->subJoins);
 		$childAttribute = $this->getChildAttributeFromSubJoins($join->subJoins);
 
-		$join->parentAttribute = $this->parentTable->attributes->getByName($parentAttribute->name);
-		$join->childAttribute = $this->childTable->attributes->getByName($childAttribute->name);
+		$join->parentAttribute = $this->parentTable->fields->getByName($parentAttribute->name);
+		$join->childAttribute = $this->childTable->fields->getByName($childAttribute->name);
 
 		return $join;
 	}
@@ -211,14 +211,14 @@ class Join
 				$join->parentAttribute = $this->buildTableAttribute($firstTable, $parentAttributeAlias);
 				$join->childTable = $secondTable;
 				$join->childAttribute = $this->buildTableAttribute($secondTable, $childAttributeAlias);
-				$join->childTable->attributes->push($join->childAttribute);
+				$join->childTable->fields->push($join->childAttribute);
 				break;
 			} elseif ($childTableAlias === $secondTable->getAlias()) {
 				$join->childTable = $secondTable;
 				$join->childAttribute = $this->buildTableAttribute($secondTable, $childAttributeAlias);
 				$join->parentTable = $firstTable;
 				$join->parentAttribute = $this->buildTableAttribute($firstTable, $parentAttributeAlias);
-				$join->parentTable->attributes->push($join->parentAttribute);
+				$join->parentTable->fields->push($join->parentAttribute);
 				break;
 			}
 		}
@@ -231,10 +231,10 @@ class Join
 		$joins = new ConstraintList();
 		foreach ($this->joinManifest as $parentAlias => $childAlias) {
 			$parentAttributeName = ltrim(strstr($parentAlias, '.'), '.');
-			$parentAttribute = $this->parentTable->attributes->getByName($parentAttributeName);
+			$parentAttribute = $this->parentTable->fields->getByName($parentAttributeName);
 
 			$childAttributeName = ltrim(strstr($childAlias, '.'), '.');
-			$childAttribute = $this->childTable->attributes->getByName($childAttributeName);
+			$childAttribute = $this->childTable->fields->getByName($childAttributeName);
 
 			$join = new Constraint();
 			$join->link = $this;
