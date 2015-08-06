@@ -7,21 +7,21 @@ use DemoGraph\Module\Graph\QuerySet\DataParser;
 use DemoGraph\Module\Graph\QuerySet\GetBy\Composer;
 use DemoGraph\Module\Graph\QuerySet\FilterParser;
 use DemoGraph\Module\Graph\QuerySet\GetBy\Conductor;
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 use DemoGraph\Module\Graph\Test\Mock\Connection;
 use DemoGraph\Test\UnitTest;
 
 class ConductorTest extends UnitTest
 {
-	public function testQueryConductedFromResourceWithSingleTable()
+	public function testQueryConductedFromTableWithSingleTable()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		while ($resource->links->length() > 0) {
-			$resource->links->removeByIndex(0);
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		while ($table->links->length() > 0) {
+			$table->links->removeByIndex(0);
 		}
 
 		$expectedQuery = <<<EOT
@@ -48,7 +48,7 @@ EOT;
 		// todo: Properly mock the query set, rather than relying on Composer to build one
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -66,15 +66,15 @@ EOT;
 		$dbConnection->assertNotExpectingQueries();
 	}
 
-	public function testQueryConductedFromResourceWithSingleTableUsingFilters()
+	public function testQueryConductedFromTableWithSingleTableUsingFilters()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		while ($resource->links->length() > 0) {
-			$resource->links->removeByIndex(0);
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		while ($table->links->length() > 0) {
+			$table->links->removeByIndex(0);
 		}
 
 		// todo: Mock the filters, rather than using FilterParser
@@ -82,7 +82,7 @@ EOT;
 			'forename' => 'David'
 		);
 		$filterParser = new FilterParser();
-		$filters = $filterParser->parse($resource, $filters);
+		$filters = $filterParser->parse($table, $filters);
 
 		$expectedQuery = <<<EOT
 SELECT `User`.`id` AS `User.id`,`User`.`forename` AS `User.forename`,`User`.`surname` AS `User.surname`
@@ -103,7 +103,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource)
+			->setResource($table)
 			->setFilters($filters);
 
 		$querySet = $composer->compose();
@@ -121,26 +121,26 @@ EOT;
 		$dbConnection->assertNotExpectingQueries();
 	}
 
-	public function testQueryConductedFromResourceWithOneToOneLinksAndFiltersOnLinkedTables()
+	public function testQueryConductedFromTableWithOneToOneLinksAndFiltersOnLinkedTables()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'friends');
-		$resource->links->removeByPropertyValue('name', 'posts');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'friends');
+		$table->links->removeByPropertyValue('name', 'posts');
 
-		$landlordResource = $resource->links->getByName('address')->getChildResource()
-			->links->getByName('landlord')->getChildResource();
-		$landlordResource->links->removeByPropertyValue('name', 'friends');
-		$landlordResource->links->removeByPropertyValue('name', 'posts');
+		$landlordTable = $table->links->getByName('address')->getChildTable()
+			->links->getByName('landlord')->getChildTable();
+		$landlordTable->links->removeByPropertyValue('name', 'friends');
+		$landlordTable->links->removeByPropertyValue('name', 'posts');
 
-		$landlord2Resource = $landlordResource->links->getByName('address')->getChildResource()
-			->links->getByName('landlord')->getChildResource();
-		$landlord2Resource->links->removeByPropertyValue('name', 'friends');
-		$landlord2Resource->links->removeByPropertyValue('name', 'posts');
-		$landlord2Resource->links->removeByPropertyValue('name', 'address');
+		$landlord2Table = $landlordTable->links->getByName('address')->getChildTable()
+			->links->getByName('landlord')->getChildTable();
+		$landlord2Table->links->removeByPropertyValue('name', 'friends');
+		$landlord2Table->links->removeByPropertyValue('name', 'posts');
+		$landlord2Table->links->removeByPropertyValue('name', 'address');
 
 		// todo: Mock the filters, rather than using FilterParser
 		$filters = array(
@@ -152,7 +152,7 @@ EOT;
 			)
 		);
 		$filterParser = new FilterParser();
-		$filters = $filterParser->parse($resource, $filters);
+		$filters = $filterParser->parse($table, $filters);
 
 		$expectedQuery = <<<EOT
 SELECT `User`.`id` AS `User.id`,`User`.`forename` AS `User.forename`,`User`.`surname` AS `User.surname`,`User_address`.`userId` AS `User_address.userId`,`User_address`.`houseName` AS `User_address.houseName`,`User_address`.`postcode` AS `User_address.postcode`,`User_address`.`landlordId` AS `User_address.landlordId`,`User_address_landlord`.`id` AS `User_address_landlord.id`,`User_address_landlord`.`forename` AS `User_address_landlord.forename`,`User_address_landlord`.`surname` AS `User_address_landlord.surname`,`User_address_landlord_address`.`userId` AS `User_address_landlord_address.userId`,`User_address_landlord_address`.`houseName` AS `User_address_landlord_address.houseName`,`User_address_landlord_address`.`postcode` AS `User_address_landlord_address.postcode`,`User_address_landlord_address`.`landlordId` AS `User_address_landlord_address.landlordId`,`User_address_landlord_address_landlord`.`id` AS `User_address_landlord_address_landlord.id`,`User_address_landlord_address_landlord`.`forename` AS `User_address_landlord_address_landlord.forename`,`User_address_landlord_address_landlord`.`surname` AS `User_address_landlord_address_landlord.surname`
@@ -192,7 +192,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource)
+			->setResource($table)
 			->setFilters($filters);
 
 		$querySet = $composer->compose();
@@ -210,18 +210,18 @@ EOT;
 		$dbConnection->assertNotExpectingQueries();
 	}
 
-	public function testQuerySetConductedFromResourceWithOneToManyLink()
+	public function testQuerySetConductedFromTableWithOneToManyLink()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'friends');
-		$resource->links->removeByPropertyValue('name', 'address');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'friends');
+		$table->links->removeByPropertyValue('name', 'address');
 
-		$postResource = $resource->links->getByName('posts')->getChildResource();
-		$postResource->links->removeByPropertyValue('name', 'author');
+		$postTable = $table->links->getByName('posts')->getChildTable();
+		$postTable->links->removeByPropertyValue('name', 'author');
 
 		$expectedQueries = array();
 		$expectedData = array();
@@ -270,7 +270,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -287,23 +287,23 @@ EOT;
 		$dbConnection->assertNotExpectingQueries();
 	}
 
-	public function testQuerySetConductedFromResourceWithSeveralOneToManyAndOneToOneLinks()
+	public function testQuerySetConductedFromTableWithSeveralOneToManyAndOneToOneLinks()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'friends');
-		$resource->links->removeByPropertyValue('name', 'address');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'friends');
+		$table->links->removeByPropertyValue('name', 'address');
 
-		$postResource = $resource->links->getByName('posts')->getChildResource();
-		$authorResource = $postResource->links->getByName('author')->getChildResource();
-		$authorResource->links->removeByPropertyValue('name', 'friends');
-		$authorResource->links->removeByPropertyValue('name', 'address');
+		$postTable = $table->links->getByName('posts')->getChildTable();
+		$authorTable = $postTable->links->getByName('author')->getChildTable();
+		$authorTable->links->removeByPropertyValue('name', 'friends');
+		$authorTable->links->removeByPropertyValue('name', 'address');
 
-		$authorPostResource = $authorResource->links->getByName('posts')->getChildResource();
-		$authorPostResource->links->removeByPropertyValue('name', 'author');
+		$authorPostTable = $authorTable->links->getByName('posts')->getChildTable();
+		$authorPostTable->links->removeByPropertyValue('name', 'author');
 
 		$expectedQueries = array();
 		$expectedData = array();
@@ -385,7 +385,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -402,20 +402,20 @@ EOT;
 		$dbConnection->assertNotExpectingQueries();
 	}
 
-	public function testQuerySetConductedFromResourceWithManyToManyLink()
+	public function testQuerySetConductedFromTableWithManyToManyLink()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'address');
-		$resource->links->removeByPropertyValue('name', 'posts');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'address');
+		$table->links->removeByPropertyValue('name', 'posts');
 
-		$friendResource = $resource->links->getByName('friends')->getChildResource();
-		$friendResource->links->removeByPropertyValue('name', 'friends');
-		$friendResource->links->removeByPropertyValue('name', 'address');
-		$friendResource->links->removeByPropertyValue('name', 'posts');
+		$friendTable = $table->links->getByName('friends')->getChildTable();
+		$friendTable->links->removeByPropertyValue('name', 'friends');
+		$friendTable->links->removeByPropertyValue('name', 'address');
+		$friendTable->links->removeByPropertyValue('name', 'posts');
 
 		$expectedQueries = array();
 		$expectedData = array();
@@ -470,7 +470,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -491,24 +491,24 @@ EOT;
 		$dbConnection->assertNotExpectingQueries();
 	}
 
-	public function testQuerySetConductedFromResourceWithSeveralManyToManyLinks()
+	public function testQuerySetConductedFromTableWithSeveralManyToManyLinks()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'address');
-		$resource->links->removeByPropertyValue('name', 'posts');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'address');
+		$table->links->removeByPropertyValue('name', 'posts');
 
-		$friendResource = $resource->links->getByName('friends')->getChildResource();
-		$friendResource->links->removeByPropertyValue('name', 'address');
-		$friendResource->links->removeByPropertyValue('name', 'posts');
+		$friendTable = $table->links->getByName('friends')->getChildTable();
+		$friendTable->links->removeByPropertyValue('name', 'address');
+		$friendTable->links->removeByPropertyValue('name', 'posts');
 
-		$friendOfFriendResource = $friendResource->links->getByName('friends')->getChildResource();
-		$friendOfFriendResource->links->removeByPropertyValue('name', 'friends');
-		$friendOfFriendResource->links->removeByPropertyValue('name', 'address');
-		$friendOfFriendResource->links->removeByPropertyValue('name', 'posts');
+		$friendOfFriendTable = $friendTable->links->getByName('friends')->getChildTable();
+		$friendOfFriendTable->links->removeByPropertyValue('name', 'friends');
+		$friendOfFriendTable->links->removeByPropertyValue('name', 'address');
+		$friendOfFriendTable->links->removeByPropertyValue('name', 'posts');
 
 		$expectedQueries = array();
 		$expectedData = array();
@@ -595,7 +595,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -617,24 +617,24 @@ EOT;
 		$dbConnection->assertNotExpectingQueries();
 	}
 
-	public function testQuerySetConductedFromResourceWithFiltersOnManyToManyLinkedTables()
+	public function testQuerySetConductedFromTableWithFiltersOnManyToManyLinkedTables()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'address');
-		$resource->links->removeByPropertyValue('name', 'posts');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'address');
+		$table->links->removeByPropertyValue('name', 'posts');
 
-		$friendResource = $resource->links->getByName('friends')->getChildResource();
-		$friendResource->links->removeByPropertyValue('name', 'address');
-		$friendResource->links->removeByPropertyValue('name', 'posts');
+		$friendTable = $table->links->getByName('friends')->getChildTable();
+		$friendTable->links->removeByPropertyValue('name', 'address');
+		$friendTable->links->removeByPropertyValue('name', 'posts');
 
-		$friendOfFriendResource = $friendResource->links->getByName('friends')->getChildResource();
-		$friendOfFriendResource->links->removeByPropertyValue('name', 'friends');
-		$friendOfFriendResource->links->removeByPropertyValue('name', 'address');
-		$friendOfFriendResource->links->removeByPropertyValue('name', 'posts');
+		$friendOfFriendTable = $friendTable->links->getByName('friends')->getChildTable();
+		$friendOfFriendTable->links->removeByPropertyValue('name', 'friends');
+		$friendOfFriendTable->links->removeByPropertyValue('name', 'address');
+		$friendOfFriendTable->links->removeByPropertyValue('name', 'posts');
 
 		// todo: Mock the filters, rather than using FilterParser
 		$filters = array(
@@ -647,7 +647,7 @@ EOT;
 			)
 		);
 		$filterParser = new FilterParser();
-		$filters = $filterParser->parse($resource, $filters);
+		$filters = $filterParser->parse($table, $filters);
 
 		$expectedQueries = array();
 		$expectedData = array();
@@ -719,7 +719,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource)
+			->setResource($table)
 			->setFilters($filters);
 
 		$querySet = $composer->compose();
@@ -742,35 +742,35 @@ EOT;
 		$dbConnection->assertNotExpectingQueries();
 	}
 
-	public function testQuerySetConductedFromResourceWithManyToManyLinkHavingMoreThanOneConstraintOnFirstSubJoin()
+	public function testQuerySetConductedFromTableWithManyToManyLinkHavingMoreThanOneConstraintOnFirstSubJoin()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'address');
-		$resource->links->removeByPropertyValue('name', 'posts');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'address');
+		$table->links->removeByPropertyValue('name', 'posts');
 
-		$friendLink = $resource->links->getByName('friends');
-		$friendResource = $friendLink->getChildResource();
+		$friendLink = $table->links->getByName('friends');
+		$friendTable = $friendLink->getChildTable();
 		$friendSubJoins = $friendLink->constraints->getByIndex(0)->subJoins;
 
-		$extraSubJoin = new ResourceDefinition\LinkSubJoin();
-		$extraSubJoin->parentResource = $friendSubJoins->getByIndex(0)->parentResource;
+		$extraSubJoin = new Definition\Table\Join\SubJoin();
+		$extraSubJoin->parentTable = $friendSubJoins->getByIndex(0)->parentTable;
 		$extraSubJoin->parentAttribute = clone $friendSubJoins->getByIndex(0)->parentAttribute;
 		$extraSubJoin->parentAttribute->name = 'forename';
 		$extraSubJoin->parentAttribute->alias = 'User.forename';
-		$extraSubJoin->childResource = $friendSubJoins->getByIndex(0)->childResource;
+		$extraSubJoin->childTable = $friendSubJoins->getByIndex(0)->childTable;
 		$extraSubJoin->childAttribute = clone $friendSubJoins->getByIndex(0)->childAttribute;
 		$extraSubJoin->childAttribute->name = 'username1';
 		$extraSubJoin->childAttribute->alias = 'User_friendLink.username1';
 		$extraSubJoin->parentJoin = $friendLink;
 		$friendSubJoins->push($extraSubJoin);
 
-		$friendResource->links->removeByPropertyValue('name', 'friends');
-		$friendResource->links->removeByPropertyValue('name', 'address');
-		$friendResource->links->removeByPropertyValue('name', 'posts');
+		$friendTable->links->removeByPropertyValue('name', 'friends');
+		$friendTable->links->removeByPropertyValue('name', 'address');
+		$friendTable->links->removeByPropertyValue('name', 'posts');
 
 		$expectedQueries = array();
 		$expectedData = array();
@@ -826,7 +826,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -847,35 +847,35 @@ EOT;
 		$dbConnection->assertNotExpectingQueries();
 	}
 
-	public function testQuerySetConductedFromResourceWithManyToManyLinkHavingMoreThanOneConstraintOnSecondSubJoin()
+	public function testQuerySetConductedFromTableWithManyToManyLinkHavingMoreThanOneConstraintOnSecondSubJoin()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'address');
-		$resource->links->removeByPropertyValue('name', 'posts');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'address');
+		$table->links->removeByPropertyValue('name', 'posts');
 
-		$friendLink = $resource->links->getByName('friends');
-		$friendResource = $friendLink->getChildResource();
+		$friendLink = $table->links->getByName('friends');
+		$friendTable = $friendLink->getChildTable();
 		$friendSubJoins = $friendLink->constraints->getByIndex(0)->subJoins;
 
-		$extraSubJoin = new ResourceDefinition\LinkSubJoin();
-		$extraSubJoin->parentResource = $friendSubJoins->getByIndex(1)->parentResource;
+		$extraSubJoin = new Definition\Table\Join\SubJoin();
+		$extraSubJoin->parentTable = $friendSubJoins->getByIndex(1)->parentTable;
 		$extraSubJoin->parentAttribute = clone $friendSubJoins->getByIndex(1)->parentAttribute;
 		$extraSubJoin->parentAttribute->name = 'username2';
 		$extraSubJoin->parentAttribute->alias = 'User_friendLink.username2';
-		$extraSubJoin->childResource = $friendSubJoins->getByIndex(1)->childResource;
+		$extraSubJoin->childTable = $friendSubJoins->getByIndex(1)->childTable;
 		$extraSubJoin->childAttribute = clone $friendSubJoins->getByIndex(1)->childAttribute;
 		$extraSubJoin->childAttribute->name = 'username';
 		$extraSubJoin->childAttribute->alias = 'User_friends.username';
 		$extraSubJoin->parentJoin = $friendLink;
 		$friendSubJoins->push($extraSubJoin);
 
-		$friendResource->links->removeByPropertyValue('name', 'friends');
-		$friendResource->links->removeByPropertyValue('name', 'address');
-		$friendResource->links->removeByPropertyValue('name', 'posts');
+		$friendTable->links->removeByPropertyValue('name', 'friends');
+		$friendTable->links->removeByPropertyValue('name', 'address');
+		$friendTable->links->removeByPropertyValue('name', 'posts');
 
 		$expectedQueries = array();
 		$expectedData = array();
@@ -931,7 +931,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 

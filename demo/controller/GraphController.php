@@ -56,19 +56,29 @@ class GraphController extends RestfulController
 
 	protected function get(Request $request, $route)
 	{
-		$resourceModule = $this->getGraphFactory();
+		$resourceManifestDirectory = dirname(dirname(__DIR__)) . '/demo/resource/graph/resourceManifest';
+		$tableManifestDirectory = dirname(dirname(__DIR__)) . '/demo/resource/graph/tableManifest';
+		$tableManifestValidator = new Graph\TableManifestValidator();
+		$resourceManifestValidator = new Graph\ResourceManifestValidator();
+		$resourceModule = $this->getGraphFactory()
+			->setResourceManifestDirectory($resourceManifestDirectory)
+			->setTableManifestDirectory($tableManifestDirectory)
+			->setResourceManifestValidator($resourceManifestValidator)
+			->setTableManifestValidator($tableManifestValidator);
+
+
 		$requestParser = new Graph\RequestParser\RestfulRequestParser($this->app);
-		$parsedRequest = $requestParser->parse($request, $route);
-		$unresolvedRoute = $parsedRequest->getUnresolvedRoute();
-		$outputFormat = $parsedRequest->getFormat();
 		$requestParams = $request->params()->get();
 
-		if (preg_match('/\//', $unresolvedRoute)) {
-			list($resourceId, $function) = explode('/', $unresolvedRoute);
-			$function = lcfirst($function);
+		$parsedRequest = $requestParser->parse($request, $route);
+		$viewName = $parsedRequest->getViewName();
+		$resourceId = $parsedRequest->getResourceId();
+
+		if (preg_match('/\./', $viewName)) {
+			$extensionStartPos = strrpos($viewName, '.');
+			$function = lcfirst(substr($viewName, 0, $extensionStartPos));
 		} else {
-			$function = lcfirst($unresolvedRoute);
-			$resourceId = $unresolvedRoute;
+			$function = $viewName;
 		}
 
 		switch ($function) {
@@ -107,14 +117,12 @@ class GraphController extends RestfulController
 //				break;
 			default:
 				$resourceName = $parsedRequest->getResourceRoute();
-				$manifestValidator = new Graph\ResourceManifestValidator();
-				$tableManifestDirectory = dirname(dirname(__DIR__)) . '/demo/resource/graph/tableManifest';
-				$resourceDefinitionBuilder = $resourceModule->resourceDefinitionBuilder($manifestValidator, $tableManifestDirectory);
+				$resourceDefinitionBuilder = $resourceModule->resourceDefinitionBuilder();
 				$resourceDefinition = $resourceDefinitionBuilder->buildFromName($resourceName);
-				$resourceFactory = $resourceModule->resourceFactory($resourceDefinition);
+				$resourceFactory = $resourceModule->resourceFactory($resourceDefinition->table);
 
-				$resourceManifest = $this->getResourceManifest($resourceName);
-				if (strlen($resourceId) > 0) {
+				$resourceManifest = $parsedRequest->getManifest();
+				if (isset($resourceId)) {
 					$filters = array(
 						'id' => $resourceId
 					);
@@ -122,10 +130,18 @@ class GraphController extends RestfulController
 					$filters = $this->convertRequestParamsToSimpleSearchFilters($requestParams);
 				}
 				$resourceList = $resourceFactory->getBy($resourceManifest['attributes'], $filters);
-				$renderer = new Graph\Renderer($this->app);
+				$renderer = new Graph\Renderer($this->app, array(
+					'moustache' => new Graph\Renderer\Mustache(),
+					'php' => new Graph\Renderer\Php(),
+					'json' => new Graph\Renderer\Json()
+				));
 				$renderer->setResourceManifest($resourceManifest);
-				$output = $renderer->renderResourceList($resourceFactory, $resourceList);
-				var_dump($output);
+				$view = $resourceDefinition->views->getByProperty('name', $viewName);
+				$extensionStartPos = strrpos($view->path, '.') + 1;
+				$extension = strToLower(substr($view->path, $extensionStartPos));
+				$output = $renderer->render($view, array(
+					'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
+				));
 				break;
 		}
 
@@ -134,7 +150,7 @@ class GraphController extends RestfulController
 
 	protected function getResourceManifest($resourceRoute)
 	{
-		$manifestDirectory = dirname(dirname(__DIR__)) . '/demo/resource/graph/resourceManifest';
+		$manifestDirectory = dirname(dirname(__DIR__)) . '/demo/resource/graph/tableManifest';
 		$manifestFile = $manifestDirectory . DIRECTORY_SEPARATOR . $resourceRoute . '.json';
 		$manifest = json_decode(file_get_contents($manifestFile), true);
 		return $manifest;

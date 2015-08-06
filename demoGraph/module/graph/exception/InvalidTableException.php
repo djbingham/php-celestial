@@ -3,7 +3,7 @@
 namespace DemoGraph\Module\Graph\Exception;
 
 
-class InvalidResourceException extends \Exception
+class InvalidTableException extends \Exception
 {
     
 }

@@ -2,7 +2,7 @@
 
 namespace DemoGraph\Module\Graph;
 
-interface ResourceListInterface extends ResourceInterface
+interface ResourceListInterface extends ResourceInterface, \Iterator
 {
     /**
      * Append a new Resource to this list, with given attributeList

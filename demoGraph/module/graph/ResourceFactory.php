@@ -4,7 +4,7 @@ namespace DemoGraph\Module\Graph;
 class ResourceFactory implements ResourceFactoryInterface
 {
 	/**
-	 * @var ResourceDefinition\Resource
+	 * @var Definition\Table
 	 */
 	protected $resourceDefinition;
 
@@ -13,7 +13,7 @@ class ResourceFactory implements ResourceFactoryInterface
 	 */
 	protected $querySetFactory;
 
-	public function __construct(ResourceDefinition\Resource $definition, QuerySetFactory $querySetFactory)
+	public function __construct(Definition\Table $definition, QuerySetFactory $querySetFactory)
 	{
 		$this->resourceDefinition = $definition;
 		$this->querySetFactory = $querySetFactory;
@@ -103,7 +103,7 @@ class ResourceFactory implements ResourceFactoryInterface
 		return $attributes;
 	}
 
-    private function filterResourceAttributes(ResourceDefinition\Resource $resourceDefinition, array $attributeMap)
+    private function filterResourceAttributes(Definition\Table $resourceDefinition, array $attributeMap)
     {
         foreach ($resourceDefinition->attributes as $attributeIndex => $attribute) {
             if (!array_key_exists($attribute->name, $attributeMap)) {
@@ -112,9 +112,9 @@ class ResourceFactory implements ResourceFactoryInterface
         }
 		for ($linkIndex = 0; $linkIndex < $resourceDefinition->links->length(); $linkIndex++) {
 			$link = $resourceDefinition->links->getByIndex($linkIndex);
-            /** @var ResourceDefinition\Link $link */
+            /** @var \DemoGraph\Module\Graph\Definition\Table\Join $link */
             if (array_key_exists($link->name, $attributeMap)) {
-				$this->filterResourceAttributes($link->getChildResource(), $attributeMap[$link->name]);
+				$this->filterResourceAttributes($link->getChildTable(), $attributeMap[$link->name]);
 			} else {
 				$resourceDefinition->links->removeByIndex($linkIndex);
 				$linkIndex--;

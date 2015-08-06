@@ -1,11 +1,11 @@
 <?php
-namespace DemoGraph\Module\Graph\ResourceDefinition;
+namespace DemoGraph\Module\Graph\Definition\Table\Join;
 
 use DemoGraph\Module\Graph\Helper\ObjectList;
 
-class LinkConstraintList extends ObjectList
+class ConstraintList extends ObjectList
 {
-    public function push(LinkConstraint $view)
+    public function push(Constraint $view)
     {
         $this->items[] = $view;
         return $this;
@@ -13,7 +13,7 @@ class LinkConstraintList extends ObjectList
 
     /**
      * @param string $index
-     * @return LinkConstraint
+     * @return Constraint
      */
     public function getByIndex($index)
     {

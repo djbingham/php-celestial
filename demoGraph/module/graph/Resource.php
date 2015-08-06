@@ -4,7 +4,7 @@ namespace DemoGraph\Module\Graph;
 class Resource implements ResourceInterface
 {
 	private $factory;
-	private $attributes;
+	private $attributes = array();
 
 	public function __construct(ResourceFactoryInterface $factory)
 	{

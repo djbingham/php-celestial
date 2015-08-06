@@ -25,7 +25,7 @@ class RestfulRequestParser implements RequestParserInterface
      */
     protected function getResourceManifestFile($resourceRoute)
     {
-        $pathParts = array($this->app->rootDirectory(), 'resource', 'graph', 'resourceManifest', $resourceRoute);
+        $pathParts = array($this->app->rootDirectory(), 'resource', 'graph', 'tableManifest', $resourceRoute);
         return sprintf('%s.json', implode(DIRECTORY_SEPARATOR, $pathParts));
     }
 
@@ -46,22 +46,14 @@ class RestfulRequestParser implements RequestParserInterface
 	public function parse(Request $request, $controllerRoute)
 	{
 		$resourceRoute = str_replace($controllerRoute, '', $request->path());
-		$pathParts = explode('.', $resourceRoute);
-		$resourcePath = trim(array_shift($pathParts), '/');
-		$extension = array_pop($pathParts);
+		$resourcePath = trim($resourceRoute, '/');
 
-		if (!empty($pathParts)) {
-			throw new Exception\InvalidRequestException(
-				sprintf('Too many period (.) characters in the request path: `%s`', $request->path())
-			);
-		}
 		if (empty($resourcePath)) {
 			throw new Exception\InvalidRequestException(
 				sprintf('No resource specified in request path: %s', $request->path())
 			);
 		}
 		$parsedResourcePath = $this->parseResourcePath($resourcePath);
-
 
 		$requestProperties = $request->toArray();
 		if (!is_null($parsedResourcePath['manifestFile'])) {
@@ -75,13 +67,15 @@ class RestfulRequestParser implements RequestParserInterface
 			$requestProperties['factoryClass'] = $parsedResourcePath['factoryClass'];
 		}
 		$requestProperties['resourceRoute'] = $parsedResourcePath['resourceRoute'];
+		$requestProperties['viewName'] = $parsedResourcePath['viewName'];
+		$requestProperties['resourceId'] = $parsedResourcePath['resourceId'];
 		$requestProperties['unresolvedRoute'] = $parsedResourcePath['unresolvedRoute'];
-		$requestProperties['format'] = $extension;
 		return $this->instantiateParsedRequest($requestProperties);
 	}
 
 	protected function parseResourcePath($resourcePath)
 	{
+
 		$resourcePathParts = explode('/', $resourcePath);
 		$otherPathParts = array();
 
@@ -89,26 +83,49 @@ class RestfulRequestParser implements RequestParserInterface
 			$resourcePathParts[$i] = ucfirst($pathPart);
 		}
 
+		$manifestPathParts = $resourcePathParts;
+		$lastPathPartIndex = count($manifestPathParts) - 1;
+		$lastPathPart = $manifestPathParts[$lastPathPartIndex];
+		$extensionStartPos = strrpos($lastPathPart, '.');
+		if ($extensionStartPos !== false) {
+			$manifestPathParts[$lastPathPartIndex] = substr($lastPathPart, 0, $extensionStartPos);
+		}
+
 		$factoryClass = null;
 		$manifestFile = null;
-		for ($i = count($resourcePathParts); $i > 0; $i--) {
-			$manifestFile = $this->getResourceManifestFile(implode(DIRECTORY_SEPARATOR, $resourcePathParts));
+		for ($i = count($manifestPathParts); $i > 0; $i--) {
+			$manifestFile = $this->getResourceManifestFile(implode(DIRECTORY_SEPARATOR, $manifestPathParts));
 			if (file_exists($manifestFile)) {
 				$factoryClass = null;
 				break;
 			} elseif (class_exists($factoryClass)) {
 				$manifestFile = null;
-				$factoryClass = $this->getFactoryClass(implode('\\', $resourcePathParts));
+				$factoryClass = $this->getFactoryClass(implode('\\', $manifestPathParts));
 				break;
 			}
 
 			array_unshift($otherPathParts, array_pop($resourcePathParts));
+			array_pop($manifestPathParts);
+		}
+
+		if (empty($otherPathParts)) {
+			if ($extensionStartPos !== false) {
+				$otherPathParts[] = substr($lastPathPart, $extensionStartPos);
+			}
 		}
 
 		if (!is_a($factoryClass, 'Sloth\Module\Resource\ResourceFactory', true) && !empty($factoryClass)) {
 			throw new Exception\InvalidRequestException(
 				sprintf('Request routed to a class that is not a resource factory: `%s`', $factoryClass)
 			);
+		}
+
+		$viewName = lcfirst(array_pop($otherPathParts));
+
+		if (count($otherPathParts) > 0) {
+			$resourceId = lcfirst(array_pop($otherPathParts));
+		} else {
+			$resourceId = null;
 		}
 
 		$unresolvedRoute = null;
@@ -120,6 +137,8 @@ class RestfulRequestParser implements RequestParserInterface
 			'manifestFile' => $manifestFile,
 			'factoryClass' => $factoryClass,
 			'resourceRoute' => implode('/', $resourcePathParts),
+			'resourceId' => $resourceId,
+			'viewName' => $viewName,
 			'unresolvedRoute' => trim($unresolvedRoute, '/')
 		);
 	}

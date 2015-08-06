@@ -1,12 +1,12 @@
 <?php
 namespace DemoGraph\Module\Graph\DefinitionBuilder;
 
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 
 class ValidatorListBuilder
 {
-    public function build(ResourceDefinition\Resource $resource, array $validatorManifest)
+    public function build(array $validatorManifest)
     {
-        return new ResourceDefinition\ValidatorList();
+        return new Definition\ValidatorList();
     }
 }

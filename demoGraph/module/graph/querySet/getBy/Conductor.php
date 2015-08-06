@@ -4,7 +4,7 @@ namespace DemoGraph\Module\Graph\QuerySet\GetBy;
 use DemoGraph\Module\Graph\QuerySet\DataParser;
 use DemoGraph\Module\Graph\QuerySet\QuerySet;
 use DemoGraph\Module\Graph\QuerySet\QuerySetItem;
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 use SlothMySql\QueryBuilder\Query\Constraint;
 
@@ -87,7 +87,7 @@ class Conductor
 				if (array_key_exists($targetResourceName, $linkData)) {
 					$targetLinkData = $linkData[$targetResourceName];
 					$linkToTargetResource = $links->getByChild($targetResourceName);
-					if ($linkToTargetResource instanceof ResourceDefinition\Link) {
+					if ($linkToTargetResource instanceof Definition\Table\Join) {
 						$constraint = $this->buildLinkConstraint($linkToTargetResource, $targetLinkData);
 						if ($constraint instanceof Constraint) {
 							$targetQuerySetItem->getQuery()->where($constraint);
@@ -99,14 +99,14 @@ class Conductor
 		return $this;
 	}
 
-	private function buildLinkConstraint(ResourceDefinition\Link $link, $linkData)
+	private function buildLinkConstraint(Definition\Table\Join $link, $linkData)
 	{
-		/** @var ResourceDefinition\LinkConstraint $constraintDefinition */
+		/** @var \DemoGraph\Module\Graph\Definition\Table\Join\Constraint $constraintDefinition */
 		foreach ($link->getConstraints() as $constraintDefinition) {
 			if ($constraintDefinition->subJoins !== null && $constraintDefinition->subJoins->length() > 0) {
 				foreach ($constraintDefinition->subJoins as $subJoin) {
-					/** @var ResourceDefinition\LinkSubJoin $subJoin */
-					$tableName = $subJoin->childResource->getAlias();
+					/** @var \DemoGraph\Module\Graph\Definition\Table\Join\SubJoin $subJoin */
+					$tableName = $subJoin->childTable->getAlias();
 					$field = $subJoin->childAttribute;
 					$queryField = $this->database->value()
 						->table($tableName)
@@ -126,7 +126,7 @@ class Conductor
 					}
 				}
 			} else {
-				$tableName = $constraintDefinition->childAttribute->resource->getAlias();
+				$tableName = $constraintDefinition->childAttribute->table->getAlias();
 				$attribute = $constraintDefinition->childAttribute;
 				$queryField = $this->database->value()
 					->table($tableName)

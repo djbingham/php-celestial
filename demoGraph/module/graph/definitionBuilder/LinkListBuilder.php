@@ -1,48 +1,48 @@
 <?php
 namespace DemoGraph\Module\Graph\DefinitionBuilder;
 
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 
 class LinkListBuilder
 {
 	/**
-	 * @var ResourceDefinitionBuilder
+	 * @var TableDefinitionBuilder
 	 */
-	private $resourceBuilder;
+	private $tableBuilder;
 
-	public function __construct(ResourceDefinitionBuilder $resourceBuilder)
+	public function __construct(TableDefinitionBuilder $tableBuilder)
 	{
-		$this->resourceBuilder = $resourceBuilder;
+		$this->tableBuilder = $tableBuilder;
 	}
 
-	public function build(ResourceDefinition\Resource $resource, array $linksManifest)
+	public function build(Definition\Table $table, array $linksManifest)
 	{
-		$links = new ResourceDefinition\LinkList();
+		$links = new Definition\Table\JoinList();
 		foreach ($linksManifest as $name => $linkManifest) {
-			$link = new ResourceDefinition\Link($this->resourceBuilder);
+			$link = new Definition\Table\Join($this->tableBuilder);
 			$link->name = $name;
 			if (array_key_exists('via', $linkManifest)) {
-				$link->intermediaryResources = $this->buildIntermediaryResources($linkManifest['via']);
+				$link->intermediaryTables = $this->buildIntermediaryTables($linkManifest['via']);
 			}
 			$link->type = $linkManifest['type'];
-			$link->parentResource = $resource;
-			$link->childResourceName = $linkManifest['resource'];
+			$link->parentTable = $table;
+			$link->childTableName = $linkManifest['table'];
 			$link->joinManifest = $linkManifest['joins'];
 			$links->push($link);
 		}
 		return $links;
 	}
 
-	private function buildIntermediaryResources(array $manifest)
+	private function buildIntermediaryTables(array $manifest)
 	{
-		$resources = new ResourceDefinition\ResourceList();
-		foreach ($manifest as $alias => $resourceName) {
-			$resourceManifest = array(
-				'name' => $resourceName
+		$tables = new Definition\TableList();
+		foreach ($manifest as $alias => $tableName) {
+			$tableManifest = array(
+				'name' => $tableName
 			);
-			$resource = $this->resourceBuilder->buildFromManifest($resourceManifest, $alias);
-			$resources->push($resource);
+			$table = $this->tableBuilder->buildFromManifest($tableManifest, $alias);
+			$tables->push($table);
 		}
-		return $resources;
+		return $tables;
 	}
 }

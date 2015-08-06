@@ -19,7 +19,7 @@
 	"links": {
 		"friends": {
 			"type": "manyToMany",
-			"resource": "User",
+			"table": "User",
 			"via": {
 				"friendLink": "UserFriend"
 			},
@@ -30,14 +30,14 @@
 		},
 		"posts": {
 			"type": "oneToMany",
-			"resource": "Post",
+			"table": "Post",
 			"joins": {
 				"this.id": "Post.authorId"
 			}
 		},
 		"address": {
 			"type": "oneToOne",
-			"resource": "UserAddress",
+			"table": "UserAddress",
 			"joins": {
 				"this.id": "address.userId"
 			}

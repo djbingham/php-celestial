@@ -7,8 +7,9 @@ interface RendererInterface
 {
 	/**
 	 * @param App $app
+	 * @param array $engines
 	 */
-	public function __construct(App $app);
+	public function __construct(App $app, array $engines);
 
 	/**
 	 * @param ResourceFactoryInterface $resourceFactory
@@ -24,11 +25,11 @@ interface RendererInterface
 	public function renderResource(ResourceFactoryInterface $resourceFactory, ResourceInterface $resource, $format);
 
 	/**
-	 * @param ResourceFactoryInterface $resourceFactory
+	 * @param Definition\Resource $resourceDefinition
 	 * @param ResourceListInterface $resourceList
 	 * @param string $format
 	 */
-	public function renderResourceList(ResourceFactoryInterface $resourceFactory, ResourceListInterface $resourceList, $format);
+	public function renderResourceList(Definition\Resource $resourceDefinition, ResourceListInterface $resourceList, $format);
 
 	/**
 	 * @param ResourceFactoryInterface $resourceFactory

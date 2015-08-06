@@ -1,11 +1,11 @@
 <?php
-namespace DemoGraph\Module\Graph\ResourceDefinition;
+namespace DemoGraph\Module\Graph\Definition\Table;
 
 use DemoGraph\Module\Graph\Helper\ObjectList;
 
-class LinkList extends ObjectList
+class JoinList extends ObjectList
 {
-	public function push(Link $connection)
+	public function push(Join $connection)
 	{
 		$this->items[] = $connection;
 		return $this;
@@ -13,7 +13,7 @@ class LinkList extends ObjectList
 
 	/**
 	 * @param string $index
-	 * @return Link
+	 * @return Join
 	 */
 	public function getByIndex($index)
 	{
@@ -22,7 +22,7 @@ class LinkList extends ObjectList
 
 	/**
 	 * @param string $name
-	 * @return Link
+	 * @return Join
 	 */
 	public function getByName($name)
 	{
@@ -34,9 +34,9 @@ class LinkList extends ObjectList
 		if (!is_array($types)) {
 			$types = array($types);
 		}
-		$links = new LinkList();
+		$links = new JoinList();
 		foreach ($this as $link) {
-			/** @var Link $link */
+			/** @var Join $link */
 			if (in_array($link->type, $types)) {
 				$links->push($link);
 			}
@@ -46,10 +46,10 @@ class LinkList extends ObjectList
 
 	public function getByParent($parentAlias)
 	{
-		$links = new LinkList();
+		$links = new JoinList();
 		foreach ($this as $link) {
-			/** @var Link $link */
-			if ($link->parentResource->getAlias() === $parentAlias) {
+			/** @var Join $link */
+			if ($link->parentTable->getAlias() === $parentAlias) {
 				$links->push($link);
 			}
 		}
@@ -60,8 +60,8 @@ class LinkList extends ObjectList
 	{
 		$foundLink = null;
 		foreach ($this as $link) {
-			/** @var Link $link */
-			if ($link->getChildResource()->getAlias() === $childAlias) {
+			/** @var Join $link */
+			if ($link->getChildTable()->getAlias() === $childAlias) {
 				$foundLink = $link;
 			}
 		}
@@ -72,8 +72,8 @@ class LinkList extends ObjectList
 	{
 		$found = false;
 		foreach ($this as $link) {
-			/** @var Link $link */
-			if ($link->getChildResource()->getAlias() === $childAlias) {
+			/** @var Join $link */
+			if ($link->getChildTable()->getAlias() === $childAlias) {
 				$found = true;
 				break;
 			}
@@ -85,7 +85,7 @@ class LinkList extends ObjectList
 	{
 		$foundIndex = -1;
 		foreach ($this as $index => $link) {
-			/** @var Link $link */
+			/** @var Join $link */
 			if ($link->name === $linkName) {
 				$foundIndex = $index;
 			}

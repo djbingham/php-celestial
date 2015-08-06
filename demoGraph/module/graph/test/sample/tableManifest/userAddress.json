@@ -27,7 +27,7 @@
 	"links": {
 		"landlord": {
 			"type": "oneToOne",
-			"resource": "User",
+			"table": "User",
 			"joins": {
 				"this.landlordId": "landlord.id"
 			}

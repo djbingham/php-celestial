@@ -4,7 +4,7 @@ namespace DemoGraph\Module\Graph\Test;
 require_once dirname(__DIR__) . '/UnitTest.php';
 
 use DemoGraph\Module\Graph\Factory;
-use DemoGraph\Module\Graph\ResourceManifestValidator;
+use DemoGraph\Module\Graph\TableManifestValidator;
 use DemoGraph\Test\UnitTest;
 use Sloth\App;
 
@@ -15,8 +15,8 @@ class IntegrationTest extends UnitTest
 	public function testResourceCanBeBuiltFromNamedManifestFileUsingDefaultSubBuilders()
 	{
 		$factory = new Factory($this->mockApp());
-		$manifestValidator = new ResourceManifestValidator();
-		$manifestDirectory = dirname(__DIR__) . '/sample/resourceManifest';
+		$manifestValidator = new TableManifestValidator();
+		$manifestDirectory = dirname(__DIR__) . '/sample/tableManifest';
 		$resourceBuilder = $factory->resourceDefinitionBuilder($manifestValidator, $manifestDirectory);
 
 		$resource = $resourceBuilder->buildFromName('user');
@@ -29,20 +29,20 @@ class IntegrationTest extends UnitTest
 	public function testConnectedResourcesAreLoadedOnDemand()
 	{
 		$factory = new Factory($this->mockApp());
-		$manifestValidator = new ResourceManifestValidator();
-		$manifestDirectory = dirname(__DIR__) . '/sample/resourceManifest';
+		$manifestValidator = new TableManifestValidator();
+		$manifestDirectory = dirname(__DIR__) . '/sample/tableManifest';
 		$resourceBuilder = $factory->resourceDefinitionBuilder($manifestValidator, $manifestDirectory);
 
 		$resource = $resourceBuilder->buildFromName('user');
 
-		$friendResource = $resource->links->getByName('friends')->getChildResource();
-		$postResource = $resource->links->getByName('posts')->getChildResource();
+		$friendResource = $resource->links->getByName('friends')->getChildTable();
+		$postResource = $resource->links->getByName('posts')->getChildTable();
 
 		$this->assertNotSame($resource, $friendResource);
 		$this->assertBuiltResourceMatchesUserManifest($friendResource);
 		$this->assertBuiltResourceMatchesPostManifest($postResource);
 		$this->assertBuiltPostResourceLinksToAuthorSubResource($postResource);
-		$this->assertBuiltResourceMatchesUserManifest($postResource->links->getByName('author')->getChildResource());
+		$this->assertBuiltResourceMatchesUserManifest($postResource->links->getByName('author')->getChildTable());
 	}
 
 	/**

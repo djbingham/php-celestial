@@ -1,7 +1,7 @@
 <?php
 namespace DemoGraph\Module\Graph\QuerySet;
 
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 
 class DataTree
 {

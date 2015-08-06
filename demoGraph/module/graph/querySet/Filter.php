@@ -1,12 +1,12 @@
 <?php
 namespace DemoGraph\Module\Graph\QuerySet;
 
-use DemoGraph\Module\Graph\ResourceDefinition\Attribute;
+use DemoGraph\Module\Graph\Definition\Table\Field;
 
 class Filter
 {
 	/**
-	 * @var Attribute
+	 * @var Field
 	 */
 	public $attribute;
 

@@ -38,4 +38,4 @@ $config = new Sloth\Demo\Config();
 $request = Sloth\Request::fromServerVars();
 $init = $config->initialisation();
 $app = $init->getApp();
-$init->getRouter()->route($app, $request);
+echo $init->getRouter()->route($app, $request);

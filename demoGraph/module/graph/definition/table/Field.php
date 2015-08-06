@@ -1,14 +1,15 @@
 <?php
-namespace DemoGraph\Module\Graph\ResourceDefinition;
+namespace DemoGraph\Module\Graph\Definition\Table;
 
-use DemoGraph\Module\Graph\ResourceDefinition\Resource as GraphResource;
+use DemoGraph\Module\Graph\Definition\Table;
+use DemoGraph\Module\Graph\Definition\ValidatorList;
 
-class Attribute
+class Field
 {
 	/**
-	 * @var GraphResource
+	 * @var Table
 	 */
-	public $resource;
+	public $table;
 
 	/**
 	 * @var string

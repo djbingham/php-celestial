@@ -2,7 +2,7 @@
 namespace DemoGraph\Module\Graph;
 
 use DemoGraph\Module\Graph\QuerySet;
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 
 class QuerySetFactory

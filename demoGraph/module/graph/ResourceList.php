@@ -3,12 +3,61 @@ namespace DemoGraph\Module\Graph;
 
 class ResourceList implements ResourceListInterface
 {
+	/**
+	 * @var ResourceFactoryInterface
+	 */
 	private $factory;
+
+	/**
+	 * @var array
+	 */
 	private $resources = array();
+
+	/**
+	 * @var integer
+	 */
+	protected $position = 0;
 
 	public function __construct(ResourceFactoryInterface $factory)
 	{
 		$this->factory = $factory;
+	}
+
+	public function current()
+	{
+		return $this->getByIndex($this->position);
+	}
+
+	public function key()
+	{
+		return $this->position;
+	}
+
+	public function next()
+	{
+		$this->position++;
+		return $this->current();
+	}
+
+	public function rewind()
+	{
+		$this->position = 0;
+		return $this->current();
+	}
+
+	public function valid()
+	{
+		return array_key_exists($this->position, $this->resources);
+	}
+
+	public function length()
+	{
+		return count($this->resources);
+	}
+
+	public function getByIndex($index)
+	{
+		return $this->resources[$index];
 	}
 
 	public function save()

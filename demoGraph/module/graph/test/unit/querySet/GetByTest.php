@@ -6,7 +6,7 @@ require_once dirname(dirname(__DIR__)) . '/UnitTest.php';
 use DemoGraph\Module\Graph\QueryComponent;
 use DemoGraph\Module\Graph\QueryFactory;
 use DemoGraph\Module\Graph\QuerySet\GetBy;
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 use DemoGraph\Module\Graph\Test\Mock\Connection;
 use DemoGraph\Test\UnitTest;
 
@@ -14,13 +14,13 @@ class GetByTest extends UnitTest
 {
 	public function testWithNoLinks()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$queryFactory = new QueryFactory($this->getDatabaseWrapper($dbConnection));
 
 		$resource = $resourceDefinitionBuilder->buildFromName('User');
 
-		$attributesToFetch = new ResourceDefinition\AttributeList();
+		$attributesToFetch = new Definition\Table\FieldList();
 		$attributesToFetch
 			->push($resource->attributes->getByName('id'))
 			->push($resource->attributes->getByName('forename'))
@@ -57,14 +57,14 @@ EOT;
 
 	public function testWithOneToOneLink()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$queryFactory = new QueryFactory($this->getDatabaseWrapper($dbConnection));
 
 		$userResource = $resourceDefinitionBuilder->buildFromName('User');
 		$addressResource = $resourceDefinitionBuilder->buildFromName('UserAddress', 'address');
 
-		$attributesToFetch = new ResourceDefinition\AttributeList();
+		$attributesToFetch = new Definition\Table\FieldList();
 		$attributesToFetch
 			->push($userResource->attributes->getByName('id'))
 			->push($userResource->attributes->getByName('forename'))
@@ -115,14 +115,14 @@ EOT;
 
 	public function testWithOneToManyLink()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$queryFactory = new QueryFactory($this->getDatabaseWrapper($dbConnection));
 
 		$userResource = $resourceDefinitionBuilder->buildFromName('User');
-		$postResource = $userResource->links->getByName('posts')->getChildResource();
+		$postResource = $userResource->links->getByName('posts')->getChildTable();
 
-		$attributesToFetch = new ResourceDefinition\AttributeList();
+		$attributesToFetch = new Definition\Table\FieldList();
 		$attributesToFetch
 			->push($userResource->attributes->getByName('id'))
 			->push($userResource->attributes->getByName('forename'))
@@ -202,14 +202,14 @@ EOT;
 
 	public function testWithManyToManyLink()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$queryFactory = new QueryFactory($this->getDatabaseWrapper($dbConnection));
 
 		$userResource = $resourceDefinitionBuilder->buildFromName('User');
-		$friendResource = $userResource->links->getByName('friends')->getChildResource();
+		$friendResource = $userResource->links->getByName('friends')->getChildTable();
 
-		$attributesToFetch = new ResourceDefinition\AttributeList();
+		$attributesToFetch = new Definition\Table\FieldList();
 		$attributesToFetch
 			->push($userResource->attributes->getByName('id'))
 			->push($userResource->attributes->getByName('forename'))

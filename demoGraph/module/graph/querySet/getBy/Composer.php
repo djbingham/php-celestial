@@ -4,7 +4,7 @@ namespace DemoGraph\Module\Graph\QuerySet\GetBy;
 use DemoGraph\Module\Graph\QuerySet\Filter;
 use DemoGraph\Module\Graph\QuerySet\QuerySet;
 use DemoGraph\Module\Graph\QuerySet\QuerySetItem;
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 use SlothMySql\Abstractory\Value\ATable as QueryTable;
 
@@ -16,7 +16,7 @@ class Composer
 	private $database;
 
 	/**
-	 * @var ResourceDefinition\Resource
+	 * @var Definition\Table
 	 */
 	private $resourceDefinition;
 
@@ -38,7 +38,7 @@ class Composer
 		return $this;
 	}
 
-	public function setResource(ResourceDefinition\Resource $resourceDefinition)
+	public function setResource(Definition\Table $resourceDefinition)
 	{
 		$this->resourceDefinition = $resourceDefinition;
 		return $this;
@@ -55,7 +55,7 @@ class Composer
 		return $this->buildQuerySetForResourceAndDescendants($this->resourceDefinition, $this->filters);
 	}
 
-	private function buildQuerySetForResourceAndDescendants(ResourceDefinition\Resource $resourceDefinition, array $filters)
+	private function buildQuerySetForResourceAndDescendants(Definition\Table $resourceDefinition, array $filters)
 	{
 		$querySet = new QuerySet();
 		$querySetItem = new QuerySetItem();
@@ -82,13 +82,13 @@ class Composer
 		return $querySet;
 	}
 
-	private function getLinksToManyRowsFromResourceSet(ResourceDefinition\Resource $resourceDefinition)
+	private function getLinksToManyRowsFromResourceSet(Definition\Table $resourceDefinition)
 	{
-		$foundLinks = new ResourceDefinition\LinkList();
+		$foundLinks = new Definition\Table\JoinList();
 		foreach ($resourceDefinition->links as $link) {
-			/** @var ResourceDefinition\Link $link */
-			if (in_array($link->type, array(ResourceDefinition\Link::ONE_TO_ONE, ResourceDefinition\Link::MANY_TO_ONE))) {
-				$childLinks = $this->getLinksToManyRowsFromResourceSet($link->getChildResource());
+			/** @var \DemoGraph\Module\Graph\Definition\Table\Join $link */
+			if (in_array($link->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
+				$childLinks = $this->getLinksToManyRowsFromResourceSet($link->getChildTable());
 				foreach ($childLinks as $childLink) {
 					$foundLinks->push($childLink);
 				}
@@ -99,7 +99,7 @@ class Composer
 		return $foundLinks;
 	}
 
-	private function buildQueryForResource(ResourceDefinition\Resource $resourceDefinition, array $filters)
+	private function buildQueryForResource(Definition\Table $resourceDefinition, array $filters)
 	{
 		$query = $this->database->query()->select()
 			->setFields($this->buildQueryFieldsFromResource($resourceDefinition))
@@ -114,16 +114,16 @@ class Composer
 		return $query;
 	}
 
-	private function buildQueryJoinsFromResource(ResourceDefinition\Resource $resource)
+	private function buildQueryJoinsFromResource(Definition\Table $resource)
 	{
 		$joins = array();
 		foreach ($resource->links as $link) {
-			/** @var ResourceDefinition\Link $link */
-			if (in_array($link->type, array(ResourceDefinition\Link::ONE_TO_ONE, ResourceDefinition\Link::MANY_TO_ONE))) {
-				$childResource = $link->getChildResource();
+			/** @var \DemoGraph\Module\Graph\Definition\Table\Join $link */
+			if (in_array($link->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
+				$childTable = $link->getChildTable();
 
 				foreach ($link->getConstraints() as $constraint) {
-					/** @var ResourceDefinition\LinkConstraint $constraint */
+					/** @var \DemoGraph\Module\Graph\Definition\Table\Join\Constraint $constraint */
 					$joinConstraints[] = $this->buildJoinConstraint($constraint->parentAttribute, $constraint->childAttribute);
 				}
 				$firstJoinConstraint = array_shift($joinConstraints);
@@ -132,10 +132,10 @@ class Composer
 				}
 
 				$joins[] = $this->database->query()->join()->inner()
-					->table($this->getQueryTable($childResource->name, $childResource->getAlias()))
+					->table($this->getQueryTable($childTable->name, $childTable->getAlias()))
 					->on($firstJoinConstraint);
 
-				$joins = array_merge($joins, $this->buildQueryJoinsFromResource($childResource));
+				$joins = array_merge($joins, $this->buildQueryJoinsFromResource($childTable));
 			}
 		}
 		return $joins;
@@ -158,17 +158,17 @@ class Composer
 		return $this->cache['queryTable'][$tableAlias];
 	}
 
-	private function buildJoinConstraint(ResourceDefinition\Attribute $parentField, ResourceDefinition\Attribute $childField)
+	private function buildJoinConstraint(Definition\Table\Field $parentField, Definition\Table\Field $childField)
 	{
-		$parentTable = $this->getQueryTable($parentField->resource->name, $parentField->resource->getAlias());
-		$childResource = $this->getQueryTable($childField->resource->name, $childField->resource->getAlias());
+		$parentTable = $this->getQueryTable($parentField->table->name, $parentField->table->getAlias());
+		$childTable = $this->getQueryTable($childField->table->name, $childField->table->getAlias());
 		$joinConstraint = $this->database->query()->constraint()
 			->setSubject($parentTable->field($parentField->name))
-			->equals($childResource->field($childField->name));
+			->equals($childTable->field($childField->name));
 		return $joinConstraint;
 	}
 
-	private function buildQueryConstraintFromFilters(array $filters, ResourceDefinition\Resource $resourceDefinition, $parentAlias)
+	private function buildQueryConstraintFromFilters(array $filters, Definition\Table $resourceDefinition, $parentAlias)
 	{
 		$constraints = $this->buildQueryConstraintListFromFilters($filters, $resourceDefinition, $parentAlias);
 
@@ -182,7 +182,7 @@ class Composer
 		return $firstConstraint;
 	}
 
-	private function buildQueryConstraintListFromFilters(array $filters, ResourceDefinition\Resource $resourceDefinition, $parentAlias)
+	private function buildQueryConstraintListFromFilters(array $filters, Definition\Table $resourceDefinition, $parentAlias)
 	{
 		$constraints = array();
 		foreach ($filters as $filterName => $filter) {
@@ -206,9 +206,9 @@ class Composer
 			} else {
 				if ($resourceDefinition->links->length() > 0) {
 					$resourceLink = $resourceDefinition->links->getByName($filterName);
-					if (in_array($resourceLink->type, array(ResourceDefinition\Link::ONE_TO_ONE, ResourceDefinition\Link::MANY_TO_ONE))) {
-						$childResource = $resourceLink->getChildResource();
-						$constraints = array_merge($constraints, $this->buildQueryConstraintListFromFilters($filter, $childResource, $filterName));
+					if (in_array($resourceLink->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
+						$childTable = $resourceLink->getChildTable();
+						$constraints = array_merge($constraints, $this->buildQueryConstraintListFromFilters($filter, $childTable, $filterName));
 					}
 				}
 			}
@@ -223,20 +223,20 @@ class Composer
 		return $this->getQueryTable($tableName, $tableName)->field($fieldName);
 	}
 
-	private function buildQueryFieldsFromResource(ResourceDefinition\Resource $resource)
+	private function buildQueryFieldsFromResource(Definition\Table $resource)
 	{
 		$resourceFields = $this->buildQueryFieldsFromAttributes($resource->attributes);
 		$linkFields = $this->buildQueryFieldsFromLinks($resource->links);
 		return array_merge($resourceFields, $linkFields);
 	}
 
-	private function buildQueryFieldsFromAttributes(ResourceDefinition\AttributeList $attributes)
+	private function buildQueryFieldsFromAttributes(Definition\Table\FieldList $attributes)
 	{
 		$queryFields = array();
 		foreach ($attributes as $attribute) {
-			/** @var ResourceDefinition\Attribute $attribute */
-			$tableName = $attribute->resource->name;
-			$tableAlias = $attribute->resource->getAlias();
+			/** @var \DemoGraph\Module\Graph\Definition\Table\Field $attribute */
+			$tableName = $attribute->table->name;
+			$tableAlias = $attribute->table->getAlias();
 			$fieldName = $attribute->name;
 			$queryField = $this->getQueryTable($tableName, $tableAlias)->field($fieldName)->setAlias($attribute->getAlias());
 			$queryFields[] = $queryField;
@@ -244,35 +244,35 @@ class Composer
 		return $queryFields;
 	}
 
-	private function buildQueryFieldsFromLinks(ResourceDefinition\LinkList $links)
+	private function buildQueryFieldsFromLinks(Definition\Table\JoinList $links)
 	{
 		$queryFields = array();
 		foreach ($links as $link) {
-			/** @var ResourceDefinition\Link $link */
-			if (in_array($link->type, array(ResourceDefinition\Link::ONE_TO_ONE, ResourceDefinition\Link::MANY_TO_ONE))) {
-				$childResource = $link->getChildResource();
-				$childFields = $this->buildQueryFieldsFromResource($childResource);
+			/** @var \DemoGraph\Module\Graph\Definition\Table\Join $link */
+			if (in_array($link->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
+				$childTable = $link->getChildTable();
+				$childFields = $this->buildQueryFieldsFromResource($childTable);
 				$queryFields = array_merge($queryFields, $childFields);
 			}
 		}
 		return $queryFields;
 	}
 
-	private function buildQuerySetForLinkDescendants(ResourceDefinition\Link $link, array $filters)
+	private function buildQuerySetForLinkDescendants(Definition\Table\Join $link, array $filters)
 	{
-		$childResource = $link->getChildResource();
+		$childTable = $link->getChildTable();
 		$querySet = null;
-		if ($link->type === ResourceDefinition\Link::MANY_TO_MANY) {
+		if ($link->type === Definition\Table\Join::MANY_TO_MANY) {
 			$querySet = $this->buildQuerySetForSubJoinedResourceAndDescendants($link, $filters);
-		} elseif ($link->type === ResourceDefinition\Link::ONE_TO_MANY) {
-			$querySet = $this->buildQuerySetForResourceAndDescendants($childResource, $filters);
+		} elseif ($link->type === Definition\Table\Join::ONE_TO_MANY) {
+			$querySet = $this->buildQuerySetForResourceAndDescendants($childTable, $filters);
 		}
 		return $querySet;
 	}
 
-	private function buildQuerySetForSubJoinedResourceAndDescendants(ResourceDefinition\Link $link, array $filters)
+	private function buildQuerySetForSubJoinedResourceAndDescendants(Definition\Table\Join $link, array $filters)
 	{
-		$resourceDefinition = $link->getChildResource();
+		$resourceDefinition = $link->getChildTable();
 		$querySet = new QuerySet();
 		$querySetItem = new QuerySetItem();
 		$querySetItem->setResourceName($resourceDefinition->getAlias())
@@ -294,17 +294,17 @@ class Composer
 		return $querySet;
 	}
 
-	private function buildQueryForSubJoinsAndResource(ResourceDefinition\Link $link, array $filters)
+	private function buildQueryForSubJoinsAndResource(Definition\Table\Join $link, array $filters)
 	{
-		$resourceDefinition = $link->getChildResource();
+		$resourceDefinition = $link->getChildTable();
 		$query = $this->database->query()->select();
 
 		$subJoinGroups = $this->groupSubJoinsByChild($link);
 
 		$queryJoins = array();
-		foreach ($subJoinGroups as $childResourceAlias => $subJoins) {
+		foreach ($subJoinGroups as $childTableAlias => $subJoins) {
 			$join = $this->database->query()->join()->inner();
-			$join->table($this->getQueryTable($link->getChildResource()->name, $link->getChildResource()->getAlias()));
+			$join->table($this->getQueryTable($link->getChildTable()->name, $link->getChildTable()->getAlias()));
 
 			if (!isset($firstSubJoin)) {
 				$firstSubJoinName = array_keys($subJoins)[0];
@@ -313,12 +313,12 @@ class Composer
 
 			$joinConstraints = array();
 			foreach ($subJoins as $joinDefinition) {
-				/** @var ResourceDefinition\LinkSubJoin $joinDefinition */
-				if ($joinDefinition->parentResource->getAlias() !== $link->parentResource->getAlias()) {
-					$parentTable = $this->getQueryTable($joinDefinition->parentResource->name, $joinDefinition->parentResource->getAlias());
+				/** @var \DemoGraph\Module\Graph\Definition\Table\Join\SubJoin $joinDefinition */
+				if ($joinDefinition->parentTable->getAlias() !== $link->parentTable->getAlias()) {
+					$parentTable = $this->getQueryTable($joinDefinition->parentTable->name, $joinDefinition->parentTable->getAlias());
 					$parentField = $parentTable->field($joinDefinition->parentAttribute->name);
-					$childResource = $this->getQueryTable($joinDefinition->childResource->name, $joinDefinition->childResource->getAlias());
-					$childField = $childResource->field($joinDefinition->childAttribute->name);
+					$childTable = $this->getQueryTable($joinDefinition->childTable->name, $joinDefinition->childTable->getAlias());
+					$childField = $childTable->field($joinDefinition->childAttribute->name);
 					$joinConstraint = $this->database->query()->constraint()
 						->setSubject($parentField)
 						->equals($childField);
@@ -338,16 +338,16 @@ class Composer
 		$queryJoins = array_merge($queryJoins, $this->buildQueryJoinsFromResource($resourceDefinition));
 		$query->setJoins($queryJoins);
 
-		$firstTableAlias = $firstSubJoin->childResource->getAlias();
+		$firstTableAlias = $firstSubJoin->childTable->getAlias();
 		$linkField = $this->getQueryTable($firstTableAlias, $firstTableAlias)->field($firstSubJoin->childAttribute->name);
 		$queryFields = $this->buildQueryFieldsFromResource($resourceDefinition);
 		$queryFields[] = $linkField;
 
-		$table = $firstSubJoin->childResource;
+		$table = $firstSubJoin->childTable;
 		$query->setFields($queryFields)
 			->from($this->getQueryTable($table->name, $table->getAlias()));
 
-		$queryConstraint = $this->buildQueryConstraintFromFilters($filters, $link->getChildResource(), $link->name);
+		$queryConstraint = $this->buildQueryConstraintFromFilters($filters, $link->getChildTable(), $link->name);
 		if (!is_null($queryConstraint)) {
 			$query->where($queryConstraint);
 		}
@@ -355,14 +355,14 @@ class Composer
 		return $query;
 	}
 
-	private function groupSubJoinsByChild(ResourceDefinition\Link $resourceLink)
+	private function groupSubJoinsByChild(Definition\Table\Join $resourceLink)
 	{
 		$groupedJoins = array();
 		foreach ($resourceLink->constraints as $constraint) {
-			/** @var ResourceDefinition\LinkConstraint $constraint */
+			/** @var \DemoGraph\Module\Graph\Definition\Table\Join\Constraint $constraint */
 			foreach ($constraint->subJoins as $subJoin) {
-				/** @var ResourceDefinition\LinkSubJoin $subJoin */
-				$childAlias = $subJoin->childResource->getAlias();
+				/** @var \DemoGraph\Module\Graph\Definition\Table\Join\SubJoin $subJoin */
+				$childAlias = $subJoin->childTable->getAlias();
 				if (!array_key_exists($childAlias, $groupedJoins)) {
 					$groupedJoins[$childAlias] = array();
 				}

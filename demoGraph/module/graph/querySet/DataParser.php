@@ -1,30 +1,30 @@
 <?php
 namespace DemoGraph\Module\Graph\QuerySet;
 
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 
 class DataParser
 {
-	public function extractLinkListData(ResourceDefinition\LinkList $links, array $data)
+	public function extractLinkListData(Definition\Table\JoinList $links, array $data)
 	{
 		$linkData = array();
 		foreach ($links as $link) {
-			/** @var ResourceDefinition\Link $link */
+			/** @var \DemoGraph\Module\Graph\Definition\Table\Join $link */
 			foreach ($this->extractLinkData($link, $data) as $fieldName => $value) {
-				$linkData[$link->getChildResource()->getAlias()][$fieldName] = $value;
+				$linkData[$link->getChildTable()->getAlias()][$fieldName] = $value;
 			}
 		}
 		return $linkData;
 	}
 
-	public function extractLinkData(ResourceDefinition\Link $link, array $data)
+	public function extractLinkData(Definition\Table\Join $link, array $data)
 	{
 		$linkData = array();
 		foreach ($link->constraints as $constraint) {
-			/** @var ResourceDefinition\LinkConstraint $constraint */
-			if ($constraint->subJoins instanceof ResourceDefinition\LinkSubJoinList && $constraint->subJoins->length() > 0) {
+			/** @var \DemoGraph\Module\Graph\Definition\Table\Join\Constraint $constraint */
+			if ($constraint->subJoins instanceof Definition\Table\Join\SubJoinList && $constraint->subJoins->length() > 0) {
 				foreach ($constraint->subJoins as $subJoin) {
-					/** @var ResourceDefinition\LinkSubJoin $subJoin */
+					/** @var \DemoGraph\Module\Graph\Definition\Table\Join\SubJoin $subJoin */
 					$parentFieldAlias = $subJoin->parentAttribute->getAlias();
 					$childFieldAlias = $subJoin->childAttribute->getAlias();
 					$values = $this->getFieldValues($parentFieldAlias, $data);
@@ -53,17 +53,17 @@ class DataParser
 		return $values;
 	}
 
-	public function formatResourceData(array $rawData, ResourceDefinition\Resource $resourceDefinition)
+	public function formatResourceData(array $rawData, Definition\Table $resourceDefinition)
 	{
 		$resourceData = $this->extractResourceData($resourceDefinition, $rawData);
 		return $resourceData;
 	}
 
-	private function extractResourceData(ResourceDefinition\Resource $resourceDefinition, array $rawData, array $filters = array())
+	private function extractResourceData(Definition\Table $resourceDefinition, array $rawData, array $filters = array())
 	{
 		$attributeData = array();
 		foreach ($rawData[$resourceDefinition->getAlias()] as $rowIndex => $rowData) {
-			/** @var ResourceDefinition\Attribute $attribute */
+			/** @var \DemoGraph\Module\Graph\Definition\Table\Field $attribute */
 			if ($this->rowMatchesExpectedData($rowData, $filters)) {
 				foreach ($resourceDefinition->attributes as $attribute) {
 					$attributeAlias = $attribute->getAlias();
@@ -72,10 +72,10 @@ class DataParser
 					}
 				}
 			}
-			/** @var ResourceDefinition\Link $link */
+			/** @var \DemoGraph\Module\Graph\Definition\Table\Join $link */
 			foreach ($resourceDefinition->links as $link) {
-				if (in_array($link->type, array(ResourceDefinition\Link::ONE_TO_ONE, ResourceDefinition\Link::MANY_TO_ONE))) {
-					foreach ($link->getChildResource()->attributes as $attribute) {
+				if (in_array($link->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
+					foreach ($link->getChildTable()->attributes as $attribute) {
 						$attributeAlias = $attribute->getAlias();
 						if (array_key_exists($attributeAlias, $rowData)) {
 							$attributeData[$rowIndex][$link->name][$attribute->name] = $rowData[$attributeAlias];
@@ -84,7 +84,7 @@ class DataParser
 				} else {
 					$linkFilters = $this->getLinkData($link, $rowData);
 					if ($this->rowMatchesExpectedData($rowData, $filters)) {
-						$childData = $this->extractResourceData($link->getChildResource(), $rawData, $linkFilters);
+						$childData = $this->extractResourceData($link->getChildTable(), $rawData, $linkFilters);
 
 						$attributeData[$rowIndex][$link->name] = array();
 						foreach ($childData as $childRow) {
@@ -108,18 +108,18 @@ class DataParser
 		return $matches === count($expectedValues);
 	}
 
-	private function getLinkData(ResourceDefinition\Link $link, array $parentRowData)
+	private function getLinkData(Definition\Table\Join $link, array $parentRowData)
 	{
 		$linkData = array();
-		/** @var ResourceDefinition\LinkConstraint $constraint */
+		/** @var \DemoGraph\Module\Graph\Definition\Table\Join\Constraint $constraint */
 		foreach ($link->getConstraints() as $constraint) {
 			if ($constraint->subJoins !== null && $constraint->subJoins->length() > 0) {
-				/** @var ResourceDefinition\LinkSubJoin $subJoin */
+				/** @var \DemoGraph\Module\Graph\Definition\Table\Join\SubJoin $subJoin */
 				foreach ($constraint->subJoins as $subJoin) {
 					$parentAlias = $subJoin->parentAttribute->getAlias();
 					$childAlias = $subJoin->childAttribute->getAlias();
 					$value = $parentRowData[$parentAlias];
-					if ($subJoin->parentResource->getAlias() === $link->parentResource->getAlias()) {
+					if ($subJoin->parentTable->getAlias() === $link->parentTable->getAlias()) {
 						$linkData[$childAlias] = $value;
 					}
 				}

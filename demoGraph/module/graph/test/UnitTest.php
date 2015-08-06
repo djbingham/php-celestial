@@ -4,14 +4,13 @@ namespace DemoGraph\Test;
 
 require_once __DIR__ . '/bootstrap.php';
 
-use DemoGraph\Module\Graph\DefinitionBuilder\AttributeBuilder;
-use DemoGraph\Module\Graph\DefinitionBuilder\AttributeListBuilder;
+use DemoGraph\Module\Graph\DefinitionBuilder\TableFieldBuilder;
+use DemoGraph\Module\Graph\DefinitionBuilder\TableFieldListBuilder;
 use DemoGraph\Module\Graph\DefinitionBuilder\LinkListBuilder;
-use DemoGraph\Module\Graph\DefinitionBuilder\ResourceDefinitionBuilder;
-use DemoGraph\Module\Graph\DefinitionBuilder\TableBuilder;
+use DemoGraph\Module\Graph\DefinitionBuilder\TableDefinitionBuilder;
 use DemoGraph\Module\Graph\DefinitionBuilder\ValidatorListBuilder;
 use DemoGraph\Module\Graph\DefinitionBuilder\ViewListBuilder;
-use DemoGraph\Module\Graph\ResourceManifestValidator;
+use DemoGraph\Module\Graph\TableManifestValidator;
 use DemoGraph\Module\Graph\Test\Mock\Connection;
 use DemoGraph\Module\Graph\Test\Mock\DatabaseWrapper;
 
@@ -40,21 +39,21 @@ abstract class UnitTest extends \PHPUnit_Framework_TestCase
         return new DatabaseWrapper($connection, $queryBuilderFactory);
     }
 
-	protected function getResourceDefinitionBuilder()
+	protected function getTableDefinitionBuilder()
 	{
-		$manifestValidator = new ResourceManifestValidator();
-		$manifestDirectory = __DIR__ . '/sample/resourceManifest';
-		$resourceDefinitionBuilder = new ResourceDefinitionBuilder($manifestValidator, $manifestDirectory);
+		$manifestValidator = new TableManifestValidator();
+		$manifestDirectory = __DIR__ . '/sample/tableManifest';
+		$tableDefinitionBuilder = new TableDefinitionBuilder($manifestValidator, $manifestDirectory);
 
 		$validatorListBuilder = new ValidatorListBuilder();
-		$attributeBuilder = new AttributeBuilder($validatorListBuilder);
-		$resourceDefinitionBuilder->setSubBuilders(array(
-			'attributeListBuilder' => new AttributeListBuilder($attributeBuilder),
-			'linkListBuilder' => new LinkListBuilder($resourceDefinitionBuilder),
+		$attributeBuilder = new TableFieldBuilder($validatorListBuilder);
+		$tableDefinitionBuilder->setSubBuilders(array(
+			'tableFieldListBuilder' => new TableFieldListBuilder($attributeBuilder),
+			'linkListBuilder' => new LinkListBuilder($tableDefinitionBuilder),
 			'validatorListBuilder' => $validatorListBuilder,
 			'viewListBuilder' => new ViewListBuilder()
 		));
 
-		return $resourceDefinitionBuilder;
+		return $tableDefinitionBuilder;
 	}
 }

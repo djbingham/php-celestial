@@ -1,6 +1,7 @@
 <?php
 namespace DemoGraph\Module\Graph;
 
+use DemoGraph\Module\Graph\Definition\View;
 use Sloth\App;
 
 class Renderer implements RendererInterface
@@ -15,9 +16,10 @@ class Renderer implements RendererInterface
 	 */
 	protected $resourceManifest;
 
-	public function __construct(App $app)
+	public function __construct(App $app, array $engines)
 	{
 		$this->app = $app;
+		$this->engines = $engines;
 	}
 
 	public function setResourceManifest(array $resourceManifest)
@@ -27,88 +29,75 @@ class Renderer implements RendererInterface
 
 	public function renderDefinition(ResourceFactoryInterface $resourceFactory, $format)
 	{
-		$view = $resourceFactory->getResourceDefinition()->view('definition');
+		$view = $resourceFactory->getResourceDefinition()->views->getByProperty('name', 'definition');
 		$params = array(
 			'definition' => $resourceFactory->getResourceDefinition()
 		);
-		return $this->render($view, $format, $params);
+		return $this->render($view, $params);
 	}
 
 	public function renderResource(ResourceFactoryInterface $resourceFactory, ResourceInterface $resource, $format = null)
 	{
-		$view = $resourceFactory->getResourceDefinition()->view('item');
+		$view = $resourceFactory->getResourceDefinition()->views->getByProperty('name', 'item');
 		$params = array(
 			'resource' => $resource
 		);
-		return $this->render($view, $format, $params);
+		return $this->render($view, $params);
 	}
 
-	public function renderResourceList(ResourceFactoryInterface $resourceFactory, ResourceListInterface $resourceList, $format = null)
+	public function renderResourceList(Definition\Resource $resourceDefinition, ResourceListInterface $resourceList, $format = null)
 	{
-		$view = $resourceFactory->getResourceDefinition()->view('list');
+		$view = $resourceDefinition->views->getByProperty('name', 'list.html');
 		$params = array(
 			'resourceList' => $resourceList
 		);
-		return $this->render($view, $format, $params);
+		return $this->render($view, $params);
 	}
 
 	public function renderCreateForm(ResourceFactoryInterface $resourceFactory, $format = null)
 	{
-		$view = $resourceFactory->getResourceDefinition()->view('create');
+		$view = $resourceFactory->getResourceDefinition()->views->getByProperty('name', 'create');
 		$params = array();
-		return $this->render($view, $format, $params);
+		return $this->render($view, $params);
 	}
 
 	public function renderUpdateForm(ResourceFactoryInterface $resourceFactory, ResourceInterface $resource, $format = null)
 	{
-		$view = $resourceFactory->getResourceDefinition()->view('update');
+		$view = $resourceFactory->getResourceDefinition()->views->getByProperty('name', 'update');
 		$params = array(
 			'resource' => $resource
 		);
-		return $this->render($view, $format, $params);
+		return $this->render($view, $params);
 	}
 
 	public function renderSimpleSearchForm(ResourceFactoryInterface $resourceFactory, $format = null)
 	{
-		$view = $resourceFactory->getResourceDefinition()->view('simpleSearch');
+		$view = $resourceFactory->getResourceDefinition()->views->getByProperty('name', 'simpleSearch');
 		$params = array();
-		return $this->render($view, $format, $params);
+		return $this->render($view, $params);
 	}
 
 	public function renderSearchForm(ResourceFactoryInterface $resourceFactory, $format = null)
 	{
-		$view = $resourceFactory->getResourceDefinition()->view('search');
+		$view = $resourceFactory->getResourceDefinition()->views->getByProperty('name', 'search');
 		$params = array();
-		return $this->render($view, $format, $params);
+		return $this->render($view, $params);
 	}
 
 	public function renderDeletedResource(ResourceFactoryInterface $resourceFactory, ResourceInterface $resource, $format = null)
 	{
-		$view = $resourceFactory->getResourceDefinition()->view('deleted');
+		$view = $resourceFactory->getResourceDefinition()->views->getByProperty('name', 'deleted');
 		$params = array(
 			'resource' => $resource
 		);
-		return $this->render($view, $format, $params);
+		return $this->render($view, $params);
 	}
 
-	protected function render($view, $format = 'html', array $params = array())
+	public function render(View $view, array $params = array())
 	{
-		$renderFunction = sprintf('render%s', ucfirst($format));
-		return $this->$renderFunction($view, $params);
-	}
-
-	protected function renderHtml($view, array $params = array())
-	{
-		$view = sprintf('resource/%s.html', $view);
-		return $this->app->render()->full($view, $params);
-	}
-
-	protected function renderJson($view, $params)
-	{
-		switch ($view) {
-			default:
-				return "No JSON for view: $view";
-				break;
-		}
+		$viewPath = $this->app->rootDirectory() . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR .
+			'resource' . DIRECTORY_SEPARATOR . $view->path;
+		$engine = $this->engines[$view->engine];
+		return $engine->render($viewPath, $params);
 	}
 }

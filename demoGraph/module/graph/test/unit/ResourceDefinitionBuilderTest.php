@@ -3,11 +3,11 @@ namespace DemoGraph\Module\Graph\Test;
 
 require_once dirname(__DIR__) . '/UnitTest.php';
 
-use DemoGraph\Module\Graph\DefinitionBuilder\ResourceDefinitionBuilder;
-use DemoGraph\Module\Graph\ResourceManifestValidator;
+use DemoGraph\Module\Graph\DefinitionBuilder\TableDefinitionBuilder;
+use DemoGraph\Module\Graph\TableManifestValidator;
 use DemoGraph\Test\UnitTest;
-use DemoGraph\Module\Graph\DefinitionBuilder\AttributeBuilder;
-use DemoGraph\Module\Graph\DefinitionBuilder\AttributeListBuilder;
+use DemoGraph\Module\Graph\DefinitionBuilder\TableFieldBuilder;
+use DemoGraph\Module\Graph\DefinitionBuilder\TableFieldListBuilder;
 use DemoGraph\Module\Graph\DefinitionBuilder\LinkListBuilder;
 use DemoGraph\Module\Graph\DefinitionBuilder\TableBuilder;
 use DemoGraph\Module\Graph\DefinitionBuilder\ValidatorListBuilder;
@@ -19,7 +19,7 @@ class ResourceDefinitionBuilderTest extends UnitTest
 
 	public function testResourceCanBeBuiltFromNamedManifestFile()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$resource = $resourceDefinitionBuilder->buildFromName('user');
 
 		$this->assertBuiltResourceMatchesUserManifest($resource);
@@ -30,17 +30,17 @@ class ResourceDefinitionBuilderTest extends UnitTest
 
 	public function testConnectedResourcesAreLoadedOnDemand()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$resource = $resourceDefinitionBuilder->buildFromName('user');
 
-		$friendResource = $resource->links->getByName('friends')->getChildResource();
-		$postResource = $resource->links->getByName('posts')->getChildResource();
+		$friendResource = $resource->links->getByName('friends')->getChildTable();
+		$postResource = $resource->links->getByName('posts')->getChildTable();
 
 		$this->assertNotSame($resource, $friendResource);
 		$this->assertBuiltResourceMatchesUserManifest($friendResource);
 		$this->assertBuiltResourceMatchesPostManifest($postResource);
 		$this->assertBuiltPostResourceLinksToAuthorSubResource($postResource);
-		$this->assertBuiltResourceMatchesUserManifest($postResource->links->getByName('author')->getChildResource());
+		$this->assertBuiltResourceMatchesUserManifest($postResource->links->getByName('author')->getChildTable());
 	}
 
 	public function testConnectedResourcesHaveUniqueAliases()

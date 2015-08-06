@@ -5,21 +5,21 @@ require_once dirname(dirname(dirname(__DIR__))) . '/UnitTest.php';
 
 use DemoGraph\Module\Graph\QuerySet\GetBy\Composer;
 use DemoGraph\Module\Graph\QuerySet\FilterParser;
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 use DemoGraph\Module\Graph\Test\Mock\Connection;
 use DemoGraph\Test\UnitTest;
 
 class ComposerTest extends UnitTest
 {
-	public function testQueryComposedFromResourceWithSingleTable()
+	public function testQueryComposedFromTableWithSingleTable()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		while ($resource->links->length() > 0) {
-			$resource->links->removeByIndex(0);
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		while ($table->links->length() > 0) {
+			$table->links->removeByIndex(0);
 		}
 
 		$expectedQuery = <<<EOT
@@ -29,7 +29,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -40,22 +40,22 @@ EOT;
 		$this->assertInstanceOf('DemoGraph\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
 		$this->assertAttributeEquals('User', 'resourceName', $querySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $querySetItem->getLinks());
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
 		$this->assertEquals(0, $querySetItem->getLinks()->length());
 
 		$query = $querySetItem->getQuery();
 		$this->assertEquals($expectedQuery, (string)$query);
 	}
 
-	public function testQueryComposedFromResourceWithSingleTableUsingFilters()
+	public function testQueryComposedFromTableWithSingleTableUsingFilters()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		while ($resource->links->length() > 0) {
-			$resource->links->removeByIndex(0);
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		while ($table->links->length() > 0) {
+			$table->links->removeByIndex(0);
 		}
 
 		// todo: Mock the filters, rather than using FilterParser
@@ -63,7 +63,7 @@ EOT;
 			'forename' => 'David'
 		);
 		$filterParser = new FilterParser();
-		$filters = $filterParser->parse($resource, $filters);
+		$filters = $filterParser->parse($table, $filters);
 
 		$expectedQuery = <<<EOT
 SELECT `User`.`id` AS `User.id`,`User`.`forename` AS `User.forename`,`User`.`surname` AS `User.surname`
@@ -73,7 +73,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource)
+			->setResource($table)
 			->setFilters($filters);
 
 		$querySet = $composer->compose();
@@ -85,22 +85,22 @@ EOT;
 		$this->assertInstanceOf('DemoGraph\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
 		$this->assertAttributeEquals('User', 'resourceName', $querySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $querySetItem->getLinks());
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
 		$this->assertEquals(0, $querySetItem->getLinks()->length());
 
 		$query = $querySetItem->getQuery();
 		$this->assertEquals($expectedQuery, (string)$query);
 	}
 
-	public function testQueryComposedFromResourceWithSingleTableUsingFilterWithArrayValue()
+	public function testQueryComposedFromTableWithSingleTableUsingFilterWithArrayValue()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		while ($resource->links->length() > 0) {
-			$resource->links->removeByIndex(0);
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		while ($table->links->length() > 0) {
+			$table->links->removeByIndex(0);
 		}
 
 		// todo: Mock the filters, rather than using FilterParser
@@ -108,7 +108,7 @@ EOT;
 			'forename' => array('David', 'Flic')
 		);
 		$filterParser = new FilterParser();
-		$filters = $filterParser->parse($resource, $filters);
+		$filters = $filterParser->parse($table, $filters);
 
 		$expectedQuery = <<<EOT
 SELECT `User`.`id` AS `User.id`,`User`.`forename` AS `User.forename`,`User`.`surname` AS `User.surname`
@@ -118,7 +118,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource)
+			->setResource($table)
 			->setFilters($filters);
 
 		$querySet = $composer->compose();
@@ -130,33 +130,33 @@ EOT;
 		$this->assertInstanceOf('DemoGraph\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
 		$this->assertAttributeEquals('User', 'resourceName', $querySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $querySetItem->getLinks());
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
 		$this->assertEquals(0, $querySetItem->getLinks()->length());
 
 		$query = $querySetItem->getQuery();
 		$this->assertEquals($expectedQuery, (string)$query);
 	}
 
-	public function testQueryComposedFromResourceWithOneToOneLinksAndFiltersOnLinkedTables()
+	public function testQueryComposedFromTableWithOneToOneLinksAndFiltersOnLinkedTables()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'friends');
-		$resource->links->removeByPropertyValue('name', 'posts');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'friends');
+		$table->links->removeByPropertyValue('name', 'posts');
 
-		$landlordResource = $resource->links->getByName('address')
-			->getChildResource()->links->getByName('landlord')->getChildResource();
-		$landlordResource->links->removeByPropertyValue('name', 'friends');
-		$landlordResource->links->removeByPropertyValue('name', 'posts');
+		$landlordTable = $table->links->getByName('address')
+			->getChildTable()->links->getByName('landlord')->getChildTable();
+		$landlordTable->links->removeByPropertyValue('name', 'friends');
+		$landlordTable->links->removeByPropertyValue('name', 'posts');
 
-		$landlord2Resource = $landlordResource->links->getByName('address')
-			->getChildResource()->links->getByName('landlord')->getChildResource();
-		$landlord2Resource->links->removeByPropertyValue('name', 'friends');
-		$landlord2Resource->links->removeByPropertyValue('name', 'posts');
-		$landlord2Resource->links->removeByPropertyValue('name', 'address');
+		$landlord2Table = $landlordTable->links->getByName('address')
+			->getChildTable()->links->getByName('landlord')->getChildTable();
+		$landlord2Table->links->removeByPropertyValue('name', 'friends');
+		$landlord2Table->links->removeByPropertyValue('name', 'posts');
+		$landlord2Table->links->removeByPropertyValue('name', 'address');
 
 		$filters = array(
 			'forename' => 'David',
@@ -169,7 +169,7 @@ EOT;
 
 		// todo: Mock the filters, rather than using FilterParser
 		$filterParser = new FilterParser();
-		$filters = $filterParser->parse($resource, $filters);
+		$filters = $filterParser->parse($table, $filters);
 
 		$expectedQuery = <<<EOT
 SELECT `User`.`id` AS `User.id`,`User`.`forename` AS `User.forename`,`User`.`surname` AS `User.surname`,`User_address`.`userId` AS `User_address.userId`,`User_address`.`houseName` AS `User_address.houseName`,`User_address`.`postcode` AS `User_address.postcode`,`User_address`.`landlordId` AS `User_address.landlordId`,`User_address_landlord`.`id` AS `User_address_landlord.id`,`User_address_landlord`.`forename` AS `User_address_landlord.forename`,`User_address_landlord`.`surname` AS `User_address_landlord.surname`,`User_address_landlord_address`.`userId` AS `User_address_landlord_address.userId`,`User_address_landlord_address`.`houseName` AS `User_address_landlord_address.houseName`,`User_address_landlord_address`.`postcode` AS `User_address_landlord_address.postcode`,`User_address_landlord_address`.`landlordId` AS `User_address_landlord_address.landlordId`,`User_address_landlord_address_landlord`.`id` AS `User_address_landlord_address_landlord.id`,`User_address_landlord_address_landlord`.`forename` AS `User_address_landlord_address_landlord.forename`,`User_address_landlord_address_landlord`.`surname` AS `User_address_landlord_address_landlord.surname`
@@ -184,7 +184,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource)
+			->setResource($table)
 			->setFilters($filters);
 
 		$querySet = $composer->compose();
@@ -196,34 +196,34 @@ EOT;
 		$this->assertInstanceOf('DemoGraph\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
 		$this->assertAttributeEquals('User', 'resourceName', $querySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $querySetItem->getLinks());
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
 		$this->assertEquals(0, $querySetItem->getLinks()->length());
 
 		$query = $querySetItem->getQuery();
 		$this->assertEquals($expectedQuery, (string)$query);
 	}
 
-	public function testQuerySetComposedFromResourceWithOneToOneLinkHavingMoreThanOneConstraint()
+	public function testQuerySetComposedFromTableWithOneToOneLinkHavingMoreThanOneConstraint()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'friends');
-		$resource->links->removeByPropertyValue('name', 'posts');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'friends');
+		$table->links->removeByPropertyValue('name', 'posts');
 
-		$addressLink = $resource->links->getByName('address');
-		$addressResource = $resource->links->getByName('address')->getChildResource();
+		$addressLink = $table->links->getByName('address');
+		$addressTable = $table->links->getByName('address')->getChildTable();
 
-		$secondConstraint = new ResourceDefinition\LinkConstraint();
+		$secondConstraint = new Definition\Table\Join\Constraint();
 		$secondConstraint->link = $addressLink;
-		$secondConstraint->parentAttribute = $resource->attributes->getByName('id');
-		$secondConstraint->childAttribute = $addressResource->attributes->getByName('landlordId');
+		$secondConstraint->parentAttribute = $table->attributes->getByName('id');
+		$secondConstraint->childAttribute = $addressTable->attributes->getByName('landlordId');
 		$secondConstraint->subJoins = null;
 		$addressLink->constraints->push($secondConstraint);
 
-		$addressResource->links->removeByPropertyValue('name', 'landlord');
+		$addressTable->links->removeByPropertyValue('name', 'landlord');
 
 		$expectedQuery = <<<EOT
 SELECT `User`.`id` AS `User.id`,`User`.`forename` AS `User.forename`,`User`.`surname` AS `User.surname`,`User_address`.`userId` AS `User_address.userId`,`User_address`.`houseName` AS `User_address.houseName`,`User_address`.`postcode` AS `User_address.postcode`,`User_address`.`landlordId` AS `User_address.landlordId`
@@ -234,7 +234,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -245,25 +245,25 @@ EOT;
 		$this->assertInstanceOf('DemoGraph\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
 		$this->assertAttributeEquals('User', 'resourceName', $querySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $querySetItem->getLinks());
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
 		$this->assertEquals(0, $querySetItem->getLinks()->length());
 
 		$query = $querySetItem->getQuery();
 		$this->assertEquals($expectedQuery, (string)$query);
 	}
 
-	public function testQuerySetComposedFromResourceWithOneToManyLinks()
+	public function testQuerySetComposedFromTableWithOneToManyLinks()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'friends');
-		$resource->links->removeByPropertyValue('name', 'address');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'friends');
+		$table->links->removeByPropertyValue('name', 'address');
 
-		$postResource = $resource->links->getByName('posts')->getChildResource();
-		$postResource->links->removeByPropertyValue('name', 'author');
+		$postTable = $table->links->getByName('posts')->getChildTable();
+		$postTable->links->removeByPropertyValue('name', 'author');
 
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
@@ -277,7 +277,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -289,9 +289,9 @@ EOT;
 		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $userLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
-		$this->assertSame($resource->links->getByName('posts'), $userLinks->getByIndex(0));
+		$this->assertSame($table->links->getByName('posts'), $userLinks->getByIndex(0));
 
 		$userQuery = $userQuerySetItem->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
@@ -303,30 +303,30 @@ EOT;
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $postQuerySetItem->getQuery());
 
 		$postLinks = $postQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $postLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $postLinks);
 		$this->assertEquals(0, $postLinks->length());
 
 		$postQuery = $postQuerySetItem->getQuery();
 		$this->assertEquals($expectedQueries[1], (string)$postQuery);
 	}
 
-	public function testQuerySetComposedFromResourceWithSeveralOneToManyAndOneToOneLinks()
+	public function testQuerySetComposedFromTableWithSeveralOneToManyAndOneToOneLinks()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'friends');
-		$resource->links->removeByPropertyValue('name', 'address');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'friends');
+		$table->links->removeByPropertyValue('name', 'address');
 
-		$postResource = $resource->links->getByName('posts')->getChildResource();
-		$authorResource = $postResource->links->getByName('author')->getChildResource();
-		$authorResource->links->removeByPropertyValue('name', 'friends');
-		$authorResource->links->removeByPropertyValue('name', 'address');
+		$postTable = $table->links->getByName('posts')->getChildTable();
+		$authorTable = $postTable->links->getByName('author')->getChildTable();
+		$authorTable->links->removeByPropertyValue('name', 'friends');
+		$authorTable->links->removeByPropertyValue('name', 'address');
 
-		$authorPostResource = $authorResource->links->getByName('posts')->getChildResource();
-		$authorPostResource->links->removeByPropertyValue('name', 'author');
+		$authorPostTable = $authorTable->links->getByName('posts')->getChildTable();
+		$authorPostTable->links->removeByPropertyValue('name', 'author');
 
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
@@ -345,7 +345,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -357,9 +357,9 @@ EOT;
 		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $userLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
-		$this->assertSame($resource->links->getByName('posts'), $userLinks->getByIndex(0));
+		$this->assertSame($table->links->getByName('posts'), $userLinks->getByIndex(0));
 
 		$userQuery = $userQuerySetItem->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
@@ -371,9 +371,9 @@ EOT;
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $postAndAuthorQuerySetItem->getQuery());
 
 		$postAndAuthorLinks = $postAndAuthorQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $postAndAuthorLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $postAndAuthorLinks);
 		$this->assertEquals(1, $postAndAuthorLinks->length());
-		$this->assertSame($authorResource->links->getByName('posts'), $postAndAuthorLinks->getByIndex(0));
+		$this->assertSame($authorTable->links->getByName('posts'), $postAndAuthorLinks->getByIndex(0));
 
 		$postAndAuthorQuery = $postAndAuthorQuerySetItem->getQuery();
 		$this->assertEquals($expectedQueries[1], (string)$postAndAuthorQuery);
@@ -384,27 +384,27 @@ EOT;
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $authorPostQuerySetItem->getQuery());
 
 		$authorPostLinks = $authorPostQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $authorPostLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $authorPostLinks);
 		$this->assertEquals(0, $authorPostLinks->length());
 
 		$authorPostLinksQuery = $authorPostQuerySetItem->getQuery();
 		$this->assertEquals($expectedQueries[2], (string)$authorPostLinksQuery);
 	}
 
-	public function testQuerySetComposedFromResourceWithManyToManyLink()
+	public function testQuerySetComposedFromTableWithManyToManyLink()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'address');
-		$resource->links->removeByPropertyValue('name', 'posts');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'address');
+		$table->links->removeByPropertyValue('name', 'posts');
 
-		$friendResource = $resource->links->getByName('friends')->getChildResource();
-		$friendResource->links->removeByPropertyValue('name', 'friends');
-		$friendResource->links->removeByPropertyValue('name', 'address');
-		$friendResource->links->removeByPropertyValue('name', 'posts');
+		$friendTable = $table->links->getByName('friends')->getChildTable();
+		$friendTable->links->removeByPropertyValue('name', 'friends');
+		$friendTable->links->removeByPropertyValue('name', 'address');
+		$friendTable->links->removeByPropertyValue('name', 'posts');
 
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
@@ -419,7 +419,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -431,11 +431,11 @@ EOT;
 		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $userLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
 
 		$userFriendLink = $userLinks->getByIndex(0);
-		$this->assertSame($resource->links->getByName('friends'), $userFriendLink);
+		$this->assertSame($table->links->getByName('friends'), $userFriendLink);
 
 		$userQuery = $userQuerySetItem->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
@@ -447,31 +447,31 @@ EOT;
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
 
 		$friendLinks = $friendQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $friendLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $friendLinks);
 		$this->assertEquals(0, $friendLinks->length());
 
 		$friendQuery = $friendQuerySetItem->getQuery();
 		$this->assertEquals($expectedQueries[1], (string)$friendQuery);
 	}
 
-	public function testQuerySetComposedFromResourceWithSeveralManyToManyLinks()
+	public function testQuerySetComposedFromTableWithSeveralManyToManyLinks()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'address');
-		$resource->links->removeByPropertyValue('name', 'posts');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'address');
+		$table->links->removeByPropertyValue('name', 'posts');
 
-		$friendResource = $resource->links->getByName('friends')->getChildResource();
-		$friendResource->links->removeByPropertyValue('name', 'address');
-		$friendResource->links->removeByPropertyValue('name', 'posts');
+		$friendTable = $table->links->getByName('friends')->getChildTable();
+		$friendTable->links->removeByPropertyValue('name', 'address');
+		$friendTable->links->removeByPropertyValue('name', 'posts');
 
-		$friendOfFriendResource = $friendResource->links->getByName('friends')->getChildResource();
-		$friendOfFriendResource->links->removeByPropertyValue('name', 'friends');
-		$friendOfFriendResource->links->removeByPropertyValue('name', 'address');
-		$friendOfFriendResource->links->removeByPropertyValue('name', 'posts');
+		$friendOfFriendTable = $friendTable->links->getByName('friends')->getChildTable();
+		$friendOfFriendTable->links->removeByPropertyValue('name', 'friends');
+		$friendOfFriendTable->links->removeByPropertyValue('name', 'address');
+		$friendOfFriendTable->links->removeByPropertyValue('name', 'posts');
 
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
@@ -491,7 +491,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -504,11 +504,11 @@ EOT;
 		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $userLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
 
 		$userFriendLink = $userLinks->getByIndex(0);
-		$this->assertSame($resource->links->getByName('friends'), $userFriendLink);
+		$this->assertSame($table->links->getByName('friends'), $userFriendLink);
 
 		$friendQuerySetItem = $querySet->getByIndex(1);
 		$this->assertInstanceOf('DemoGraph\Module\Graph\QuerySet\QuerySetItem', $friendQuerySetItem);
@@ -516,11 +516,11 @@ EOT;
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
 
 		$friendLinks = $friendQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $friendLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $friendLinks);
 		$this->assertEquals(1, $friendLinks->length());
 
 		$friendOfFriendLink = $friendLinks->getByIndex(0);
-		$this->assertSame($friendResource->links->getByName('friends'), $friendOfFriendLink);
+		$this->assertSame($friendTable->links->getByName('friends'), $friendOfFriendLink);
 
 		$friendOfFriendQuerySetItem = $querySet->getByIndex(2);
 		$this->assertInstanceOf('DemoGraph\Module\Graph\QuerySet\QuerySetItem', $friendOfFriendQuerySetItem);
@@ -528,7 +528,7 @@ EOT;
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQuerySetItem->getQuery());
 
 		$friendOfFriendLinks = $friendOfFriendQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $friendOfFriendLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $friendOfFriendLinks);
 		$this->assertEquals(0, $friendOfFriendLinks->length());
 
 		// Test built query for each query-set item
@@ -545,24 +545,24 @@ EOT;
 		$this->assertEquals($expectedQueries[2], (string)$friendOfFriendQuery);
 	}
 
-	public function testQuerySetComposedFromResourceWithFiltersOnManyToManyLinkedTables()
+	public function testQuerySetComposedFromTableWithFiltersOnManyToManyLinkedTables()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'address');
-		$resource->links->removeByPropertyValue('name', 'posts');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'address');
+		$table->links->removeByPropertyValue('name', 'posts');
 
-		$friendResource = $resource->links->getByName('friends')->getChildResource();
-		$friendResource->links->removeByPropertyValue('name', 'address');
-		$friendResource->links->removeByPropertyValue('name', 'posts');
+		$friendTable = $table->links->getByName('friends')->getChildTable();
+		$friendTable->links->removeByPropertyValue('name', 'address');
+		$friendTable->links->removeByPropertyValue('name', 'posts');
 
-		$friendOfFriendResource = $friendResource->links->getByName('friends')->getChildResource();
-		$friendOfFriendResource->links->removeByPropertyValue('name', 'friends');
-		$friendOfFriendResource->links->removeByPropertyValue('name', 'address');
-		$friendOfFriendResource->links->removeByPropertyValue('name', 'posts');
+		$friendOfFriendTable = $friendTable->links->getByName('friends')->getChildTable();
+		$friendOfFriendTable->links->removeByPropertyValue('name', 'friends');
+		$friendOfFriendTable->links->removeByPropertyValue('name', 'address');
+		$friendOfFriendTable->links->removeByPropertyValue('name', 'posts');
 
 		// todo: Mock the filters, rather than using FilterParser
 		$filters = array(
@@ -575,7 +575,7 @@ EOT;
 			)
 		);
 		$filterParser = new FilterParser();
-		$filters = $filterParser->parse($resource, $filters);
+		$filters = $filterParser->parse($table, $filters);
 
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
@@ -598,7 +598,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource)
+			->setResource($table)
 			->setFilters($filters);
 
 		$querySet = $composer->compose();
@@ -612,11 +612,11 @@ EOT;
 		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $userLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
 
 		$userFriendLink = $userLinks->getByIndex(0);
-		$this->assertSame($resource->links->getByName('friends'), $userFriendLink);
+		$this->assertSame($table->links->getByName('friends'), $userFriendLink);
 
 		$friendQuerySetItem = $querySet->getByIndex(1);
 		$this->assertInstanceOf('DemoGraph\Module\Graph\QuerySet\QuerySetItem', $friendQuerySetItem);
@@ -624,11 +624,11 @@ EOT;
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
 
 		$friendLinks = $friendQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $friendLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $friendLinks);
 		$this->assertEquals(1, $friendLinks->length());
 
 		$friendOfFriendLink = $friendLinks->getByIndex(0);
-		$this->assertSame($friendResource->links->getByName('friends'), $friendOfFriendLink);
+		$this->assertSame($friendTable->links->getByName('friends'), $friendOfFriendLink);
 
 		$friendOfFriendQuerySetItem = $querySet->getByIndex(2);
 		$this->assertInstanceOf('DemoGraph\Module\Graph\QuerySet\QuerySetItem', $friendOfFriendQuerySetItem);
@@ -636,7 +636,7 @@ EOT;
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQuerySetItem->getQuery());
 
 		$friendOfFriendLinks = $friendOfFriendQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $friendOfFriendLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $friendOfFriendLinks);
 		$this->assertEquals(0, $friendOfFriendLinks->length());
 
 		// Test built query for each query-set item
@@ -653,35 +653,35 @@ EOT;
 		$this->assertEquals($expectedQueries[2], (string)$friendOfFriendQuery);
 	}
 
-	public function testQuerySetComposedFromResourceWithManyToManyLinkHavingMoreThanOneConstraintOnFirstSubJoin()
+	public function testQuerySetComposedFromTableWithManyToManyLinkHavingMoreThanOneConstraintOnFirstSubJoin()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'address');
-		$resource->links->removeByPropertyValue('name', 'posts');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'address');
+		$table->links->removeByPropertyValue('name', 'posts');
 
-		$friendLink = $resource->links->getByName('friends');
-		$friendResource = $friendLink->getChildResource();
+		$friendLink = $table->links->getByName('friends');
+		$friendTable = $friendLink->getChildTable();
 		$friendSubJoins = $friendLink->constraints->getByIndex(0)->subJoins;
 
-		$extraSubJoin = new ResourceDefinition\LinkSubJoin();
-		$extraSubJoin->parentResource = $friendSubJoins->getByIndex(0)->parentResource;
+		$extraSubJoin = new Definition\Table\Join\SubJoin();
+		$extraSubJoin->parentTable = $friendSubJoins->getByIndex(0)->parentTable;
 		$extraSubJoin->parentAttribute = clone $friendSubJoins->getByIndex(0)->parentAttribute;
 		$extraSubJoin->parentAttribute->name = 'forename';
 		$extraSubJoin->parentAttribute->alias = 'User.forename';
-		$extraSubJoin->childResource = $friendSubJoins->getByIndex(0)->childResource;
+		$extraSubJoin->childTable = $friendSubJoins->getByIndex(0)->childTable;
 		$extraSubJoin->childAttribute = clone $friendSubJoins->getByIndex(0)->childAttribute;
 		$extraSubJoin->childAttribute->name = 'username1';
 		$extraSubJoin->childAttribute->alias = 'User_friendLink.username1';
 		$extraSubJoin->parentJoin = $friendLink;
 		$friendSubJoins->push($extraSubJoin);
 
-		$friendResource->links->removeByPropertyValue('name', 'friends');
-		$friendResource->links->removeByPropertyValue('name', 'address');
-		$friendResource->links->removeByPropertyValue('name', 'posts');
+		$friendTable->links->removeByPropertyValue('name', 'friends');
+		$friendTable->links->removeByPropertyValue('name', 'address');
+		$friendTable->links->removeByPropertyValue('name', 'posts');
 
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
@@ -696,7 +696,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -708,11 +708,11 @@ EOT;
 		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $userLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
 
 		$userFriendLink = $userLinks->getByIndex(0);
-		$this->assertSame($resource->links->getByName('friends'), $userFriendLink);
+		$this->assertSame($table->links->getByName('friends'), $userFriendLink);
 
 		$userQuery = $userQuerySetItem->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
@@ -724,42 +724,42 @@ EOT;
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
 
 		$friendLinks = $friendQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $friendLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $friendLinks);
 		$this->assertEquals(0, $friendLinks->length());
 
 		$friendQuery = $friendQuerySetItem->getQuery();
 		$this->assertEquals($expectedQueries[1], (string)$friendQuery);
 	}
 
-	public function testQuerySetComposedFromResourceWithManyToManyLinkHavingMoreThanOneConstraintOnSecondSubJoin()
+	public function testQuerySetComposedFromTableWithManyToManyLinkHavingMoreThanOneConstraintOnSecondSubJoin()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
 		$dbConnection = new Connection();
 		$database = $this->getDatabaseWrapper($dbConnection);
 
-		$resource = $resourceDefinitionBuilder->buildFromName('User');
-		$resource->links->removeByPropertyValue('name', 'address');
-		$resource->links->removeByPropertyValue('name', 'posts');
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'address');
+		$table->links->removeByPropertyValue('name', 'posts');
 
-		$friendLink = $resource->links->getByName('friends');
-		$friendResource = $friendLink->getChildResource();
+		$friendLink = $table->links->getByName('friends');
+		$friendTable = $friendLink->getChildTable();
 		$friendSubJoins = $friendLink->constraints->getByIndex(0)->subJoins;
 
-		$extraSubJoin = new ResourceDefinition\LinkSubJoin();
-		$extraSubJoin->parentResource = $friendSubJoins->getByIndex(1)->parentResource;
+		$extraSubJoin = new Definition\Table\Join\SubJoin();
+		$extraSubJoin->parentTable = $friendSubJoins->getByIndex(1)->parentTable;
 		$extraSubJoin->parentAttribute = clone $friendSubJoins->getByIndex(1)->parentAttribute;
 		$extraSubJoin->parentAttribute->name = 'username2';
 		$extraSubJoin->parentAttribute->alias = 'User_friendLink.username2';
-		$extraSubJoin->childResource = $friendSubJoins->getByIndex(1)->childResource;
+		$extraSubJoin->childTable = $friendSubJoins->getByIndex(1)->childTable;
 		$extraSubJoin->childAttribute = clone $friendSubJoins->getByIndex(1)->childAttribute;
 		$extraSubJoin->childAttribute->name = 'username';
 		$extraSubJoin->childAttribute->alias = 'User_friends.username';
 		$extraSubJoin->parentJoin = $friendLink;
 		$friendSubJoins->push($extraSubJoin);
 
-		$friendResource->links->removeByPropertyValue('name', 'friends');
-		$friendResource->links->removeByPropertyValue('name', 'address');
-		$friendResource->links->removeByPropertyValue('name', 'posts');
+		$friendTable->links->removeByPropertyValue('name', 'friends');
+		$friendTable->links->removeByPropertyValue('name', 'address');
+		$friendTable->links->removeByPropertyValue('name', 'posts');
 
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
@@ -775,7 +775,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($resource);
+			->setResource($table);
 
 		$querySet = $composer->compose();
 
@@ -787,11 +787,11 @@ EOT;
 		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $userLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
 
 		$userFriendLink = $userLinks->getByIndex(0);
-		$this->assertSame($resource->links->getByName('friends'), $userFriendLink);
+		$this->assertSame($table->links->getByName('friends'), $userFriendLink);
 
 		$userQuery = $userQuerySetItem->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
@@ -803,7 +803,7 @@ EOT;
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
 
 		$friendLinks = $friendQuerySetItem->getLinks();
-		$this->assertInstanceOf('DemoGraph\Module\Graph\ResourceDefinition\LinkList', $friendLinks);
+		$this->assertInstanceOf('DemoGraph\Module\Graph\Definition\Table\JoinList', $friendLinks);
 		$this->assertEquals(0, $friendLinks->length());
 
 		$friendQuery = $friendQuerySetItem->getQuery();

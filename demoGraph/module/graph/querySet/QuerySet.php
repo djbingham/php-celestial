@@ -3,7 +3,7 @@ namespace DemoGraph\Module\Graph\QuerySet;
 
 use DemoGraph\Module\Graph\Helper\ObjectList;
 use DemoGraph\Module\Graph\QuerySet\QuerySetItem;
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 
 class QuerySet extends ObjectList
 {

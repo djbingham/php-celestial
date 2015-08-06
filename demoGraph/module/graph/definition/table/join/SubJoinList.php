@@ -1,18 +1,18 @@
 <?php
-namespace DemoGraph\Module\Graph\ResourceDefinition;
+namespace DemoGraph\Module\Graph\Definition\Table\Join;
 
 use DemoGraph\Module\Graph\Helper\ObjectList;
 
-class LinkSubJoinList extends ObjectList
+class SubJoinList extends ObjectList
 {
-    public function push(LinkSubJoin $view)
+    public function push(SubJoin $view)
     {
         $this->items[] = $view;
         return $this;
     }
 
     /**
-     * @return LinkSubJoin
+     * @return SubJoin
      */
     public function shift()
     {
@@ -22,19 +22,19 @@ class LinkSubJoinList extends ObjectList
 
     /**
      * @param string $index
-     * @return LinkSubJoin
+     * @return SubJoin
      */
     public function getByIndex($index)
     {
         return parent::getByIndex($index);
     }
 
-    public function getByParentResourceAlias($parentAlias)
+    public function getByParentTableAlias($parentAlias)
     {
         $foundJoin = null;
         foreach ($this as $join) {
-            /** @var LinkSubJoin $join */
-            if ($join->parentResource->getAlias() === $parentAlias) {
+            /** @var SubJoin $join */
+            if ($join->parentTable->getAlias() === $parentAlias) {
                 $foundJoin = $join;
             }
         }

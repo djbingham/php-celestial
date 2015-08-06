@@ -1,16 +1,17 @@
 <?php
-namespace DemoGraph\Module\Graph\ResourceDefinition;
+namespace DemoGraph\Module\Graph\Definition\Table;
 
+use DemoGraph\Module\Graph\Definition\Table\Field;
 use DemoGraph\Module\Graph\Helper\ObjectList;
 
-class AttributeList extends ObjectList
+class FieldList extends ObjectList
 {
 	/**
 	 * @var string
 	 */
 	protected $alias;
 
-	public function push(Attribute $attribute)
+	public function push(Field $attribute)
 	{
 		$this->items[] = $attribute;
 		return $this;
@@ -29,7 +30,7 @@ class AttributeList extends ObjectList
 
 	/**
 	 * @param string $index
-	 * @return Attribute
+	 * @return Field
 	 */
 	public function getByIndex($index)
 	{
@@ -38,7 +39,7 @@ class AttributeList extends ObjectList
 
 	/**
 	 * @param string $name
-	 * @return Attribute
+	 * @return Field
 	 */
 	public function getByName($name)
 	{
@@ -46,22 +47,22 @@ class AttributeList extends ObjectList
 	}
 
 	/**
-	 * @param string $resourceAlias
-	 * @return AttributeList
+	 * @param string $tableAlias
+	 * @return FieldList
 	 */
-	public function getByResourceAlias($resourceAlias)
+	public function getByTableAlias($tableAlias)
 	{
 		$matchedAttributes = new self();
 		foreach ($this as $attribute) {
-			/** @var Attribute $attribute */
-			if ($attribute->resource->getAlias() === $resourceAlias) {
+			/** @var Field $attribute */
+			if ($attribute->table->getAlias() === $tableAlias) {
 				$matchedAttributes->push($attribute);
 			}
 		}
 		return $matchedAttributes;
 	}
 
-	public function remove(Attribute $attribute)
+	public function remove(Field $attribute)
 	{
 		$index = $this->indexOf($attribute);
 		if ($index !== -1) {
@@ -70,11 +71,11 @@ class AttributeList extends ObjectList
 		return $this;
 	}
 
-	public function indexOf(Attribute $attribute)
+	public function indexOf(Field $attribute)
 	{
 		$foundIndex = -1;
 		foreach ($this->items as $index => $item) {
-			/** @var Attribute $item */
+			/** @var Field $item */
 			if ($item->name === $attribute->name) {
 				$foundIndex = $index;
 				break;
@@ -87,7 +88,7 @@ class AttributeList extends ObjectList
 	{
 		$foundIndex = -1;
 		foreach ($this->items as $index => $item) {
-			/** @var Attribute $item */
+			/** @var Field $item */
 			if ($item->name === $attributeName) {
 				$foundIndex = $index;
 				break;

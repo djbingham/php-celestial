@@ -1,5 +1,5 @@
 <?php
-namespace DemoGraph\Module\Graph\ResourceDefinition;
+namespace DemoGraph\Module\Graph\Definition;
 
 use DemoGraph\Module\Graph\Helper\ObjectList;
 

@@ -1,5 +1,5 @@
 {
-	"primaryResource": "User",
+	"table": "User",
 	"attributes": {
 		"id": true,
 		"forename": true,
@@ -10,22 +10,33 @@
 		}
 	},
 	"views": {
-		"item": "default/item",
-		"list": "default/list",
-		"create": "default/createForm",
-		"update": "default/updateForm",
-		"simpleSearch": "default/simpleSearchForm",
-		"search": "default/searchForm",
-		"deleted": "default/deleted",
-		"definition": "default/definition",
-
-		"index.json": {
-			"engine": "json",
-			"path": "default/index"
+		"": {
+			"engine": "php",
+			"path": "default/list.php"
 		},
-		"index.html": {
+		".html": {
 			"engine": "moustache",
-			"path": "default/index.html"
+			"path": "user/list.html"
+		},
+		".php": {
+			"engine": "php",
+			"path": "default/list.php"
+		},
+		"list": {
+			"engine": "moustache",
+			"path": "user/list.html"
+		},
+		"list.html": {
+			"engine": "moustache",
+			"path": "user/list.html"
+		},
+		"list.php": {
+			"engine": "php",
+			"path": "default/list.php"
+		},
+		"list.json": {
+			"engine": "json",
+			"path": "default/list.json"
 		}
 	}
 }

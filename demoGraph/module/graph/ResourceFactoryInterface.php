@@ -4,13 +4,13 @@ namespace DemoGraph\Module\Graph;
 interface ResourceFactoryInterface
 {
     /**
-     * @param ResourceDefinition\Resource $definition
+     * @param Definition\Table $definition
      * @param QuerySetFactory $querySetFactory
      */
-    public function __construct(ResourceDefinition\Resource $definition, QuerySetFactory $querySetFactory);
+    public function __construct(Definition\Table $definition, QuerySetFactory $querySetFactory);
 
 	/**
-	 * @return ResourceDefinition\Resource
+	 * @return Definition\Table
 	 */
 	public function getResourceDefinition();
 

@@ -1,7 +1,7 @@
 <?php
 namespace DemoGraph\Module\Graph\QuerySet;
 
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 use SlothMySql\QueryBuilder\Abstractory\MySqlQuery;
 
 class QuerySetItem
@@ -17,7 +17,7 @@ class QuerySetItem
 	private $query;
 
 	/**
-	 * @var ResourceDefinition\LinkList
+	 * @var \DemoGraph\Module\Graph\Definition\Table\JoinList
 	 */
 	private $links;
 

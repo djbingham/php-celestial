@@ -3,7 +3,7 @@ namespace DemoGraph\Module\Graph\QuerySet;
 
 use DemoGraph\Module\Graph\QuerySet\GetBy\Composer;
 use DemoGraph\Module\Graph\QuerySet\GetBy\Conductor;
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 
 class Orchestrator
@@ -34,7 +34,7 @@ class Orchestrator
 	private $dataParser;
 
 	/**
-	 * @var ResourceDefinition\Resource
+	 * @var Definition\Table
 	 */
 	private $resourceDefinition;
 
@@ -78,7 +78,7 @@ class Orchestrator
 		return $this;
 	}
 
-	public function execute(ResourceDefinition\Resource $resourceDefinition, array $filters)
+	public function execute(Definition\Table $resourceDefinition, array $filters)
 	{
 		$filters = $this->filterParser->parse($resourceDefinition, $filters);
 		$querySet = $this->composer

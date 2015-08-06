@@ -4,14 +4,14 @@ namespace DemoGraph\Module\Graph\Test\QueryBuilder;
 require_once dirname(dirname(__DIR__)) . '/UnitTest.php';
 
 use DemoGraph\Module\Graph\QuerySet\DataParser;
-use DemoGraph\Module\Graph\ResourceDefinition;
+use DemoGraph\Module\Graph\Definition;
 use DemoGraph\Test\UnitTest;
 
 class DataParserTest extends UnitTest
 {
 	public function testFormatResourceDataWithDataFromSingleResource()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 
 		$resource = $resourceDefinitionBuilder->buildFromName('User');
 		while ($resource->links->length() > 0) {
@@ -53,7 +53,7 @@ class DataParserTest extends UnitTest
 
 	public function testFormatResourceDataWithDataFromOneToOneJoinedResources()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 
 		$resource = $resourceDefinitionBuilder->buildFromName('User');
 		$resource->links->removeByPropertyValue('name', 'friends');
@@ -110,7 +110,7 @@ class DataParserTest extends UnitTest
 
 	public function testFormatResourceDataWithDataFromOneToManyJoinedResources()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 
 		$resource = $resourceDefinitionBuilder->buildFromName('User');
 		$resource->links->removeByPropertyValue('name', 'address');
@@ -190,13 +190,13 @@ class DataParserTest extends UnitTest
 
 	public function testFormatResourceDataWithDataFromTwoManyToManyJoinedResources()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 
 		$resource = $resourceDefinitionBuilder->buildFromName('User');
 		$resource->links->removeByPropertyValue('name', 'address');
 		$resource->links->removeByPropertyValue('name', 'posts');
 
-		$friendResource = $resource->links->getByName('friends')->getChildResource();
+		$friendResource = $resource->links->getByName('friends')->getChildTable();
 		$friendResource->links->removeByPropertyValue('name', 'address');
 		$friendResource->links->removeByPropertyValue('name', 'posts');
 		$friendResource->links->removeByPropertyValue('name', 'friends');
@@ -297,17 +297,17 @@ class DataParserTest extends UnitTest
 
 	public function testFormatResourceDataWithDataFromThreeManyToManyJoinedResources()
 	{
-		$resourceDefinitionBuilder = $this->getResourceDefinitionBuilder();
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 
 		$resource = $resourceDefinitionBuilder->buildFromName('User');
 		$resource->links->removeByPropertyValue('name', 'address');
 		$resource->links->removeByPropertyValue('name', 'posts');
 
-		$friendResource = $resource->links->getByName('friends')->getChildResource();
+		$friendResource = $resource->links->getByName('friends')->getChildTable();
 		$friendResource->links->removeByPropertyValue('name', 'address');
 		$friendResource->links->removeByPropertyValue('name', 'posts');
 
-		$friendOfFriendResource = $friendResource->links->getByName('friends')->getChildResource();
+		$friendOfFriendResource = $friendResource->links->getByName('friends')->getChildTable();
 		$friendOfFriendResource->links->removeByPropertyValue('name', 'friends');
 		$friendOfFriendResource->links->removeByPropertyValue('name', 'address');
 		$friendOfFriendResource->links->removeByPropertyValue('name', 'posts');

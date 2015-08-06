@@ -1,19 +1,33 @@
 <?php
 namespace DemoGraph\Module\Graph\DefinitionBuilder;
 
-use DemoGraph\Module\Graph\Definition\Resource;
 use DemoGraph\Module\Graph\Definition;
-use DemoGraph\Module\Graph\ResourceManifestValidator;
+use DemoGraph\Module\Graph\TableManifestValidator;
 
-class ResourceDefinitionBuilder
+class TableDefinitionBuilder
 {
 	/**
-	 * @var TableDefinitionBuilder
+	 * @var TableFieldListBuilder
 	 */
-	private $tableBuilder;
+	private $tableFieldListBuilder;
 
 	/**
-	 * @var ResourceManifestValidator
+	 * @var LinkListBuilder
+	 */
+	private $linkListBuilder;
+
+	/**
+	 * @var ViewListBuilder
+	 */
+	private $viewListBuilder;
+
+	/**
+	 * @var ValidatorListBuilder
+	 */
+	private $validatorListBuilder;
+
+	/**
+	 * @var TableManifestValidator
 	 */
 	private $manifestValidator;
 
@@ -22,83 +36,61 @@ class ResourceDefinitionBuilder
 	 */
 	private $manifestDirectory;
 
-	/**
-	 * @var ValidatorListBuilder
-	 */
-	private $validatorListBuilder;
-
-	/**
-	 * @var TableFieldListBuilder
-	 */
-	private $attributeListBuilder;
-
-	/**
-	 * @var ViewListBuilder
-	 */
-	private $viewListBuilder;
-
-	public function setManifestValidator(ResourceManifestValidator $validator)
+	public function __construct(TableManifestValidator $manifestValidator, $manifestDirectory)
 	{
-		$this->manifestValidator = $validator;
-		return $this;
-	}
-
-	public function setManifestDirectory($manifestDirectory)
-	{
+		$this->manifestValidator = $manifestValidator;
 		$this->manifestDirectory = $manifestDirectory;
-		return $this;
 	}
 
 	public function setSubBuilders(array $builders)
 	{
-		$this->tableBuilder = $builders['tableBuilder'];
 		$this->validatorListBuilder = $builders['validatorListBuilder'];
-		$this->attributeListBuilder = $builders['attributeListBuilder'];
+		$this->tableFieldListBuilder = $builders['tableFieldListBuilder'];
+		$this->linkListBuilder = $builders['linkListBuilder'];
 		$this->viewListBuilder = $builders['viewListBuilder'];
 		return $this;
 	}
 
-	public function buildFromName($tableName)
+	public function buildFromName($tableName, $alias = null)
 	{
 		$filePathParts = explode(DIRECTORY_SEPARATOR, $tableName);
 		$lastPathPartIndex = count($filePathParts) - 1;
 		$filePathParts[$lastPathPartIndex] = ucfirst($filePathParts[$lastPathPartIndex]);
 
-		$lastPathPartIndex = count($filePathParts) - 1;
-		$lastPathPart = $filePathParts[$lastPathPartIndex];
-		$extensionStartPos = strrpos($lastPathPart, '.');
-		if ($extensionStartPos !== false) {
-			$filePathParts[$lastPathPartIndex] = substr($lastPathPart, 0, $extensionStartPos);
-		}
-
 		$fileName = sprintf('%s.json', implode(DIRECTORY_SEPARATOR, $filePathParts));
 		$filePath = $this->manifestDirectory . DIRECTORY_SEPARATOR . $fileName ;
 
-		return $this->buildFromFile($filePath);
+		return $this->buildFromFile($filePath, $alias);
 	}
 
-	public function buildFromFile($filePath)
+	public function buildFromFile($filePath, $alias = null)
 	{
 		$this->assertManifestFileExists($filePath);
 		$fileContents = file_get_contents($filePath);
 		$fileName = basename($filePath, '.json');
 		$manifest = json_decode($fileContents, true);
 		$manifest['name'] = ucfirst($fileName);
-		return $this->buildFromManifest($manifest);
+		return $this->buildFromManifest($manifest, $alias);
 	}
 
-	public function buildFromManifest(array $manifest)
+	public function buildFromManifest(array $manifest, $alias = null)
 	{
 		$manifest = $this->padManifest($manifest);
 		$this->assertManifestIsValid($manifest);
 
-		$resource = new Resource();
-		$resource->name = $manifest['name'];
-		$resource->table = $this->tableBuilder->buildFromName($manifest['table']);
-		$resource->validators = $this->validatorListBuilder->build($manifest['validators']);
-		$resource->views = $this->viewListBuilder->build($manifest['views']);
+		$table = new Definition\Table();
+		if (!is_null($alias)) {
+			$table->alias = $alias;
+		} else {
+			$table->alias = $manifest['name'];
+		}
+		$table->name = $manifest['name'];
+		$table->attributes = $this->tableFieldListBuilder->build($table, $manifest['attributes']);
+		$table->links = $this->linkListBuilder->build($table, $manifest['links']);
+		$table->validators = $this->validatorListBuilder->build($manifest['validators']);
+		$table->views = $this->viewListBuilder->build($manifest['views']);
 
-		return $resource;
+		return $table;
 	}
 
 	private function assertManifestFileExists($filePath)
@@ -118,6 +110,12 @@ class ResourceDefinitionBuilder
 
 	private function padManifest(array $manifest)
 	{
+		if (!array_key_exists('attributes', $manifest)) {
+			$manifest['attributes'] = array();
+		}
+		if (!array_key_exists('links', $manifest)) {
+			$manifest['links'] = array();
+		}
 		if (!array_key_exists('views', $manifest)) {
 			$manifest['views'] = array();
 		}
