@@ -3,7 +3,11 @@
 {{#resources}}
 	<dt>({{id}}) {{forename}} {{surname}}</dt>
 	<dd>
-
+		<ul>
+			{{#friends}}
+				<li>({{id}}) {{forename}} {{surname}}</li>
+			{{/friends}}
+		</ul>
 	</dd>
 {{/resources}}
 </dl>

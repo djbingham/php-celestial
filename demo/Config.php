@@ -61,7 +61,7 @@ class Config extends BaseConfig
     {
         return new BaseConfig\Modules(array(
             'resource' => 'SlothDemo\\Module\\Resource\\Loader',
-			'graph' => 'DemoGraph\\Module\\Graph\\Factory'
+			'graph' => 'Sloth\\Module\\Graph\\Factory'
         ));
     }
 

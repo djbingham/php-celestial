@@ -1,5 +1,5 @@
 <?php
-namespace DemoGraph\Module\Graph\Restful;
+namespace Sloth\Module\Graph\Restful;
 
 use Sloth\App;
 use Sloth\Request;

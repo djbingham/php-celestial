@@ -1,6 +1,6 @@
 <?php
 /**
- * @var DemoGraph\Module\Graph\ResourceList $resources
+ * @var Sloth\Module\Graph\ResourceList $resources
  */
 ?>
 <h2>Resource List</h2>
