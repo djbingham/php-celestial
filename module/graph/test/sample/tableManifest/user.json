@@ -46,15 +46,6 @@
 			}
 		}
 	},
-	"views": {
-		"index.json": {
-			"engine": "json",
-			"path": "user/index"
-		},
-		"index.html": {
-			"engine": "moustache",
-			"path": "user/index.html"
-		}
-	},
-	"validators": []
+	"views": {},
+	"validators": {}
 }

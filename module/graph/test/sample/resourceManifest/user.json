@@ -1,0 +1,54 @@
+{
+	"table": "User",
+	"attributes": {
+		"id": true,
+		"forename": true,
+		"surname": true,
+		"address": {
+			"houseName": true,
+			"postCode": true
+		},
+		"posts": {
+			"content": true
+		},
+		"friends": {
+			"id": true,
+			"forename": true,
+			"surname": true,
+			"friends": {
+				"forename": true,
+				"surname": true
+			}
+		}
+	},
+	"views": {
+		"": {
+			"engine": "php",
+			"path": "default/list.php"
+		},
+		".html": {
+			"engine": "moustache",
+			"path": "user/list.html"
+		},
+		".php": {
+			"engine": "php",
+			"path": "default/list.php"
+		},
+		"list": {
+			"engine": "moustache",
+			"path": "user/list.html"
+		},
+		"list.html": {
+			"engine": "moustache",
+			"path": "user/list.html"
+		},
+		"list.php": {
+			"engine": "php",
+			"path": "default/list.php"
+		},
+		"list.json": {
+			"engine": "json",
+			"path": "default/list.json"
+		}
+	}
+}

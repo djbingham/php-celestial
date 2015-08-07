@@ -33,21 +33,6 @@ class Orchestrator
 	 */
 	private $dataParser;
 
-	/**
-	 * @var Definition\Table
-	 */
-	private $resourceDefinition;
-
-	/**
-	 * @var array
-	 */
-	private $requestedAttributes;
-
-	/**
-	 * @var array
-	 */
-	private $filters;
-
 	public function setDatabase(DatabaseWrapper $database)
 	{
 		$this->database = $database;

@@ -3,48 +3,74 @@ namespace Sloth\Module\Graph\Test;
 
 require_once dirname(__DIR__) . '/UnitTest.php';
 
-use Sloth\Module\Graph\DefinitionBuilder\TableDefinitionBuilder;
-use Sloth\Module\Graph\TableManifestValidator;
+use Sloth\Module\Graph\Factory;
+use Sloth\Module\Graph\ResourceManifestValidator;
 use DemoGraph\Test\UnitTest;
-use Sloth\Module\Graph\DefinitionBuilder\TableFieldBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\TableFieldListBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\LinkListBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\TableBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\ValidatorListBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\ViewListBuilder;
+use Sloth\App;
+use Sloth\Module\Graph\TableManifestValidator;
 
-class ResourceDefinitionBuilderTest extends UnitTest
+class IntegrationTest extends UnitTest
 {
 	use Assertions\ResourceBuilderAssertions;
 
-	public function testResourceCanBeBuiltFromNamedManifestFile()
+	public function testTableCanBeBuiltFromNamedManifestFileUsingDefaultSubBuilders()
 	{
-		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
-		$resource = $resourceDefinitionBuilder->buildFromName('user');
+		$factory = new Factory($this->mockApp());
+		$resourceManifestValidator = new ResourceManifestValidator();
+		$resourceManifestDirectory = dirname(__DIR__) . '/sample/resourceManifest';
+		$tableManifestValidator = new TableManifestValidator();
+		$tableManifestDirectory = dirname(__DIR__) . '/sample/tableManifest';
+		$factory->setResourceManifestValidator($resourceManifestValidator)
+			->setResourceManifestDirectory($resourceManifestDirectory)
+			->setTableManifestValidator($tableManifestValidator)
+			->setTableManifestDirectory($tableManifestDirectory);
+		$resourceBuilder = $factory->resourceDefinitionBuilder();
 
-		$this->assertBuiltResourceMatchesUserManifest($resource);
-		$this->assertBuiltUserResourceLinksToFriendsSubResource($resource);
-		$this->assertBuiltUserResourceLinksToPostsSubResource($resource);
-        $this->assertBuiltUserResourceLinksToAddressSubResource($resource);
+		$resource = $resourceBuilder->buildFromName('user');
+		$table = $resource->table;
+
+		$this->assertBuiltTableMatchesUserManifest($table);
+		$this->assertBuiltUserTableJoinsToFriendsTable($table);
+		$this->assertBuiltUserTableJoinsToPostsTable($table);
 	}
 
-	public function testConnectedResourcesAreLoadedOnDemand()
+	public function testConnectedTablesAreLoadedOnDemand()
 	{
-		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
-		$resource = $resourceDefinitionBuilder->buildFromName('user');
+		$factory = new Factory($this->mockApp());
+		$resourceManifestValidator = new ResourceManifestValidator();
+		$resourceManifestDirectory = dirname(__DIR__) . '/sample/resourceManifest';
+		$tableManifestValidator = new TableManifestValidator();
+		$tableManifestDirectory = dirname(__DIR__) . '/sample/tableManifest';
+		$factory->setResourceManifestValidator($resourceManifestValidator)
+			->setResourceManifestDirectory($resourceManifestDirectory)
+			->setTableManifestValidator($tableManifestValidator)
+			->setTableManifestDirectory($tableManifestDirectory);
+		$resourceBuilder = $factory->resourceDefinitionBuilder();
 
-		$friendResource = $resource->links->getByName('friends')->getChildTable();
-		$postResource = $resource->links->getByName('posts')->getChildTable();
+		$resource = $resourceBuilder->buildFromName('user');
+		$table = $resource->table;
 
-		$this->assertNotSame($resource, $friendResource);
-		$this->assertBuiltResourceMatchesUserManifest($friendResource);
-		$this->assertBuiltResourceMatchesPostManifest($postResource);
-		$this->assertBuiltPostResourceLinksToAuthorSubResource($postResource);
-		$this->assertBuiltResourceMatchesUserManifest($postResource->links->getByName('author')->getChildTable());
+		$friendTable = $table->links->getByName('friends')->getChildTable();
+		$postTable = $table->links->getByName('posts')->getChildTable();
+
+		$this->assertNotSame($table, $friendTable);
+		$this->assertBuiltTableMatchesUserManifest($friendTable);
+		$this->assertBuiltTableMatchesPostManifest($postTable);
+		$this->assertBuiltPostTableJoinsToAuthorTable($postTable);
+		$this->assertBuiltTableMatchesUserManifest($postTable->links->getByName('author')->getChildTable());
 	}
 
-	public function testConnectedResourcesHaveUniqueAliases()
-    {
-
-    }
+	/**
+	 * @return App
+	 */
+	private function mockApp()
+	{
+		$app = $this->getMockBuilder('Sloth\App')
+			->disableOriginalConstructor()
+			->getMock();
+		$app->expects($this->any())
+			->method('database')
+			->will($this->returnValue($this->getDatabaseWrapper()));
+		return $app;
+	}
 }
