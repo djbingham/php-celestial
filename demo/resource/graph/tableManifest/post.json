@@ -1,8 +1,5 @@
 {
-	"table": {
-		"name": "Post"
-	},
-	"attributes": {
+	"fields": {
 		"id": {
 			"type": "integer(11)",
 			"field": "id",
@@ -22,21 +19,12 @@
 	"links": {
 		"author": {
 			"type": "manyToOne",
-			"resource": "User",
+			"table": "User",
 			"joins": {
 				"this.authorId": "author.id"
 			}
 		}
 	},
-	"views": {
-		"index.json": {
-			"engine": "json",
-			"path": "user/index"
-		},
-		"index.html": {
-			"engine": "moustache",
-			"path": "user/index.html"
-		}
-	},
-	"validators": []
+	"views": {},
+	"validators": {}
 }

@@ -1,8 +1,5 @@
 {
-	"table": {
-		"name": "User"
-	},
-	"attributes": {
+	"fields": {
 		"id": {
 			"type": "integer(11)",
 			"field": "id",

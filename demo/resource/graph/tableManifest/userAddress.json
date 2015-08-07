@@ -1,8 +1,5 @@
 {
-	"table": {
-		"name": "UserAddress"
-	},
-	"attributes": {
+	"fields": {
 		"userId": {
 			"type": "integer(11)",
 			"field": "userId",
@@ -27,13 +24,12 @@
 	"links": {
 		"landlord": {
 			"type": "oneToOne",
-			"resource": "User",
+			"table": "User",
 			"joins": {
 				"this.landlordId": "landlord.id"
 			}
 		}
 	},
-	"views": {
-	},
-	"validators": []
+	"views": {},
+	"validators": {}
 }

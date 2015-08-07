@@ -68,10 +68,10 @@ trait ResourceBuilderAssertions
 		$joinToFriends = $linkToFriends->getConstraints()->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Join\Constraint', $joinToFriends);
 		$this->assertSame($linkToFriends, $joinToFriends->link);
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToFriends->parentAttribute);
-		$this->assertEquals('id', $joinToFriends->parentAttribute->name);
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToFriends->childAttribute);
-		$this->assertEquals('id', $joinToFriends->childAttribute->name);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToFriends->parentField);
+		$this->assertEquals('id', $joinToFriends->parentField->name);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToFriends->childField);
+		$this->assertEquals('id', $joinToFriends->childField->name);
 
 		$subJoinsToFriends = $linkToFriends->getConstraints()->getByIndex(0)->subJoins;
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Join\SubJoinList', $subJoinsToFriends);
@@ -79,25 +79,25 @@ trait ResourceBuilderAssertions
 
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Join\SubJoin', $subJoinsToFriends->getByIndex(0));
 		$this->assertSame($table, $subJoinsToFriends->getByIndex(0)->parentTable);
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $subJoinsToFriends->getByIndex(0)->parentAttribute);
-		$this->assertSame($table->fields->getByName('id')->table, $subJoinsToFriends->getByIndex(0)->parentAttribute->table);
-		$this->assertEquals($table->fields->getByName('id')->name, $subJoinsToFriends->getByIndex(0)->parentAttribute->name);
-		$this->assertEquals($table->fields->getByName('id')->alias, $subJoinsToFriends->getByIndex(0)->parentAttribute->alias);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $subJoinsToFriends->getByIndex(0)->parentField);
+		$this->assertSame($table->fields->getByName('id')->table, $subJoinsToFriends->getByIndex(0)->parentField->table);
+		$this->assertEquals($table->fields->getByName('id')->name, $subJoinsToFriends->getByIndex(0)->parentField->name);
+		$this->assertEquals($table->fields->getByName('id')->alias, $subJoinsToFriends->getByIndex(0)->parentField->alias);
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table', $subJoinsToFriends->getByIndex(0)->childTable);
 		$this->assertEquals('UserFriend', $subJoinsToFriends->getByIndex(0)->childTable->name);
 		$this->assertEquals('User_friendLink', $subJoinsToFriends->getByIndex(0)->childTable->alias);
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $subJoinsToFriends->getByIndex(0)->childAttribute);
-		$this->assertEquals('friendId1', $subJoinsToFriends->getByIndex(0)->childAttribute->name);
-		$this->assertSame($subJoinsToFriends->getByIndex(0)->childTable, $subJoinsToFriends->getByIndex(0)->childAttribute->table);
-		$this->assertEquals('User_friendLink.friendId1', $subJoinsToFriends->getByIndex(0)->childAttribute->alias);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $subJoinsToFriends->getByIndex(0)->childField);
+		$this->assertEquals('friendId1', $subJoinsToFriends->getByIndex(0)->childField->name);
+		$this->assertSame($subJoinsToFriends->getByIndex(0)->childTable, $subJoinsToFriends->getByIndex(0)->childField->table);
+		$this->assertEquals('User_friendLink.friendId1', $subJoinsToFriends->getByIndex(0)->childField->alias);
 
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Join\SubJoin', $subJoinsToFriends->getByIndex(1));
 		$this->assertSame($subJoinsToFriends->getByIndex(0)->childTable, $subJoinsToFriends->getByIndex(1)->parentTable);
 
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $subJoinsToFriends->getByIndex(1)->parentAttribute);
-		$this->assertEquals('friendId2', $subJoinsToFriends->getByIndex(1)->parentAttribute->name);
-		$this->assertSame($subJoinsToFriends->getByIndex(0)->childTable, $subJoinsToFriends->getByIndex(1)->parentAttribute->table);
-		$this->assertEquals('User_friendLink.friendId2', $subJoinsToFriends->getByIndex(1)->parentAttribute->alias);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $subJoinsToFriends->getByIndex(1)->parentField);
+		$this->assertEquals('friendId2', $subJoinsToFriends->getByIndex(1)->parentField->name);
+		$this->assertSame($subJoinsToFriends->getByIndex(0)->childTable, $subJoinsToFriends->getByIndex(1)->parentField->table);
+		$this->assertEquals('User_friendLink.friendId2', $subJoinsToFriends->getByIndex(1)->parentField->alias);
 
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table', $subJoinsToFriends->getByIndex(1)->childTable);
 		$this->assertEquals('User', $subJoinsToFriends->getByIndex(1)->childTable->name);
@@ -121,18 +121,18 @@ trait ResourceBuilderAssertions
 		$this->assertSame($linkToPosts, $joinToPosts->link);
 		$this->assertNull($joinToPosts->subJoins);
 
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToPosts->parentAttribute);
-		$this->assertSame($table->fields->getByName('id'), $joinToPosts->parentAttribute);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToPosts->parentField);
+		$this->assertSame($table->fields->getByName('id'), $joinToPosts->parentField);
 
-		$this->assertEquals('authorId', $joinToPosts->childAttribute->name);
-		$this->assertEquals('integer(11)', $joinToPosts->childAttribute->type);
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToPosts->childAttribute);
-		$this->assertEquals('authorId', $joinToPosts->childAttribute->name);
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table', $joinToPosts->childAttribute->table);
-		$this->assertEquals('Post', $joinToPosts->childAttribute->table->name);
-		$this->assertEquals($linkToPosts->getChildTable(), $joinToPosts->childAttribute->table);
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\ValidatorList', $joinToPosts->childAttribute->validators);
-		$this->assertEquals(0, $joinToPosts->childAttribute->validators->length());
+		$this->assertEquals('authorId', $joinToPosts->childField->name);
+		$this->assertEquals('integer(11)', $joinToPosts->childField->type);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToPosts->childField);
+		$this->assertEquals('authorId', $joinToPosts->childField->name);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table', $joinToPosts->childField->table);
+		$this->assertEquals('Post', $joinToPosts->childField->table->name);
+		$this->assertEquals($linkToPosts->getChildTable(), $joinToPosts->childField->table);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\ValidatorList', $joinToPosts->childField->validators);
+		$this->assertEquals(0, $joinToPosts->childField->validators->length());
 	}
 
 	public function assertBuiltUserTableJoinsToAddressSubTable(Definition\Table $table)
@@ -152,18 +152,18 @@ trait ResourceBuilderAssertions
         $this->assertSame($linkToAddress, $joinToAddress->link);
         $this->assertNull($joinToAddress->subJoins);
 
-        $this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToAddress->parentAttribute);
-        $this->assertSame($table->fields->getByName('id'), $joinToAddress->parentAttribute);
+        $this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToAddress->parentField);
+        $this->assertSame($table->fields->getByName('id'), $joinToAddress->parentField);
 
-        $this->assertEquals('userId', $joinToAddress->childAttribute->name);
-        $this->assertEquals('integer(11)', $joinToAddress->childAttribute->type);
-        $this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToAddress->childAttribute);
-        $this->assertEquals('userId', $joinToAddress->childAttribute->name);
-        $this->assertInstanceOf('Sloth\Module\Graph\Definition\Table', $joinToAddress->childAttribute->table);
-        $this->assertEquals('UserAddress', $joinToAddress->childAttribute->table->name);
-        $this->assertEquals($linkToAddress->getChildTable(), $joinToAddress->childAttribute->table);
-        $this->assertInstanceOf('Sloth\Module\Graph\Definition\ValidatorList', $joinToAddress->childAttribute->validators);
-        $this->assertEquals(0, $joinToAddress->childAttribute->validators->length());
+        $this->assertEquals('userId', $joinToAddress->childField->name);
+        $this->assertEquals('integer(11)', $joinToAddress->childField->type);
+        $this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToAddress->childField);
+        $this->assertEquals('userId', $joinToAddress->childField->name);
+        $this->assertInstanceOf('Sloth\Module\Graph\Definition\Table', $joinToAddress->childField->table);
+        $this->assertEquals('UserAddress', $joinToAddress->childField->table->name);
+        $this->assertEquals($linkToAddress->getChildTable(), $joinToAddress->childField->table);
+        $this->assertInstanceOf('Sloth\Module\Graph\Definition\ValidatorList', $joinToAddress->childField->validators);
+        $this->assertEquals(0, $joinToAddress->childField->validators->length());
 	}
 
 	public function assertBuiltTableMatchesPostManifest(Definition\Table $table)
@@ -229,30 +229,30 @@ trait ResourceBuilderAssertions
 		$joinToAuthor = $linkToAuthor->getConstraints()->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Join\Constraint', $joinToAuthor);
 		$this->assertSame($linkToAuthor, $joinToAuthor->link);
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToAuthor->parentAttribute);
-		$this->assertEquals('authorId', $joinToAuthor->parentAttribute->name);
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToAuthor->childAttribute);
-		$this->assertEquals('id', $joinToAuthor->childAttribute->name);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToAuthor->parentField);
+		$this->assertEquals('authorId', $joinToAuthor->parentField->name);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToAuthor->childField);
+		$this->assertEquals('id', $joinToAuthor->childField->name);
 
 		$joinToAuthor = $linkToAuthor->getConstraints()->getByIndex(0);
 		$this->assertSame($linkToAuthor, $joinToAuthor->link);
 		$this->assertNull($joinToAuthor->subJoins);
 
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Join\Constraint', $joinToAuthor);
-		$this->assertSame($table->fields->getByName('authorId'), $joinToAuthor->parentAttribute);
+		$this->assertSame($table->fields->getByName('authorId'), $joinToAuthor->parentField);
 
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToAuthor->childAttribute);
-		$this->assertBuiltTableMatchesUserManifest($joinToAuthor->childAttribute->table);
-		$this->assertEquals('id', $joinToAuthor->childAttribute->name);
-		$this->assertEquals('integer(11)', $joinToAuthor->childAttribute->type);
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table', $joinToAuthor->childAttribute->table);
-		$this->assertEquals('User', $joinToAuthor->childAttribute->table->name);
-		$this->assertEquals('User_posts_author', $joinToAuthor->childAttribute->table->alias);
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToAuthor->childAttribute);
-		$this->assertSame($joinToAuthor->childAttribute->table, $joinToAuthor->childAttribute->table);
-		$this->assertEquals('id', $joinToAuthor->childAttribute->name);
-		$this->assertEquals('User_posts_author.id', $joinToAuthor->childAttribute->alias);
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\ValidatorList', $joinToAuthor->childAttribute->validators);
-		$this->assertEquals(0, $joinToAuthor->childAttribute->validators->length());
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToAuthor->childField);
+		$this->assertBuiltTableMatchesUserManifest($joinToAuthor->childField->table);
+		$this->assertEquals('id', $joinToAuthor->childField->name);
+		$this->assertEquals('integer(11)', $joinToAuthor->childField->type);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table', $joinToAuthor->childField->table);
+		$this->assertEquals('User', $joinToAuthor->childField->table->name);
+		$this->assertEquals('User_posts_author', $joinToAuthor->childField->table->alias);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToAuthor->childField);
+		$this->assertSame($joinToAuthor->childField->table, $joinToAuthor->childField->table);
+		$this->assertEquals('id', $joinToAuthor->childField->name);
+		$this->assertEquals('User_posts_author.id', $joinToAuthor->childField->alias);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\ValidatorList', $joinToAuthor->childField->validators);
+		$this->assertEquals(0, $joinToAuthor->childField->validators->length());
 	}
 }

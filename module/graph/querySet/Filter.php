@@ -8,7 +8,7 @@ class Filter
 	/**
 	 * @var Field
 	 */
-	public $attribute;
+	public $field;
 
 	/**
 	 * @var mixed

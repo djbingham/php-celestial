@@ -1,8 +1,5 @@
 {
-	"table": {
-		"name": "PostComment"
-	},
-	"attributes": {
+	"fields": {
 		"id": {
 			"type": "integer(11)",
 			"field": "id",
@@ -32,35 +29,26 @@
 	"links": {
 		"author": {
 			"type": "manyToOne",
-			"resource": "User",
+			"table": "User",
 			"joins": {
 				"this.authorId": "author.id"
 			}
 		},
 		"post": {
 			"type": "manyToOne",
-			"resource": "Post",
+			"table": "Post",
 			"joins": {
 				"this.postId": "Post.id"
 			}
 		},
 		"replies": {
 			"type": "oneToMany",
-			"resource": "Comment",
+			"table": "Comment",
 			"joins": {
 				"this.id": "replies.parentId"
 			}
 		}
 	},
-	"views": {
-		"index.json": {
-			"engine": "json",
-			"path": "user/index"
-		},
-		"index.html": {
-			"engine": "moustache",
-			"path": "user/index.html"
-		}
-	},
-	"validators": []
+	"views": {},
+	"validators": {}
 }

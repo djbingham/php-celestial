@@ -38,7 +38,7 @@ EOT;
 
 		$querySetItem = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
-		$this->assertAttributeEquals('User', 'resourceName', $querySetItem);
+		$this->assertAttributeEquals('User', 'tableName', $querySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
 		$this->assertEquals(0, $querySetItem->getLinks()->length());
@@ -83,7 +83,7 @@ EOT;
 
 		$querySetItem = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
-		$this->assertAttributeEquals('User', 'resourceName', $querySetItem);
+		$this->assertAttributeEquals('User', 'tableName', $querySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
 		$this->assertEquals(0, $querySetItem->getLinks()->length());
@@ -128,7 +128,7 @@ EOT;
 
 		$querySetItem = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
-		$this->assertAttributeEquals('User', 'resourceName', $querySetItem);
+		$this->assertAttributeEquals('User', 'tableName', $querySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
 		$this->assertEquals(0, $querySetItem->getLinks()->length());
@@ -194,7 +194,7 @@ EOT;
 
 		$querySetItem = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
-		$this->assertAttributeEquals('User', 'resourceName', $querySetItem);
+		$this->assertAttributeEquals('User', 'tableName', $querySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
 		$this->assertEquals(0, $querySetItem->getLinks()->length());
@@ -218,8 +218,8 @@ EOT;
 
 		$secondConstraint = new Definition\Table\Join\Constraint();
 		$secondConstraint->link = $addressLink;
-		$secondConstraint->parentAttribute = $table->fields->getByName('id');
-		$secondConstraint->childAttribute = $addressTable->fields->getByName('landlordId');
+		$secondConstraint->parentField = $table->fields->getByName('id');
+		$secondConstraint->childField = $addressTable->fields->getByName('landlordId');
 		$secondConstraint->subJoins = null;
 		$addressLink->constraints->push($secondConstraint);
 
@@ -243,7 +243,7 @@ EOT;
 
 		$querySetItem = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
-		$this->assertAttributeEquals('User', 'resourceName', $querySetItem);
+		$this->assertAttributeEquals('User', 'tableName', $querySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
 		$this->assertEquals(0, $querySetItem->getLinks()->length());
@@ -286,7 +286,7 @@ EOT;
 
 		$userQuerySetItem = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
+		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
@@ -299,7 +299,7 @@ EOT;
 
 		$postQuerySetItem = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $postQuerySetItem);
-		$this->assertAttributeEquals('User_posts', 'resourceName', $postQuerySetItem);
+		$this->assertAttributeEquals('User_posts', 'tableName', $postQuerySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $postQuerySetItem->getQuery());
 
 		$postLinks = $postQuerySetItem->getLinks();
@@ -354,7 +354,7 @@ EOT;
 
 		$userQuerySetItem = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
+		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
@@ -367,7 +367,7 @@ EOT;
 
 		$postAndAuthorQuerySetItem = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $postAndAuthorQuerySetItem);
-		$this->assertAttributeEquals('User_posts', 'resourceName', $postAndAuthorQuerySetItem);
+		$this->assertAttributeEquals('User_posts', 'tableName', $postAndAuthorQuerySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $postAndAuthorQuerySetItem->getQuery());
 
 		$postAndAuthorLinks = $postAndAuthorQuerySetItem->getLinks();
@@ -380,7 +380,7 @@ EOT;
 
 		$authorPostQuerySetItem = $querySet->getByIndex(2);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $authorPostQuerySetItem);
-		$this->assertAttributeEquals('User_posts_author_posts', 'resourceName', $authorPostQuerySetItem);
+		$this->assertAttributeEquals('User_posts_author_posts', 'tableName', $authorPostQuerySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $authorPostQuerySetItem->getQuery());
 
 		$authorPostLinks = $authorPostQuerySetItem->getLinks();
@@ -428,7 +428,7 @@ EOT;
 
 		$userQuerySetItem = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
+		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
@@ -443,7 +443,7 @@ EOT;
 
 		$friendQuerySetItem = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendQuerySetItem);
-		$this->assertAttributeEquals('User_friends', 'resourceName', $friendQuerySetItem);
+		$this->assertAttributeEquals('User_friends', 'tableName', $friendQuerySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
 
 		$friendLinks = $friendQuerySetItem->getLinks();
@@ -501,7 +501,7 @@ EOT;
 
 		$userQuerySetItem = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
+		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
@@ -512,7 +512,7 @@ EOT;
 
 		$friendQuerySetItem = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendQuerySetItem);
-		$this->assertAttributeEquals('User_friends', 'resourceName', $friendQuerySetItem);
+		$this->assertAttributeEquals('User_friends', 'tableName', $friendQuerySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
 
 		$friendLinks = $friendQuerySetItem->getLinks();
@@ -524,7 +524,7 @@ EOT;
 
 		$friendOfFriendQuerySetItem = $querySet->getByIndex(2);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendOfFriendQuerySetItem);
-		$this->assertAttributeEquals('User_friends_friends', 'resourceName', $friendOfFriendQuerySetItem);
+		$this->assertAttributeEquals('User_friends_friends', 'tableName', $friendOfFriendQuerySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQuerySetItem->getQuery());
 
 		$friendOfFriendLinks = $friendOfFriendQuerySetItem->getLinks();
@@ -609,7 +609,7 @@ EOT;
 
 		$userQuerySetItem = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
+		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
@@ -620,7 +620,7 @@ EOT;
 
 		$friendQuerySetItem = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendQuerySetItem);
-		$this->assertAttributeEquals('User_friends', 'resourceName', $friendQuerySetItem);
+		$this->assertAttributeEquals('User_friends', 'tableName', $friendQuerySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
 
 		$friendLinks = $friendQuerySetItem->getLinks();
@@ -632,7 +632,7 @@ EOT;
 
 		$friendOfFriendQuerySetItem = $querySet->getByIndex(2);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendOfFriendQuerySetItem);
-		$this->assertAttributeEquals('User_friends_friends', 'resourceName', $friendOfFriendQuerySetItem);
+		$this->assertAttributeEquals('User_friends_friends', 'tableName', $friendOfFriendQuerySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQuerySetItem->getQuery());
 
 		$friendOfFriendLinks = $friendOfFriendQuerySetItem->getLinks();
@@ -669,13 +669,13 @@ EOT;
 
 		$extraSubJoin = new Definition\Table\Join\SubJoin();
 		$extraSubJoin->parentTable = $friendSubJoins->getByIndex(0)->parentTable;
-		$extraSubJoin->parentAttribute = clone $friendSubJoins->getByIndex(0)->parentAttribute;
-		$extraSubJoin->parentAttribute->name = 'forename';
-		$extraSubJoin->parentAttribute->alias = 'User.forename';
+		$extraSubJoin->parentField = clone $friendSubJoins->getByIndex(0)->parentField;
+		$extraSubJoin->parentField->name = 'forename';
+		$extraSubJoin->parentField->alias = 'User.forename';
 		$extraSubJoin->childTable = $friendSubJoins->getByIndex(0)->childTable;
-		$extraSubJoin->childAttribute = clone $friendSubJoins->getByIndex(0)->childAttribute;
-		$extraSubJoin->childAttribute->name = 'username1';
-		$extraSubJoin->childAttribute->alias = 'User_friendLink.username1';
+		$extraSubJoin->childField = clone $friendSubJoins->getByIndex(0)->childField;
+		$extraSubJoin->childField->name = 'username1';
+		$extraSubJoin->childField->alias = 'User_friendLink.username1';
 		$extraSubJoin->parentJoin = $friendLink;
 		$friendSubJoins->push($extraSubJoin);
 
@@ -705,7 +705,7 @@ EOT;
 
 		$userQuerySetItem = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
+		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
@@ -720,7 +720,7 @@ EOT;
 
 		$friendQuerySetItem = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendQuerySetItem);
-		$this->assertAttributeEquals('User_friends', 'resourceName', $friendQuerySetItem);
+		$this->assertAttributeEquals('User_friends', 'tableName', $friendQuerySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
 
 		$friendLinks = $friendQuerySetItem->getLinks();
@@ -747,13 +747,13 @@ EOT;
 
 		$extraSubJoin = new Definition\Table\Join\SubJoin();
 		$extraSubJoin->parentTable = $friendSubJoins->getByIndex(1)->parentTable;
-		$extraSubJoin->parentAttribute = clone $friendSubJoins->getByIndex(1)->parentAttribute;
-		$extraSubJoin->parentAttribute->name = 'username2';
-		$extraSubJoin->parentAttribute->alias = 'User_friendLink.username2';
+		$extraSubJoin->parentField = clone $friendSubJoins->getByIndex(1)->parentField;
+		$extraSubJoin->parentField->name = 'username2';
+		$extraSubJoin->parentField->alias = 'User_friendLink.username2';
 		$extraSubJoin->childTable = $friendSubJoins->getByIndex(1)->childTable;
-		$extraSubJoin->childAttribute = clone $friendSubJoins->getByIndex(1)->childAttribute;
-		$extraSubJoin->childAttribute->name = 'username';
-		$extraSubJoin->childAttribute->alias = 'User_friends.username';
+		$extraSubJoin->childField = clone $friendSubJoins->getByIndex(1)->childField;
+		$extraSubJoin->childField->name = 'username';
+		$extraSubJoin->childField->alias = 'User_friends.username';
 		$extraSubJoin->parentJoin = $friendLink;
 		$friendSubJoins->push($extraSubJoin);
 
@@ -784,7 +784,7 @@ EOT;
 
 		$userQuerySetItem = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'resourceName', $userQuerySetItem);
+		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
 
 		$userLinks = $userQuerySetItem->getLinks();
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
@@ -799,7 +799,7 @@ EOT;
 
 		$friendQuerySetItem = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendQuerySetItem);
-		$this->assertAttributeEquals('User_friends', 'resourceName', $friendQuerySetItem);
+		$this->assertAttributeEquals('User_friends', 'tableName', $friendQuerySetItem);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
 
 		$friendLinks = $friendQuerySetItem->getLinks();

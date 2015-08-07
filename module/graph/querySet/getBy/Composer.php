@@ -18,7 +18,7 @@ class Composer
 	/**
 	 * @var Definition\Table
 	 */
-	private $resourceDefinition;
+	private $tableDefinition;
 
 	/**
 	 * @var array
@@ -38,9 +38,9 @@ class Composer
 		return $this;
 	}
 
-	public function setResource(Definition\Table $resourceDefinition)
+	public function setResource(Definition\Table $tableDefinition)
 	{
-		$this->resourceDefinition = $resourceDefinition;
+		$this->resourceDefinition = $tableDefinition;
 		return $this;
 	}
 
@@ -55,16 +55,16 @@ class Composer
 		return $this->buildQuerySetForResourceAndDescendants($this->resourceDefinition, $this->filters);
 	}
 
-	private function buildQuerySetForResourceAndDescendants(Definition\Table $resourceDefinition, array $filters)
+	private function buildQuerySetForResourceAndDescendants(Definition\Table $tableDefinition, array $filters)
 	{
 		$querySet = new QuerySet();
 		$querySetItem = new QuerySetItem();
-		$querySetItem->setResourceName($resourceDefinition->getAlias())
-			->setQuery($this->buildQueryForResource($resourceDefinition, $filters))
-			->setLinks($this->getLinksToManyRowsFromResourceSet($resourceDefinition));
+		$querySetItem->setTableName($tableDefinition->getAlias())
+			->setQuery($this->buildQueryForResource($tableDefinition, $filters))
+			->setLinks($this->getLinksToManyRowsFromResourceSet($tableDefinition));
 		$querySet->push($querySetItem);
 
-		$linksToManyRows = $this->getLinksToManyRowsFromResourceSet($resourceDefinition);
+		$linksToManyRows = $this->getLinksToManyRowsFromResourceSet($tableDefinition);
 		foreach ($linksToManyRows as $link) {
 			if (array_key_exists($link->name, $filters)) {
 				$descendantFilters = $filters[$link->name];
@@ -82,10 +82,10 @@ class Composer
 		return $querySet;
 	}
 
-	private function getLinksToManyRowsFromResourceSet(Definition\Table $resourceDefinition)
+	private function getLinksToManyRowsFromResourceSet(Definition\Table $tableDefinition)
 	{
 		$foundLinks = new Definition\Table\JoinList();
-		foreach ($resourceDefinition->links as $link) {
+		foreach ($tableDefinition->links as $link) {
 			/** @var \Sloth\Module\Graph\Definition\Table\Join $link */
 			if (in_array($link->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
 				$childLinks = $this->getLinksToManyRowsFromResourceSet($link->getChildTable());
@@ -99,14 +99,14 @@ class Composer
 		return $foundLinks;
 	}
 
-	private function buildQueryForResource(Definition\Table $resourceDefinition, array $filters)
+	private function buildQueryForResource(Definition\Table $tableDefinition, array $filters)
 	{
 		$query = $this->database->query()->select()
-			->setFields($this->buildQueryFieldsFromResource($resourceDefinition))
-			->from($this->getQueryTable($resourceDefinition->name, $resourceDefinition->getAlias()))
-			->setJoins($this->buildQueryJoinsFromResource($resourceDefinition));
+			->setFields($this->buildQueryFieldsFromTable($tableDefinition))
+			->from($this->getQueryTable($tableDefinition->name, $tableDefinition->getAlias()))
+			->setJoins($this->buildQueryJoinsFromResource($tableDefinition));
 
-		$constraint = $this->buildQueryConstraintFromFilters($filters, $resourceDefinition, $resourceDefinition->getAlias());
+		$constraint = $this->buildQueryConstraintFromFilters($filters, $tableDefinition, $tableDefinition->getAlias());
 		if ($constraint !== null) {
 			$query->where($constraint);
 		}
@@ -124,7 +124,7 @@ class Composer
 
 				foreach ($link->getConstraints() as $constraint) {
 					/** @var \Sloth\Module\Graph\Definition\Table\Join\Constraint $constraint */
-					$joinConstraints[] = $this->buildJoinConstraint($constraint->parentAttribute, $constraint->childAttribute);
+					$joinConstraints[] = $this->buildJoinConstraint($constraint->parentField, $constraint->childField);
 				}
 				$firstJoinConstraint = array_shift($joinConstraints);
 				foreach ($joinConstraints as $constraint) {
@@ -168,9 +168,9 @@ class Composer
 		return $joinConstraint;
 	}
 
-	private function buildQueryConstraintFromFilters(array $filters, Definition\Table $resourceDefinition, $parentAlias)
+	private function buildQueryConstraintFromFilters(array $filters, Definition\Table $tableDefinition, $parentAlias)
 	{
-		$constraints = $this->buildQueryConstraintListFromFilters($filters, $resourceDefinition, $parentAlias);
+		$constraints = $this->buildQueryConstraintListFromFilters($filters, $tableDefinition, $parentAlias);
 
 		$firstConstraint = null;
 		if (count($constraints) > 0) {
@@ -182,13 +182,13 @@ class Composer
 		return $firstConstraint;
 	}
 
-	private function buildQueryConstraintListFromFilters(array $filters, Definition\Table $resourceDefinition, $parentAlias)
+	private function buildQueryConstraintListFromFilters(array $filters, Definition\Table $tableDefinition, $parentAlias)
 	{
 		$constraints = array();
 		foreach ($filters as $filterName => $filter) {
 			if ($filter instanceof Filter) {
-				$attribute = $filter->attribute;
-				$field = $this->buildQueryFieldFromAlias($attribute->getAlias(), $parentAlias);
+				$field = $filter->field;
+				$field = $this->buildQueryFieldFromAlias($field->getAlias(), $parentAlias);
 				$fieldConstraint = $this->database->query()->constraint()
 					->setSubject($field);
 				if (is_array($filter->value)) {
@@ -204,8 +204,8 @@ class Composer
 				}
 				$constraints[] = $fieldConstraint;
 			} else {
-				if ($resourceDefinition->links->length() > 0) {
-					$resourceLink = $resourceDefinition->links->getByName($filterName);
+				if ($tableDefinition->links->length() > 0) {
+					$resourceLink = $tableDefinition->links->getByName($filterName);
 					if (in_array($resourceLink->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
 						$childTable = $resourceLink->getChildTable();
 						$constraints = array_merge($constraints, $this->buildQueryConstraintListFromFilters($filter, $childTable, $filterName));
@@ -223,22 +223,22 @@ class Composer
 		return $this->getQueryTable($tableName, $tableName)->field($fieldName);
 	}
 
-	private function buildQueryFieldsFromResource(Definition\Table $resource)
+	private function buildQueryFieldsFromTable(Definition\Table $resource)
 	{
-		$resourceFields = $this->buildQueryFieldsFromAttributes($resource->fields);
+		$resourceFields = $this->buildQueryFieldsFromFields($resource->fields);
 		$linkFields = $this->buildQueryFieldsFromLinks($resource->links);
 		return array_merge($resourceFields, $linkFields);
 	}
 
-	private function buildQueryFieldsFromAttributes(Definition\Table\FieldList $attributes)
+	private function buildQueryFieldsFromFields(Definition\Table\FieldList $fields)
 	{
 		$queryFields = array();
-		foreach ($attributes as $attribute) {
-			/** @var \Sloth\Module\Graph\Definition\Table\Field $attribute */
-			$tableName = $attribute->table->name;
-			$tableAlias = $attribute->table->getAlias();
-			$fieldName = $attribute->name;
-			$queryField = $this->getQueryTable($tableName, $tableAlias)->field($fieldName)->setAlias($attribute->getAlias());
+		foreach ($fields as $field) {
+			/** @var \Sloth\Module\Graph\Definition\Table\Field $field */
+			$tableName = $field->table->name;
+			$tableAlias = $field->table->getAlias();
+			$fieldName = $field->name;
+			$queryField = $this->getQueryTable($tableName, $tableAlias)->field($fieldName)->setAlias($field->getAlias());
 			$queryFields[] = $queryField;
 		}
 		return $queryFields;
@@ -251,7 +251,7 @@ class Composer
 			/** @var \Sloth\Module\Graph\Definition\Table\Join $link */
 			if (in_array($link->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
 				$childTable = $link->getChildTable();
-				$childFields = $this->buildQueryFieldsFromResource($childTable);
+				$childFields = $this->buildQueryFieldsFromTable($childTable);
 				$queryFields = array_merge($queryFields, $childFields);
 			}
 		}
@@ -272,15 +272,15 @@ class Composer
 
 	private function buildQuerySetForSubJoinedResourceAndDescendants(Definition\Table\Join $link, array $filters)
 	{
-		$resourceDefinition = $link->getChildTable();
+		$tableDefinition = $link->getChildTable();
 		$querySet = new QuerySet();
 		$querySetItem = new QuerySetItem();
-		$querySetItem->setResourceName($resourceDefinition->getAlias())
+		$querySetItem->setTableName($tableDefinition->getAlias())
 			->setQuery($this->buildQueryForSubJoinsAndResource($link, $filters))
-			->setLinks($this->getLinksToManyRowsFromResourceSet($resourceDefinition));
+			->setLinks($this->getLinksToManyRowsFromResourceSet($tableDefinition));
 		$querySet->push($querySetItem);
 
-		foreach ($resourceDefinition->links as $link) {
+		foreach ($tableDefinition->links as $link) {
 			if (array_key_exists($link->name, $filters)) {
 				$descendantFilters = $filters[$link->name];
 			} else {
@@ -296,7 +296,7 @@ class Composer
 
 	private function buildQueryForSubJoinsAndResource(Definition\Table\Join $link, array $filters)
 	{
-		$resourceDefinition = $link->getChildTable();
+		$tableDefinition = $link->getChildTable();
 		$query = $this->database->query()->select();
 
 		$subJoinGroups = $this->groupSubJoinsByChild($link);
@@ -316,9 +316,9 @@ class Composer
 				/** @var \Sloth\Module\Graph\Definition\Table\Join\SubJoin $joinDefinition */
 				if ($joinDefinition->parentTable->getAlias() !== $link->parentTable->getAlias()) {
 					$parentTable = $this->getQueryTable($joinDefinition->parentTable->name, $joinDefinition->parentTable->getAlias());
-					$parentField = $parentTable->field($joinDefinition->parentAttribute->name);
+					$parentField = $parentTable->field($joinDefinition->parentField->name);
 					$childTable = $this->getQueryTable($joinDefinition->childTable->name, $joinDefinition->childTable->getAlias());
-					$childField = $childTable->field($joinDefinition->childAttribute->name);
+					$childField = $childTable->field($joinDefinition->childField->name);
 					$joinConstraint = $this->database->query()->constraint()
 						->setSubject($parentField)
 						->equals($childField);
@@ -335,14 +335,14 @@ class Composer
 				$queryJoins[] = $join;
 			}
 		}
-		$queryJoins = array_merge($queryJoins, $this->buildQueryJoinsFromResource($resourceDefinition));
+		$queryJoins = array_merge($queryJoins, $this->buildQueryJoinsFromResource($tableDefinition));
 		$query->setJoins($queryJoins);
 
 		$firstTableAlias = $firstSubJoin->childTable->getAlias();
 		$linkField = $this->getQueryTable($firstTableAlias, $firstTableAlias)
-			->field($firstSubJoin->childAttribute->name)
-			->setAlias($firstSubJoin->childAttribute->getAlias());
-		$queryFields = $this->buildQueryFieldsFromResource($resourceDefinition);
+			->field($firstSubJoin->childField->name)
+			->setAlias($firstSubJoin->childField->getAlias());
+		$queryFields = $this->buildQueryFieldsFromTable($tableDefinition);
 		$queryFields[] = $linkField;
 
 		$table = $firstSubJoin->childTable;

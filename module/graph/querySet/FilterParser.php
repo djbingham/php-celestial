@@ -8,12 +8,12 @@ class FilterParser
 	public function parse(Definition\Table $resourceDefinition, array $filters)
 	{
 		$parsedFilters = array();
-		foreach ($resourceDefinition->fields as $attribute) {
-			/** @var \Sloth\Module\Graph\Definition\Table\Field $attribute */
-			if (array_key_exists($attribute->name, $filters)) {
-				$parsedFilters[$attribute->name] = new Filter();
-				$parsedFilters[$attribute->name]->attribute = $attribute;
-				$parsedFilters[$attribute->name]->value = $filters[$attribute->name];
+		foreach ($resourceDefinition->fields as $field) {
+			/** @var \Sloth\Module\Graph\Definition\Table\Field $field */
+			if (array_key_exists($field->name, $filters)) {
+				$parsedFilters[$field->name] = new Filter();
+				$parsedFilters[$field->name]->field = $field;
+				$parsedFilters[$field->name]->value = $filters[$field->name];
 			}
 		}
 		foreach ($resourceDefinition->links as $link) {

@@ -11,9 +11,9 @@ class FieldList extends ObjectList
 	 */
 	protected $alias;
 
-	public function push(Field $attribute)
+	public function push(Field $field)
 	{
-		$this->items[] = $attribute;
+		$this->items[] = $field;
 		return $this;
 	}
 
@@ -52,31 +52,31 @@ class FieldList extends ObjectList
 	 */
 	public function getByTableAlias($tableAlias)
 	{
-		$matchedAttributes = new self();
-		foreach ($this as $attribute) {
-			/** @var Field $attribute */
-			if ($attribute->table->getAlias() === $tableAlias) {
-				$matchedAttributes->push($attribute);
+		$matchedFields = new self();
+		foreach ($this as $field) {
+			/** @var Field $field */
+			if ($field->table->getAlias() === $tableAlias) {
+				$matchedFields->push($field);
 			}
 		}
-		return $matchedAttributes;
+		return $matchedFields;
 	}
 
-	public function remove(Field $attribute)
+	public function remove(Field $field)
 	{
-		$index = $this->indexOf($attribute);
+		$index = $this->indexOf($field);
 		if ($index !== -1) {
 			unset($this->items[$index]);
 		}
 		return $this;
 	}
 
-	public function indexOf(Field $attribute)
+	public function indexOf(Field $field)
 	{
 		$foundIndex = -1;
 		foreach ($this->items as $index => $item) {
 			/** @var Field $item */
-			if ($item->name === $attribute->name) {
+			if ($item->name === $field->name) {
 				$foundIndex = $index;
 				break;
 			}
@@ -84,12 +84,12 @@ class FieldList extends ObjectList
 		return $foundIndex;
 	}
 
-	public function indexOfName($attributeName)
+	public function indexOfName($fieldName)
 	{
 		$foundIndex = -1;
 		foreach ($this->items as $index => $item) {
 			/** @var Field $item */
-			if ($item->name === $attributeName) {
+			if ($item->name === $fieldName) {
 				$foundIndex = $index;
 				break;
 			}

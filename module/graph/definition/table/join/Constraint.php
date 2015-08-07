@@ -14,12 +14,12 @@ class Constraint
     /**
      * @var Field
      */
-    public $parentAttribute;
+    public $parentField;
 
     /**
      * @var Field
      */
-    public $childAttribute;
+    public $childField;
 
     /**
      * @var SubJoinList

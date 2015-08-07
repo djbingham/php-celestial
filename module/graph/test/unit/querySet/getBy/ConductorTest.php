@@ -758,13 +758,13 @@ EOT;
 
 		$extraSubJoin = new Definition\Table\Join\SubJoin();
 		$extraSubJoin->parentTable = $friendSubJoins->getByIndex(0)->parentTable;
-		$extraSubJoin->parentAttribute = clone $friendSubJoins->getByIndex(0)->parentAttribute;
-		$extraSubJoin->parentAttribute->name = 'forename';
-		$extraSubJoin->parentAttribute->alias = 'User.forename';
+		$extraSubJoin->parentField = clone $friendSubJoins->getByIndex(0)->parentField;
+		$extraSubJoin->parentField->name = 'forename';
+		$extraSubJoin->parentField->alias = 'User.forename';
 		$extraSubJoin->childTable = $friendSubJoins->getByIndex(0)->childTable;
-		$extraSubJoin->childAttribute = clone $friendSubJoins->getByIndex(0)->childAttribute;
-		$extraSubJoin->childAttribute->name = 'username1';
-		$extraSubJoin->childAttribute->alias = 'User_friendLink.username1';
+		$extraSubJoin->childField = clone $friendSubJoins->getByIndex(0)->childField;
+		$extraSubJoin->childField->name = 'username1';
+		$extraSubJoin->childField->alias = 'User_friendLink.username1';
 		$extraSubJoin->parentJoin = $friendLink;
 		$friendSubJoins->push($extraSubJoin);
 
@@ -863,13 +863,13 @@ EOT;
 
 		$extraSubJoin = new Definition\Table\Join\SubJoin();
 		$extraSubJoin->parentTable = $friendSubJoins->getByIndex(1)->parentTable;
-		$extraSubJoin->parentAttribute = clone $friendSubJoins->getByIndex(1)->parentAttribute;
-		$extraSubJoin->parentAttribute->name = 'username2';
-		$extraSubJoin->parentAttribute->alias = 'User_friendLink.username2';
+		$extraSubJoin->parentField = clone $friendSubJoins->getByIndex(1)->parentField;
+		$extraSubJoin->parentField->name = 'username2';
+		$extraSubJoin->parentField->alias = 'User_friendLink.username2';
 		$extraSubJoin->childTable = $friendSubJoins->getByIndex(1)->childTable;
-		$extraSubJoin->childAttribute = clone $friendSubJoins->getByIndex(1)->childAttribute;
-		$extraSubJoin->childAttribute->name = 'username';
-		$extraSubJoin->childAttribute->alias = 'User_friends.username';
+		$extraSubJoin->childField = clone $friendSubJoins->getByIndex(1)->childField;
+		$extraSubJoin->childField->name = 'username';
+		$extraSubJoin->childField->alias = 'User_friends.username';
 		$extraSubJoin->parentJoin = $friendLink;
 		$friendSubJoins->push($extraSubJoin);
 

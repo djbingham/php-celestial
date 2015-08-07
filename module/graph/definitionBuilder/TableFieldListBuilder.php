@@ -8,20 +8,20 @@ class TableFieldListBuilder
     /**
      * @var TableFieldBuilder
      */
-    private $attributeBuilder;
+    private $fieldBuilder;
 
-    public function __construct(TableFieldBuilder $attributeBuilder)
+    public function __construct(TableFieldBuilder $fieldBuilder)
     {
-        $this->attributeBuilder = $attributeBuilder;
+        $this->fieldBuilder = $fieldBuilder;
     }
 
-    public function build(Definition\Table $table, array $attributesManifest)
+    public function build(Definition\Table $table, array $fieldsManifest)
     {
-        $attributes = new Definition\Table\FieldList();
-        foreach ($attributesManifest as $attributeName => $attributeManifest) {
-            $attributeManifest['name'] = $attributeName;
-            $attributes->push($this->attributeBuilder->build($table, $attributeManifest));
+        $fields = new Definition\Table\FieldList();
+        foreach ($fieldsManifest as $fieldName => $fieldManifest) {
+            $fieldManifest['name'] = $fieldName;
+            $fields->push($this->fieldBuilder->build($table, $fieldManifest));
         }
-        return $attributes;
+        return $fields;
     }
 }

@@ -9,7 +9,7 @@ class QuerySetItem
 	/**
 	 * @var string
 	 */
-	private $resourceName;
+	private $tableName;
 
 	/**
 	 * @var MySqlQuery
@@ -21,14 +21,14 @@ class QuerySetItem
 	 */
 	private $links;
 
-	public function getResourceName()
+	public function getTableName()
 	{
-		return $this->resourceName;
+		return $this->tableName;
 	}
 
-	public function setResourceName($resourceName)
+	public function setTableName($tableName)
 	{
-		$this->resourceName = $resourceName;
+		$this->tableName = $tableName;
 		return $this;
 	}
 

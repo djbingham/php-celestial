@@ -1,5 +1,5 @@
 {
-	"attributes": {
+	"fields": {
 		"id": {
 			"type": "integer(11)",
 			"field": "id",
@@ -43,15 +43,6 @@
 			}
 		}
 	},
-	"views": {
-		"index.json": {
-			"engine": "json",
-			"path": "user/index"
-		},
-		"index.html": {
-			"engine": "moustache",
-			"path": "user/index.html"
-		}
-	},
-	"validators": []
+	"views": {},
+	"validators": {}
 }

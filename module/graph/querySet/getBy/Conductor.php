@@ -70,7 +70,7 @@ class Conductor
 		$data = $this->database->execute($query)->getData();
 		$linkData = $this->dataParser->extractLinkListData($item->getLinks(), $data);
 
-		$this->fetchedData[$item->getResourceName()] = $data;
+		$this->fetchedData[$item->getTableName()] = $data;
 		$this->applyLinkDataToQueries($linkData);
 		return $data;
 	}
@@ -83,12 +83,12 @@ class Conductor
 
 			foreach ($this->querySetToExecute as $targetQuerySetItem) {
 				/** @var QuerySetItem $targetQuerySetItem */
-				$targetResourceName = $targetQuerySetItem->getResourceName();
-				if (array_key_exists($targetResourceName, $linkData)) {
-					$targetLinkData = $linkData[$targetResourceName];
-					$linkToTargetResource = $links->getByChild($targetResourceName);
-					if ($linkToTargetResource instanceof Definition\Table\Join) {
-						$constraint = $this->buildLinkConstraint($linkToTargetResource, $targetLinkData);
+				$targetTableName = $targetQuerySetItem->getTableName();
+				if (array_key_exists($targetTableName, $linkData)) {
+					$targetLinkData = $linkData[$targetTableName];
+					$linkToTargetTable = $links->getByChild($targetTableName);
+					if ($linkToTargetTable instanceof Definition\Table\Join) {
+						$constraint = $this->buildLinkConstraint($linkToTargetTable, $targetLinkData);
 						if ($constraint instanceof Constraint) {
 							$targetQuerySetItem->getQuery()->where($constraint);
 						}
@@ -107,7 +107,7 @@ class Conductor
 				foreach ($constraintDefinition->subJoins as $subJoin) {
 					/** @var \Sloth\Module\Graph\Definition\Table\Join\SubJoin $subJoin */
 					$tableName = $subJoin->childTable->getAlias();
-					$field = $subJoin->childAttribute;
+					$field = $subJoin->childField;
 					$queryField = $this->database->value()
 						->table($tableName)
 						->field($field->name);
@@ -126,16 +126,16 @@ class Conductor
 					}
 				}
 			} else {
-				$tableName = $constraintDefinition->childAttribute->table->getAlias();
-				$attribute = $constraintDefinition->childAttribute;
+				$tableName = $constraintDefinition->childField->table->getAlias();
+				$field = $constraintDefinition->childField;
 				$queryField = $this->database->value()
 					->table($tableName)
-					->field($attribute->name);
-				$attributeValues = $linkData[$attribute->getAlias()];
+					->field($field->name);
+				$fieldValues = $linkData[$field->getAlias()];
 
 				$queryConstraint = $this->database->query()->constraint()->setSubject($queryField);
 				$queryValues = array();
-				foreach (array_unique($attributeValues) as $value) {
+				foreach (array_unique($fieldValues) as $value) {
 					$queryValues[] = $this->database->value()->guess($value);
 				}
 				$queryValue = $this->database->value()->valueList($queryValues);

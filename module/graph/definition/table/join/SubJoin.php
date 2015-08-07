@@ -19,7 +19,7 @@ class SubJoin
     /**
      * @var Field
      */
-    public $parentAttribute;
+    public $parentField;
 
     /**
      * @var Table
@@ -29,5 +29,5 @@ class SubJoin
     /**
      * @var Field
      */
-    public $childAttribute;
+    public $childField;
 }

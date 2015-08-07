@@ -20,42 +20,42 @@ class TableFieldBuilder
         $this->validatorListBuilder = $validatorListBuilder;
     }
 
-    public function build(Definition\Table $table, array $attributeManifest)
+    public function build(Definition\Table $table, array $fieldManifest)
     {
-        $attribute = $this->getCachedAttribute($table->alias, $attributeManifest['name']);
-        if (is_null($attribute)) {
-            $attribute = new Definition\Table\Field();
-            $attribute->table = $table;
-            $attribute->name = $attributeManifest['name'];
-            $attribute->alias = sprintf('%s.%s', $table->getAlias(), $attributeManifest['field']);
-            $attribute->type = $attributeManifest['type'];
-            $validatorManifest = array_key_exists('validators', $attributeManifest) ? $attributeManifest['validators'] : array();
-            $attribute->validators = $this->validatorListBuilder->build($validatorManifest);
-            $this->cacheAttribute($attribute);
+        $field = $this->getCachedField($table->alias, $fieldManifest['name']);
+        if (is_null($field)) {
+            $field = new Definition\Table\Field();
+            $field->table = $table;
+            $field->name = $fieldManifest['name'];
+            $field->alias = sprintf('%s.%s', $table->getAlias(), $fieldManifest['field']);
+            $field->type = $fieldManifest['type'];
+            $validatorManifest = array_key_exists('validators', $fieldManifest) ? $fieldManifest['validators'] : array();
+            $field->validators = $this->validatorListBuilder->build($validatorManifest);
+            $this->cacheField($field);
         }
-        return $attribute;
+        return $field;
     }
 
-    private function cacheAttribute(Definition\Table\Field $attribute)
+    private function cacheField(Definition\Table\Field $field)
     {
-        $tableName = $attribute->table->name;
-        $this->cache[$tableName][$attribute->name] = $attribute;
+        $tableName = $field->table->name;
+        $this->cache[$tableName][$field->name] = $field;
         return $this;
     }
 
     /**
      * @param string $tableName
-     * @param string $attributeName
+     * @param string $fieldName
      * @return \Sloth\Module\Graph\Definition\Table\Field
      */
-    private function getCachedAttribute($tableName, $attributeName)
+    private function getCachedField($tableName, $fieldName)
     {
         if (!array_key_exists($tableName, $this->cache)) {
             return null;
         }
-        if (!array_key_exists($attributeName, $this->cache[$tableName])) {
+        if (!array_key_exists($fieldName, $this->cache[$tableName])) {
             return null;
         }
-        return $this->cache[$tableName][$attributeName];
+        return $this->cache[$tableName][$fieldName];
     }
 }

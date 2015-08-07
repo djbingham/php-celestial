@@ -85,7 +85,7 @@ class TableDefinitionBuilder
 			$table->alias = $manifest['name'];
 		}
 		$table->name = $manifest['name'];
-		$table->fields = $this->tableFieldListBuilder->build($table, $manifest['attributes']);
+		$table->fields = $this->tableFieldListBuilder->build($table, $manifest['fields']);
 		$table->links = $this->linkListBuilder->build($table, $manifest['links']);
 		$table->validators = $this->validatorListBuilder->build($manifest['validators']);
 		$table->views = $this->viewListBuilder->build($manifest['views']);
@@ -110,8 +110,8 @@ class TableDefinitionBuilder
 
 	private function padManifest(array $manifest)
 	{
-		if (!array_key_exists('attributes', $manifest)) {
-			$manifest['attributes'] = array();
+		if (!array_key_exists('fields', $manifest)) {
+			$manifest['fields'] = array();
 		}
 		if (!array_key_exists('links', $manifest)) {
 			$manifest['links'] = array();

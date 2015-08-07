@@ -134,53 +134,53 @@ class Join
 			$join->subJoins->push($subJoin);
 		}
 
-		$parentAttribute = $this->getParentAttributeFromSubJoins($join->subJoins);
-		$childAttribute = $this->getChildAttributeFromSubJoins($join->subJoins);
+		$parentField = $this->getParentFieldFromSubJoins($join->subJoins);
+		$childField = $this->getChildFieldFromSubJoins($join->subJoins);
 
-		$join->parentAttribute = $this->parentTable->fields->getByName($parentAttribute->name);
-		$join->childAttribute = $this->childTable->fields->getByName($childAttribute->name);
+		$join->parentField = $this->parentTable->fields->getByName($parentField->name);
+		$join->childField = $this->childTable->fields->getByName($childField->name);
 
 		return $join;
 	}
 
-	private function getParentAttributeFromSubJoins(SubJoinList $joins)
+	private function getParentFieldFromSubJoins(SubJoinList $joins)
 	{
-		$parentAttribute = null;
+		$parentField = null;
 		/** @var SubJoin $join */
 		foreach ($joins as $join) {
 			if ($join->parentTable->name === $this->parentTable->name) {
-				$parentAttribute = $join->parentAttribute;
+				$parentField = $join->parentField;
 				break;
 			} elseif ($join->childTable->name === $this->parentTable->name) {
-				$parentAttribute = $join->childAttribute;
+				$parentField = $join->childField;
 				break;
 			}
 		}
-		if (is_null($parentAttribute)) {
+		if (is_null($parentField)) {
 			throw new InvalidTableException(
-				'No parent attribute from table found in sub-joins: ' . json_encode($joins)
+				'No parent field from table found in sub-joins: ' . json_encode($joins)
 			);
 		}
-		return $parentAttribute;
+		return $parentField;
 	}
 
-	private function getChildAttributeFromSubJoins(SubJoinList $joins)
+	private function getChildFieldFromSubJoins(SubJoinList $joins)
 	{
-		$childAttribute = null;
+		$childField = null;
 		/** @var SubJoin $join */
 		foreach ($joins as $join) {
 			if ($join->parentTable->name === $this->childTable->name) {
-				$childAttribute = $join->parentAttribute;
+				$childField = $join->parentField;
 			} elseif ($join->childTable->name === $this->childTable->name) {
-				$childAttribute = $join->childAttribute;
+				$childField = $join->childField;
 			}
 		}
-		if (is_null($childAttribute)) {
+		if (is_null($childField)) {
 			throw new InvalidTableException(
-				'No child attribute from table found in sub-joins: ' . json_encode($joins)
+				'No child field from table found in sub-joins: ' . json_encode($joins)
 			);
 		}
-		return $childAttribute;
+		return $childField;
 	}
 
 	private function buildSubJoin(Constraint $parentJoin, TableList $tables)
@@ -200,25 +200,25 @@ class Join
 		foreach ($this->joinManifest as $parentAlias => $childAlias) {
 			$parentTableAlias = rtrim(strstr($parentAlias, '.', true), '.');
 			$parentTableAlias = $this->getTableNameFromAlias($parentTableAlias);
-			$parentAttributeAlias = ltrim(strstr($parentAlias, '.'), '.');
+			$parentFieldAlias = ltrim(strstr($parentAlias, '.'), '.');
 
 			$childTableAlias = rtrim(strstr($childAlias, '.', true), '.');
 			$childTableAlias = $this->getTableNameFromAlias($childTableAlias);
-			$childAttributeAlias = ltrim(strstr($childAlias, '.'), '.');
+			$childFieldAlias = ltrim(strstr($childAlias, '.'), '.');
 
 			if ($parentTableAlias === $firstTable->getAlias()) {
 				$join->parentTable = $firstTable;
-				$join->parentAttribute = $this->buildTableAttribute($firstTable, $parentAttributeAlias);
+				$join->parentField = $this->buildTableField($firstTable, $parentFieldAlias);
 				$join->childTable = $secondTable;
-				$join->childAttribute = $this->buildTableAttribute($secondTable, $childAttributeAlias);
-				$join->childTable->fields->push($join->childAttribute);
+				$join->childField = $this->buildTableField($secondTable, $childFieldAlias);
+				$join->childTable->fields->push($join->childField);
 				break;
 			} elseif ($childTableAlias === $secondTable->getAlias()) {
 				$join->childTable = $secondTable;
-				$join->childAttribute = $this->buildTableAttribute($secondTable, $childAttributeAlias);
+				$join->childField = $this->buildTableField($secondTable, $childFieldAlias);
 				$join->parentTable = $firstTable;
-				$join->parentAttribute = $this->buildTableAttribute($firstTable, $parentAttributeAlias);
-				$join->parentTable->fields->push($join->parentAttribute);
+				$join->parentField = $this->buildTableField($firstTable, $parentFieldAlias);
+				$join->parentTable->fields->push($join->parentField);
 				break;
 			}
 		}
@@ -230,28 +230,28 @@ class Join
 	{
 		$joins = new ConstraintList();
 		foreach ($this->joinManifest as $parentAlias => $childAlias) {
-			$parentAttributeName = ltrim(strstr($parentAlias, '.'), '.');
-			$parentAttribute = $this->parentTable->fields->getByName($parentAttributeName);
+			$parentFieldName = ltrim(strstr($parentAlias, '.'), '.');
+			$parentField = $this->parentTable->fields->getByName($parentFieldName);
 
-			$childAttributeName = ltrim(strstr($childAlias, '.'), '.');
-			$childAttribute = $this->childTable->fields->getByName($childAttributeName);
+			$childFieldName = ltrim(strstr($childAlias, '.'), '.');
+			$childField = $this->childTable->fields->getByName($childFieldName);
 
 			$join = new Constraint();
 			$join->link = $this;
-			$join->parentAttribute = $parentAttribute;
-			$join->childAttribute = $childAttribute;
+			$join->parentField = $parentField;
+			$join->childField = $childField;
 			$joins->push($join);
 		}
 		return $joins;
 	}
 
-	private function buildTableAttribute(Table $table, $attributeName)
+	private function buildTableField(Table $table, $fieldName)
 	{
-		$attribute = new Field();
-		$attribute->table = $table;
-		$attribute->name = $attributeName;
-		$attribute->alias = sprintf('%s.%s', $table->getAlias(), $attributeName);
-		return $attribute;
+		$field = new Field();
+		$field->table = $table;
+		$field->name = $fieldName;
+		$field->alias = sprintf('%s.%s', $table->getAlias(), $fieldName);
+		return $field;
 	}
 
 	private function getTableNameFromAlias($alias)
