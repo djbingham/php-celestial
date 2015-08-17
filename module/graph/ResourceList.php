@@ -57,7 +57,11 @@ class ResourceList implements ResourceListInterface
 
 	public function getByIndex($index)
 	{
-		return $this->resources[$index];
+		$item = null;
+		if (array_key_exists($index, $this->resources)) {
+			$item = $this->resources[$index];
+		}
+		return $item;
 	}
 
 	public function save()

@@ -17,9 +17,14 @@ class QuerySetItem
 	private $query;
 
 	/**
-	 * @var \Sloth\Module\Graph\Definition\Table\JoinList
+	 * @var Definition\Table\JoinList
 	 */
 	private $links;
+
+	/**
+	 * @var Definition\Table\Join
+	 */
+	private $parentLink;
 
 	public function getTableName()
 	{
@@ -51,6 +56,17 @@ class QuerySetItem
 	public function setLinks($links)
 	{
 		$this->links = $links;
+		return $this;
+	}
+
+	public function getParentLink()
+	{
+		return $this->parentLink;
+	}
+
+	public function setParentLink($parentLink)
+	{
+		$this->parentLink = $parentLink;
 		return $this;
 	}
 }

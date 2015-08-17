@@ -69,6 +69,7 @@ class Factory
 	public function resourceDefinitionBuilder()
 	{
 		$validatorListBuilder = new ValidatorListBuilder();
+		$attributeListBuilder = null;
 		$viewListBuilder = new ViewListBuilder();
 		$tableFieldBuilder = new TableFieldBuilder($validatorListBuilder);
 
@@ -87,6 +88,7 @@ class Factory
 			->setSubBuilders(array(
 				'tableBuilder' => $tableBuilder,
 				'validatorListBuilder' => $validatorListBuilder,
+				'attributeListBuilder' => $attributeListBuilder,
 				'viewListBuilder' => $viewListBuilder
 			));
 

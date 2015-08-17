@@ -7,6 +7,7 @@ use Sloth\Module\Graph\QuerySet\QuerySetItem;
 use Sloth\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 use SlothMySql\QueryBuilder\Query\Constraint;
+use SlothMySql\QueryBuilder\Query\Select;
 
 class Conductor
 {
@@ -66,13 +67,74 @@ class Conductor
 
 	private function executeQuerySetItem(QuerySetItem $item)
 	{
+		/** @var Select $query */
 		$query = $item->getQuery();
 		$data = $this->database->execute($query)->getData();
-		$linkData = $this->dataParser->extractLinkListData($item->getLinks(), $data);
+
+		$newConstraint = $this->buildConstraintForReQuery($item, $data);
+		if (!empty($newConstraint)) {
+			$newQuery = clone $query;
+			$newQuery->setConstraint($newConstraint);
+			$data = $this->database->execute($newQuery)->getData();
+		}
 
 		$this->fetchedData[$item->getTableName()] = $data;
+
+		$linkData = $this->dataParser->extractLinkListData($item->getLinks(), $data);
 		$this->applyLinkDataToQueries($linkData);
+
 		return $data;
+	}
+
+	private function buildConstraintForReQuery(QuerySetItem $querySetItem, array $data)
+	{
+		$constraints = array();
+		$masterConstraint = null;
+		$joinFromParent = $querySetItem->getParentLink();
+
+		if ($joinFromParent !== null) {
+			/** @var Definition\Table\Join\Constraint $constraintDefinition */
+			foreach ($joinFromParent->getConstraints() as $constraintDefinition) {
+				if (!empty($constraintDefinition->subJoins)) {
+					$firstSubJoin = $constraintDefinition->subJoins->getByParentTableAlias($joinFromParent->parentTable->getAlias());
+					$joinToParentField = $firstSubJoin->childField;
+				} else {
+					$joinToParentField = $constraintDefinition->childField;
+				}
+
+				$fieldAlias = $joinToParentField->getAlias();
+				$reFilterData = array();
+				foreach ($data as $rowData) {
+					if (array_key_exists($fieldAlias, $rowData)) {
+						$reFilterData[] = $rowData[$fieldAlias];
+					}
+				}
+				if (!empty($reFilterData)) {
+					$reFilterData = array_unique($reFilterData);
+					$constraints[] = $this->buildQueryConstraintForValueList($joinToParentField, $reFilterData);
+				}
+			}
+			$masterConstraint = array_shift($constraints);
+			foreach ($constraints as $constraint) {
+				$masterConstraint->andWhere($constraint);
+			}
+		}
+
+		return $masterConstraint;
+	}
+
+	private function buildQueryConstraintForValueList(Definition\Table\Field $field, array $values)
+	{
+		$queryValues = array();
+		foreach ($values as $index => $value) {
+			$queryValues[$index] = $this->database->value()->guess($value);
+		}
+		$queryField = $this->database->value()->table($field->table->getAlias())->field($field->name);
+		$queryValue = $this->database->value()->guess($queryValues);
+		$constraint = $this->database->query()->constraint()
+			->setSubject($queryField)
+			->in($queryValue);
+		return $constraint;
 	}
 
 	private function applyLinkDataToQueries(array $linkData)

@@ -49,7 +49,11 @@ abstract class ObjectList implements \Iterator
 
 	public function getByIndex($index)
 	{
-		return $this->items[$index];
+		$item = null;
+		if (array_key_exists($index, $this->items)) {
+			$item = $this->items[$index];
+		}
+		return $item;
 	}
 
 	public function getByProperty($propertyName, $propertyValue)

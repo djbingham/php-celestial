@@ -9,7 +9,7 @@
 
 		<dt>Resource #<?= $index ?></dt>
 		<dd>
-			<?php echo renderAttributeList($resource->getAttributes()); ?>
+			<?= renderAttributeList($resource->getAttributes()); ?>
 		</dd>
 
 	<?php endforeach ?>
@@ -35,4 +35,3 @@ function renderAttributeList(array $attributes) {
 	return $string;
 }
 ?>
-

@@ -49,6 +49,10 @@
 		"list.json": {
 			"engine": "json",
 			"path": "default/list.json"
+		},
+		"simpleSearch.php": {
+			"engine": "php",
+			"path": "default/simpleSearchForm.php"
 		}
 	}
 }

@@ -50,25 +50,17 @@ class Connection extends \SlothMySql\Connection\MySqli
 		return $response;
 	}
 
-	public function connect()
+	public function connect($host = null, $user = null, $password = null, $database = null, $port = null, $socket = null)
 	{
 		return true;
 	}
 
-	public function autocommit()
+	public function autocommit($mode)
 	{
 		return true;
 	}
 
-	public function begin()
-	{
-		$this->assertNextExpectedResponseEquals(true);
-		array_shift($this->expectedQuerySequence);
-		array_shift($this->mockGetDataSequence);
-		return true;
-	}
-
-	public function commit()
+	public function begin($flags = null, $name = null)
 	{
 		$this->assertNextExpectedResponseEquals(true);
 		array_shift($this->expectedQuerySequence);
@@ -76,7 +68,15 @@ class Connection extends \SlothMySql\Connection\MySqli
 		return true;
 	}
 
-	public function rollback()
+	public function commit($flags = null, $name = null)
+	{
+		$this->assertNextExpectedResponseEquals(true);
+		array_shift($this->expectedQuerySequence);
+		array_shift($this->mockGetDataSequence);
+		return true;
+	}
+
+	public function rollback($flags = null, $name = null)
 	{
 		$this->assertNextExpectedResponseEquals(true);
 		array_shift($this->expectedQuerySequence);

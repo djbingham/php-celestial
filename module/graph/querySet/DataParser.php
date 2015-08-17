@@ -53,19 +53,24 @@ class DataParser
 		return $values;
 	}
 
-	public function formatResourceData(array $rawData, Definition\Table $resourceDefinition)
+	public function formatResourceData(array $rawData, Definition\Table $tableDefinition, array $filters = array())
 	{
-		$resourceData = $this->extractResourceData($resourceDefinition, $rawData);
+		if (!empty($rawData)) {
+			$resourceData = $this->extractResourceData($tableDefinition, $rawData);
+			$resourceData = $this->filterResourceData($resourceData, $tableDefinition, $filters);
+		} else {
+			$resourceData = array();
+		}
 		return $resourceData;
 	}
 
-	private function extractResourceData(Definition\Table $resourceDefinition, array $rawData, array $filters = array())
+	private function extractResourceData(Definition\Table $tableDefinition, array $rawData, array $linkFilters = array())
 	{
 		$fieldData = array();
-		foreach ($rawData[$resourceDefinition->getAlias()] as $rowIndex => $rowData) {
+		foreach ($rawData[$tableDefinition->getAlias()] as $rowIndex => $rowData) {
 			/** @var \Sloth\Module\Graph\Definition\Table\Field $field */
-			if ($this->rowMatchesExpectedData($rowData, $filters)) {
-				foreach ($resourceDefinition->fields as $field) {
+			if ($this->rowMatchesExpectedData($rowData, $linkFilters)) {
+				foreach ($tableDefinition->fields as $field) {
 					$fieldAlias = $field->getAlias();
 					if (array_key_exists($fieldAlias, $rowData)) {
 						$fieldData[$rowIndex][$field->name] = $rowData[$fieldAlias];
@@ -73,7 +78,7 @@ class DataParser
 				}
 			}
 			/** @var \Sloth\Module\Graph\Definition\Table\Join $link */
-			foreach ($resourceDefinition->links as $link) {
+			foreach ($tableDefinition->links as $link) {
 				if (in_array($link->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
 					foreach ($link->getChildTable()->fields as $field) {
 						$fieldAlias = $field->getAlias();
@@ -82,9 +87,9 @@ class DataParser
 						}
 					}
 				} else {
-					$linkFilters = $this->getLinkData($link, $rowData);
-					if ($this->rowMatchesExpectedData($rowData, $filters)) {
-						$childData = $this->extractResourceData($link->getChildTable(), $rawData, $linkFilters);
+					$childLinkFilters = $this->getLinkData($link, $rowData);
+					if ($this->rowMatchesExpectedData($rowData, $linkFilters)) {
+						$childData = $this->extractResourceData($link->getChildTable(), $rawData, $childLinkFilters);
 
 						$fieldData[$rowIndex][$link->name] = array();
 						foreach ($childData as $childRow) {
@@ -118,9 +123,11 @@ class DataParser
 				foreach ($constraint->subJoins as $subJoin) {
 					$parentAlias = $subJoin->parentField->getAlias();
 					$childAlias = $subJoin->childField->getAlias();
-					$value = $parentRowData[$parentAlias];
-					if ($subJoin->parentTable->getAlias() === $link->parentTable->getAlias()) {
-						$linkData[$childAlias] = $value;
+					if (array_key_exists($parentAlias, $parentRowData)) {
+						$value = $parentRowData[$parentAlias];
+						if ($subJoin->parentTable->getAlias() === $link->parentTable->getAlias()) {
+							$linkData[$childAlias] = $value;
+						}
 					}
 				}
 			} else {
@@ -131,5 +138,64 @@ class DataParser
 			}
 		}
 		return $linkData;
+	}
+
+	private function filterResourceData(array $resourceData, Definition\Table $tableDefinition, array $filters)
+	{
+		$filteredData = array();
+		while (!empty($resourceData)) {
+			$resourceRow = array_shift($resourceData);
+			if ($this->resourceRowContainsRequiredAttributes($resourceRow, $tableDefinition, $filters)) {
+				$filteredData[] = $resourceRow;
+			}
+		}
+		return $filteredData;
+	}
+
+	/**
+	 * Check whether a given resource row contains all of the links required to have matched a set of filters.
+	 * Returns false if any linked table had a filter set and has no data in the resource row.
+	 * Note that we do not need to check every table field, since all fields of a table are queried together.
+	 *
+	 * @param array $resourceRow
+	 * @param Definition\Table $tableDefinition
+	 * @param array $filters
+	 * @return bool
+	 */
+	private function resourceRowContainsRequiredAttributes(array $resourceRow, Definition\Table $tableDefinition, array $filters)
+	{
+		$filterCount = 0;
+		$matchedFilterCount = 0;
+		/** @var Definition\Table\Join $link */
+		foreach ($tableDefinition->links as $link) {
+			if (array_key_exists($link->name, $filters)) {
+				$filterCount++;
+				if (array_key_exists($link->name, $resourceRow)) {
+					if (in_array($link->type, array(Definition\Table\Join::ONE_TO_MANY, Definition\Table\Join::MANY_TO_MANY))) {
+						$resourceRow[$link->name] = $this->filterResourceSubRowsByRequiredAttributes($resourceRow[$link->name], $link->getChildTable(), $filters[$link->name]);
+						if (!empty($resourceRow[$link->name])) {
+							$matchedFilterCount++;
+							break;
+						}
+					} elseif ($this->resourceRowContainsRequiredAttributes($resourceRow[$link->name], $link->getChildTable(), $filters[$link->name])) {
+						$matchedFilterCount++;
+						break;
+					}
+				}
+			}
+		}
+		return $filterCount === $matchedFilterCount;
+	}
+
+	private function filterResourceSubRowsByRequiredAttributes(array $rows, Definition\Table $tableDefinition, array $filters)
+	{
+		$filteredRows = array();
+		while (!empty($rows)) {
+			$row = array_shift($rows);
+			if ($this->resourceRowContainsRequiredAttributes($row, $tableDefinition, $filters)) {
+				$filteredRows[] = $row;
+			}
+		}
+		return $filteredRows;
 	}
 }

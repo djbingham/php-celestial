@@ -19,4 +19,14 @@ class ViewList extends ObjectList
 	{
 		return parent::getByIndex($index);
 	}
+
+	/**
+	 * @param $propertyName
+	 * @param $value
+	 * @return View
+	 */
+	public function getByProperty($propertyName, $value)
+	{
+		return parent::getByProperty($propertyName, $value);
+	}
 }

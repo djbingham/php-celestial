@@ -50,6 +50,12 @@ class Request
 	{
         $requestUri = urldecode($_SERVER['REQUEST_URI']);
 		$urlParts = parse_url(urldecode($requestUri));
+		if (!array_key_exists('query', $urlParts)) {
+			$urlParts['query'] = '';
+		}
+		if (!array_key_exists('fragment', $urlParts)) {
+			$urlParts['fragment'] = '';
+		}
         $properties = array(
             'method' => strtolower($_SERVER['REQUEST_METHOD']),
             'uri' => urldecode($requestUri),
@@ -95,7 +101,7 @@ class Request
 
 	public function path()
 	{
-		return $this->path;
+		return rtrim($this->path, '/');
 	}
 
 	public function queryString()

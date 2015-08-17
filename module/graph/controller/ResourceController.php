@@ -67,13 +67,23 @@ abstract class ResourceController extends RestfulController
 		$parsedRequest = $requestParser->parse($request, $route);
 		$viewName = $parsedRequest->getViewName();
 		$resourceId = $parsedRequest->getResourceId();
+		$resourceName = $parsedRequest->getResourceRoute();
+		$resourceManifest = $parsedRequest->getManifest();
 
-		if (preg_match('/\./', $viewName)) {
-			$extensionStartPos = strrpos($viewName, '.');
-			$function = lcfirst(substr($viewName, 0, $extensionStartPos));
-		} else {
-			$function = $viewName;
-		}
+		$resourceDefinitionBuilder = $resourceModule->resourceDefinitionBuilder();
+		$resourceDefinition = $resourceDefinitionBuilder->buildFromName($resourceName);
+		$resourceFactory = $resourceModule->resourceFactory($resourceDefinition->table);
+
+		$view = $resourceDefinition->views->getByProperty('name', $viewName);
+		$function = $view->getFunctionName();
+		$extension = $view->getPathExtension();
+
+		$renderer = new Graph\Renderer($this->app, array(
+			'moustache' => new Graph\Renderer\Mustache(),
+			'php' => new Graph\Renderer\Php(),
+			'json' => new Graph\Renderer\Json()
+		));
+		$renderer->setResourceManifest($resourceManifest);
 
 		switch ($function) {
 //			case 'create':
@@ -88,15 +98,12 @@ abstract class ResourceController extends RestfulController
 //				$resource = $this->getById($resourceFactory, $resourceId);
 //				$output = $resourceModule->renderer()->renderUpdateForm($resourceFactory, $resource, $outputFormat);
 //				break;
-//			case 'simpleSearch':
-//				if (!empty($requestParams)) {
-//					$attributes = $this->convertRequestParamsToSimpleSearchFilters($requestParams);
-//					$resourceList = $resourceFactory->getBy($attributes);
-//					$output = $resourceModule->renderer()->renderResourceList($resourceFactory, $resourceList, $outputFormat);
-//				} else {
-//					$output = $resourceModule->renderer()->renderSimpleSearchForm($resourceFactory, $outputFormat);
-//				}
-//				break;
+			case 'simpleSearch':
+				$output = $renderer->render($view, array(
+					'resourceName' => $resourceName,
+					'resourceDefinition' => $resourceDefinition
+				));
+				break;
 //			case 'search':
 //				if (array_key_exists('filters', $requestParams)) {
 //					$filters = $this->stripUnusedFilters($requestParams['filters']);
@@ -110,12 +117,6 @@ abstract class ResourceController extends RestfulController
 //				$output = $resourceModule->renderer()->renderDefinition($resourceFactory, $outputFormat);
 //				break;
 			default:
-				$resourceName = $parsedRequest->getResourceRoute();
-				$resourceDefinitionBuilder = $resourceModule->resourceDefinitionBuilder();
-				$resourceDefinition = $resourceDefinitionBuilder->buildFromName($resourceName);
-				$resourceFactory = $resourceModule->resourceFactory($resourceDefinition->table);
-
-				$resourceManifest = $parsedRequest->getManifest();
 				if (isset($resourceId)) {
 					$filters = array(
 						'id' => $resourceId
@@ -124,15 +125,6 @@ abstract class ResourceController extends RestfulController
 					$filters = $this->convertRequestParamsToSimpleSearchFilters($requestParams);
 				}
 				$resourceList = $resourceFactory->getBy($resourceDefinition->attributes, $filters);
-				$renderer = new Graph\Renderer($this->app, array(
-					'moustache' => new Graph\Renderer\Mustache(),
-					'php' => new Graph\Renderer\Php(),
-					'json' => new Graph\Renderer\Json()
-				));
-				$renderer->setResourceManifest($resourceManifest);
-				$view = $resourceDefinition->views->getByProperty('name', $viewName);
-				$extensionStartPos = strrpos($view->path, '.') + 1;
-				$extension = strToLower(substr($view->path, $extensionStartPos));
 				$output = $renderer->render($view, array(
 					'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
 				));
@@ -154,8 +146,13 @@ abstract class ResourceController extends RestfulController
 	{
 		$attributes = array();
 		foreach ($requestParams as $name => $value) {
-			if ((is_string($value) && strlen($value) > 0) || (is_array($value) && count($value) > 0)) {
+			if ((is_string($value) && strlen($value) > 0)) {
 				$attributes[$name] = $value;
+			} elseif ((is_array($value) && count($value) > 0)) {
+				$subAttributes = $this->convertRequestParamsToSimpleSearchFilters($value);
+				if (!empty($subAttributes)) {
+					$attributes[$name] = $subAttributes;
+				}
 			}
 		}
 		return $attributes;
@@ -252,11 +249,12 @@ abstract class ResourceController extends RestfulController
 	{
 		$tableManifestValidator = new Graph\TableManifestValidator();
 		$resourceManifestValidator = new Graph\ResourceManifestValidator();
-		return $this->getResourceModule()
-			->setResourceManifestDirectory($this->getResourceManifestDirectory())
+		$module = $this->getResourceModule();
+		$module->setResourceManifestDirectory($this->getResourceManifestDirectory())
 			->setTableManifestDirectory($this->getTableManifestDirectory())
 			->setResourceManifestValidator($resourceManifestValidator)
 			->setTableManifestValidator($tableManifestValidator);
+		return $module;
 	}
 
 	/**

@@ -76,7 +76,7 @@ class Orchestrator
 			->setDataParser($this->dataParser)
 			->setQuerySet($querySet)
 			->conduct();
-		$resourceData = $this->dataParser->formatResourceData($data, $resourceDefinition);
+		$resourceData = $this->dataParser->formatResourceData($data, $resourceDefinition, $filters);
 		return $resourceData;
 	}
 }

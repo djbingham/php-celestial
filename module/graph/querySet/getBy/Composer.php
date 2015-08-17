@@ -40,7 +40,7 @@ class Composer
 
 	public function setResource(Definition\Table $tableDefinition)
 	{
-		$this->resourceDefinition = $tableDefinition;
+		$this->tableDefinition = $tableDefinition;
 		return $this;
 	}
 
@@ -52,29 +52,33 @@ class Composer
 
 	public function compose()
 	{
-		return $this->buildQuerySetForResourceAndDescendants($this->resourceDefinition, $this->filters);
+		return $this->buildQuerySetForResourceAndDescendants($this->tableDefinition, $this->filters);
 	}
 
-	private function buildQuerySetForResourceAndDescendants(Definition\Table $tableDefinition, array $filters)
+	private function buildQuerySetForResourceAndDescendants(Definition\Table $tableDefinition, array $filters, Definition\Table\Join $parentLink = null)
 	{
 		$querySet = new QuerySet();
 		$querySetItem = new QuerySetItem();
 		$querySetItem->setTableName($tableDefinition->getAlias())
 			->setQuery($this->buildQueryForResource($tableDefinition, $filters))
-			->setLinks($this->getLinksToManyRowsFromResourceSet($tableDefinition));
+			->setLinks($this->getLinksToManyRowsFromTable($tableDefinition));
+		if ($parentLink === null) {
+			$querySetItem->setParentLink($parentLink);
+		}
 		$querySet->push($querySetItem);
 
-		$linksToManyRows = $this->getLinksToManyRowsFromResourceSet($tableDefinition);
+		$linksToManyRows = $this->getLinksToManyRowsFromTable($tableDefinition);
+		/** @var Definition\Table\Join $link */
 		foreach ($linksToManyRows as $link) {
 			if (array_key_exists($link->name, $filters)) {
 				$descendantFilters = $filters[$link->name];
 			} else {
 				$descendantFilters = array();
 			}
-			$descendantQuerySet = $this->buildQuerySetForLinkDescendants($link, $descendantFilters);
+			$descendantQuerySet = $this->buildQuerySetForLinkDescendants($link, $descendantFilters, $link);
 			if (!is_null($descendantQuerySet)) {
-				foreach ($descendantQuerySet as $querySetItem) {
-					$querySet->push($querySetItem);
+				foreach ($descendantQuerySet as $descendantQuerySetItem) {
+					$querySet->push($descendantQuerySetItem);
 				}
 			}
 		}
@@ -82,13 +86,13 @@ class Composer
 		return $querySet;
 	}
 
-	private function getLinksToManyRowsFromResourceSet(Definition\Table $tableDefinition)
+	private function getLinksToManyRowsFromTable(Definition\Table $tableDefinition)
 	{
 		$foundLinks = new Definition\Table\JoinList();
 		foreach ($tableDefinition->links as $link) {
 			/** @var \Sloth\Module\Graph\Definition\Table\Join $link */
 			if (in_array($link->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
-				$childLinks = $this->getLinksToManyRowsFromResourceSet($link->getChildTable());
+				$childLinks = $this->getLinksToManyRowsFromTable($link->getChildTable());
 				foreach ($childLinks as $childLink) {
 					$foundLinks->push($childLink);
 				}
@@ -265,7 +269,7 @@ class Composer
 		if ($link->type === Definition\Table\Join::MANY_TO_MANY) {
 			$querySet = $this->buildQuerySetForSubJoinedResourceAndDescendants($link, $filters);
 		} elseif ($link->type === Definition\Table\Join::ONE_TO_MANY) {
-			$querySet = $this->buildQuerySetForResourceAndDescendants($childTable, $filters);
+			$querySet = $this->buildQuerySetForResourceAndDescendants($childTable, $filters, $link);
 		}
 		return $querySet;
 	}
@@ -277,16 +281,19 @@ class Composer
 		$querySetItem = new QuerySetItem();
 		$querySetItem->setTableName($tableDefinition->getAlias())
 			->setQuery($this->buildQueryForSubJoinsAndResource($link, $filters))
-			->setLinks($this->getLinksToManyRowsFromResourceSet($tableDefinition));
+			->setLinks($this->getLinksToManyRowsFromTable($tableDefinition));
+		if ($link !== null) {
+			$querySetItem->setParentLink($link);
+		}
 		$querySet->push($querySetItem);
 
-		foreach ($tableDefinition->links as $link) {
-			if (array_key_exists($link->name, $filters)) {
-				$descendantFilters = $filters[$link->name];
+		foreach ($tableDefinition->links as $childLink) {
+			if (array_key_exists($childLink->name, $filters)) {
+				$descendantFilters = $filters[$childLink->name];
 			} else {
 				$descendantFilters = array();
 			}
-			foreach ($this->buildQuerySetForLinkDescendants($link, $descendantFilters) as $querySetItem) {
+			foreach ($this->buildQuerySetForLinkDescendants($childLink, $descendantFilters) as $querySetItem) {
 				$querySet->push($querySetItem);
 			}
 		}
