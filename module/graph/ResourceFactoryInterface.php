@@ -24,10 +24,11 @@ interface ResourceFactoryInterface
 
     /**
      * Search the database for resources matching the supplied filters and options as well as this factory's manifest
+     * @param array $attributes
      * @param array $filters
      * @return ResourceList
      */
-    public function search(array $filters);
+    public function search(array $attributes, array $filters);
 
     /**
      * Create a new Resource with supplied attribute values

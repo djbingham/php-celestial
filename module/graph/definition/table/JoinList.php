@@ -21,9 +21,15 @@ class JoinList extends ObjectList
 	}
 
 	/**
-	 * @param string $name
+	 * @param string $propertyName
+	 * @param mixed $propertyValue
 	 * @return Join
 	 */
+	public function getByProperty($propertyName, $propertyValue)
+	{
+		return parent::getByProperty($propertyName, $propertyValue);
+	}
+
 	public function getByName($name)
 	{
 		return $this->getByProperty('name', $name);

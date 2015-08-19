@@ -104,15 +104,31 @@ abstract class ResourceController extends RestfulController
 					'resourceDefinition' => $resourceDefinition
 				));
 				break;
-//			case 'search':
-//				if (array_key_exists('filters', $requestParams)) {
-//					$filters = $this->stripUnusedFilters($requestParams['filters']);
-//					$resourceList = $resourceFactory->search($filters);
-//					$output = $resourceModule->renderer()->renderResourceList($resourceFactory, $resourceList, $outputFormat);
-//				} else {
-//					$output = $resourceModule->renderer()->renderSearchForm($resourceFactory, $outputFormat);
-//				}
-//				break;
+			case 'search':
+				if (array_key_exists('filters', $requestParams)) {
+					$filters = $this->stripUnusedFilters($requestParams['filters']);
+					$resourceList = $resourceFactory->search($resourceDefinition->attributes, $filters);
+					$output = $renderer->render($view, array(
+						'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
+					));
+				} else {
+					$output = $renderer->render($view, array(
+						'resourceName' => $resourceName,
+						'resourceDefinition' => $resourceDefinition
+					));
+				}
+				break;
+			case 'searchResult':
+				if (array_key_exists('filters', $requestParams)) {
+					$filters = $this->stripUnusedFilters($requestParams['filters']);
+				} else {
+					$filters = array();
+				}
+				$resourceList = $resourceFactory->search($resourceDefinition->attributes, $filters);
+				$output = $renderer->render($view, array(
+					'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
+				));
+				break;
 //			case 'definition':
 //				$output = $resourceModule->renderer()->renderDefinition($resourceFactory, $outputFormat);
 //				break;
@@ -165,7 +181,7 @@ abstract class ResourceController extends RestfulController
 				unset($filters[$index]);
 			}
 		}
-		return $filters;
+		return array_values($filters);
 	}
 
 	protected function post(Request $request, $route)

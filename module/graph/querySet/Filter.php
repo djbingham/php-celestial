@@ -11,6 +11,11 @@ class Filter
 	public $field;
 
 	/**
+	 * @var string
+	 */
+	public $comparator = '=';
+
+	/**
 	 * @var mixed
 	 */
 	public $value;

@@ -31,7 +31,13 @@ class QuerySetFactory
 
 	public function search()
 	{
-//		return new QuerySet\Search($this->queryFactory);
+		$orchestrator = new QuerySet\Orchestrator();
+		$orchestrator->setDatabase($this->database)
+			->setFilterParser(new QuerySet\ComplexFilterParser())
+			->setDataParser(new QuerySet\DataParser())
+			->setComposer(new QuerySet\GetBy\Composer())
+			->setConductor(new QuerySet\GetBy\Conductor());
+		return $orchestrator;
 	}
 
 	public function insertRecord()

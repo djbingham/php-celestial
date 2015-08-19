@@ -3,7 +3,7 @@ namespace Sloth\Module\Graph\QuerySet;
 
 use Sloth\Module\Graph\Definition;
 
-class FilterParser
+class FilterParser implements FilterParserInterface
 {
 	public function parse(Definition\Table $resourceDefinition, array $filters)
 	{

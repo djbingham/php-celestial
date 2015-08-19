@@ -53,6 +53,14 @@
 		"simpleSearch.php": {
 			"engine": "php",
 			"path": "default/simpleSearchForm.php"
+		},
+		"search.php": {
+			"engine": "php",
+			"path": "default/searchForm.php"
+		},
+		"searchResult.php": {
+			"engine": "php",
+			"path": "default/list.php"
 		}
 	}
 }

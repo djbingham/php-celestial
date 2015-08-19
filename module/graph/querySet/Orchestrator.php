@@ -51,7 +51,7 @@ class Orchestrator
 		return $this;
 	}
 
-	public function setFilterParser(FilterParser $filterParser)
+	public function setFilterParser(FilterParserInterface $filterParser)
 	{
 		$this->filterParser = $filterParser;
 		return $this;

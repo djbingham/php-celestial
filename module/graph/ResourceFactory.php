@@ -38,12 +38,11 @@ class ResourceFactory implements ResourceFactoryInterface
         return $this->instantiateResourceList($data);
 	}
 
-	public function search(array $filters)
+	public function search(array $attributes, array $filters)
 	{
-		$querySet = $this->querySetFactory->search();
-		$querySet->setResourceDefinition($this->resourceDefinition)
-			->setFilters($filters);
-		return $this->instantiateResourceList($querySet->execute());
+		$resourceDefinition = $this->filterResourceAttributes($this->resourceDefinition, $attributes);
+		$data = $this->querySetFactory->search()->execute($resourceDefinition, $filters);
+		return $this->instantiateResourceList($data);
 	}
 
 	public function create(array $attributes)

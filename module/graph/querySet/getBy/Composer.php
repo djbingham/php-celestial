@@ -201,11 +201,12 @@ class Composer
 						$queryValues[] = $this->database->value()->string($value);
 					}
 					$queryValue = $this->database->value()->valueList($queryValues);
-					$fieldConstraint->in($queryValue);
 				} else {
 					$queryValue = $this->database->value()->string($filter->value);
-					$fieldConstraint->equals($queryValue);
 				}
+				$fieldConstraint
+					->setComparator($filter->comparator)
+					->setValue($queryValue);
 				$constraints[] = $fieldConstraint;
 			} else {
 				if ($tableDefinition->links->length() > 0) {
