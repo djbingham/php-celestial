@@ -25,7 +25,7 @@ class RestfulRequestParser implements RequestParserInterface
      */
     protected function getResourceManifestFile($resourceRoute)
     {
-        $pathParts = array($this->app->rootDirectory(), 'resource', 'graph', 'tableManifest', $resourceRoute);
+        $pathParts = array($this->app->rootDirectory(), 'resource', 'graph', 'resourceManifest', $resourceRoute);
         return sprintf('%s.json', implode(DIRECTORY_SEPARATOR, $pathParts));
     }
 
@@ -53,7 +53,7 @@ class RestfulRequestParser implements RequestParserInterface
 				sprintf('No resource specified in request path: %s', $request->path())
 			);
 		}
-		$parsedResourcePath = $this->parseResourcePath($resourcePath);
+		$parsedResourcePath = $this->parseResourcePathToResourceLocation($resourcePath);
 
 		$requestProperties = $request->toArray();
 		if (!is_null($parsedResourcePath['manifestFile'])) {
@@ -67,15 +67,19 @@ class RestfulRequestParser implements RequestParserInterface
 			$requestProperties['factoryClass'] = $parsedResourcePath['factoryClass'];
 		}
 		$requestProperties['resourceRoute'] = $parsedResourcePath['resourceRoute'];
-		$requestProperties['viewName'] = $parsedResourcePath['viewName'];
-		$requestProperties['resourceId'] = $parsedResourcePath['resourceId'];
 		$requestProperties['unresolvedRoute'] = $parsedResourcePath['unresolvedRoute'];
+
+		$furtherRequestProperties = $this->parseRequestProperties($requestProperties, $requestProperties['manifest']);
+
+		$requestProperties['viewName'] = $furtherRequestProperties['viewName'];
+		$requestProperties['resourceId'] = $furtherRequestProperties['resourceId'];
+		$requestProperties['unresolvedRoute'] = $furtherRequestProperties['unresolvedRoute'];
+
 		return $this->instantiateParsedRequest($requestProperties);
 	}
 
-	protected function parseResourcePath($resourcePath)
+	protected function parseResourcePathToResourceLocation($resourcePath)
 	{
-
 		$resourcePathParts = explode('/', $resourcePath);
 		$otherPathParts = array();
 
@@ -120,25 +124,38 @@ class RestfulRequestParser implements RequestParserInterface
 			);
 		}
 
-		$viewName = lcfirst(array_pop($otherPathParts));
-
-		if (count($otherPathParts) > 0) {
-			$resourceId = lcfirst(array_pop($otherPathParts));
-		} else {
-			$resourceId = null;
-		}
-
-		$unresolvedRoute = null;
-		if (!empty($otherPathParts)) {
-			$unresolvedRoute = implode('/', $otherPathParts);
-		}
-
 		return array(
 			'manifestFile' => $manifestFile,
 			'factoryClass' => $factoryClass,
 			'resourceRoute' => implode('/', $resourcePathParts),
-			'resourceId' => $resourceId,
+			'unresolvedRoute' => trim(implode('/', $otherPathParts), '/')
+		);
+	}
+
+	protected function parseRequestProperties(array $requestProperties, array $manifest)
+	{
+		$unresolvedRoute = $requestProperties['unresolvedRoute'];
+		$resourceId = null;
+		$viewName = '';
+		if (!empty($unresolvedRoute)) {
+			$pathParts = explode('/', $unresolvedRoute);
+			$viewName = lcfirst(array_pop($pathParts));
+			if (!array_key_exists($viewName, $manifest['views'])) {
+				$resourceId = $viewName;
+				$viewName = lcfirst(array_pop($pathParts));
+			} elseif (count($pathParts) > 0) {
+				$resourceId = lcfirst(array_pop($pathParts));
+			}
+		}
+
+		$unresolvedRoute = null;
+		if (!empty($pathParts)) {
+			$unresolvedRoute = implode('/', $pathParts);
+		}
+
+		return array(
 			'viewName' => $viewName,
+			'resourceId' => $resourceId,
 			'unresolvedRoute' => trim($unresolvedRoute, '/')
 		);
 	}

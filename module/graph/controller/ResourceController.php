@@ -129,21 +129,31 @@ abstract class ResourceController extends RestfulController
 					'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
 				));
 				break;
-//			case 'definition':
-//				$output = $resourceModule->renderer()->renderDefinition($resourceFactory, $outputFormat);
-//				break;
-			default:
-				if (isset($resourceId)) {
-					$filters = array(
-						'id' => $resourceId
-					);
-				} else {
-					$filters = $this->convertRequestParamsToSimpleSearchFilters($requestParams);
-				}
-				$resourceList = $resourceFactory->getBy($resourceDefinition->attributes, $filters);
+			case 'definition':
 				$output = $renderer->render($view, array(
-					'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
+					'resourceName' => $resourceName,
+					'resourceDefinition' => $resourceDefinition
 				));
+				break;
+			default:
+				$filters = $this->convertRequestParamsToSimpleSearchFilters($requestParams);
+				if (isset($resourceId)) {
+					$filters['id'] = $resourceId;
+				}
+				var_dump($filters);
+
+				$resourceList = $resourceFactory->getBy($resourceDefinition->attributes, $filters);
+
+				if (isset($resourceId) && $viewName === '') {
+					$view = $resourceDefinition->views->getByProperty('name', 'item.' . $extension);
+					$output = $renderer->render($view, array(
+						'resource' => $extension === 'php' ? $resourceList->get(0) : $resourceList->get(0)->getAttributes()
+					));
+				} else {
+					$output = $renderer->render($view, array(
+						'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
+					));
+				}
 				break;
 		}
 
