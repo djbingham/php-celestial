@@ -140,12 +140,14 @@ abstract class ResourceController extends RestfulController
 				if (isset($resourceId)) {
 					$filters['id'] = $resourceId;
 				}
-				var_dump($filters);
 
 				$resourceList = $resourceFactory->getBy($resourceDefinition->attributes, $filters);
 
 				if (isset($resourceId) && $viewName === '') {
 					$view = $resourceDefinition->views->getByProperty('name', 'item.' . $extension);
+				}
+
+				if ($view->name === 'item.php') {
 					$output = $renderer->render($view, array(
 						'resource' => $extension === 'php' ? $resourceList->get(0) : $resourceList->get(0)->getAttributes()
 					));

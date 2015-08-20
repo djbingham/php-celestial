@@ -140,9 +140,19 @@ class RestfulRequestParser implements RequestParserInterface
 		if (!empty($unresolvedRoute)) {
 			$pathParts = explode('/', $unresolvedRoute);
 			$viewName = lcfirst(array_pop($pathParts));
+
 			if (!array_key_exists($viewName, $manifest['views'])) {
-				$resourceId = $viewName;
-				$viewName = lcfirst(array_pop($pathParts));
+				$extensionStartPos = strrpos($viewName, '.');
+				$extension = '';
+				if ($extensionStartPos !== false) {
+					$extension = substr($viewName, 0, $extensionStartPos);
+				}
+				if (array_key_exists($extension, $manifest['views'])) {
+					$viewName = $extension;
+				} else {
+					$resourceId = $viewName;
+					$viewName = lcfirst(array_pop($pathParts));
+				}
 			} elseif (count($pathParts) > 0) {
 				$resourceId = lcfirst(array_pop($pathParts));
 			}
