@@ -6,7 +6,16 @@
  */
 ?>
 <form action="<?= $app->createUrl(array('graph', lcfirst($resourceName) . '.php')) ?>" method="get">
-	<h2>Resource Definition (<?= $resourceName ?>)</h2>
+	<h2>Resource Definition (<?= ucfirst($resourceName) ?>)</h2>
+	<p>
+		<a href="<?= $app->createUrl(array('graph', 'index')) ?>">Index</a>
+		&nbsp;|&nbsp;
+		<a href="<?= $app->createUrl(array('graph', $resourceName, 'list')) ?>"><?= ucfirst($resourceName) ?> List</a>
+		&nbsp;|&nbsp;
+		<a href="<?= $app->createUrl(array('graph', $resourceName, 'filter')) ?>">Filter</a>
+		&nbsp;|&nbsp;
+		<a href="<?= $app->createUrl(array('graph', $resourceName, 'search')) ?>">Search</a>
+	</p>
 	<?= renderAttributes($resourceDefinition->attributes) ?>
 </form>
 

@@ -86,8 +86,8 @@ abstract class ResourceController extends RestfulController
 
 		$view = $resourceDefinition->views->getByProperty('name', $viewName);
 		$function = $view->getFunctionName();
-		$extension = $view->getPathExtension();
-
+		$pathExtension = $view->getPathExtension();
+		$nameExtension = $view->getNameExtension();
 		$renderer = $this->getRenderer();
 
 		switch ($function) {
@@ -109,7 +109,7 @@ abstract class ResourceController extends RestfulController
 //				$resource = $this->getById($resourceFactory, $resourceId);
 //				$output = $resourceModule->renderer()->renderUpdateForm($resourceFactory, $resource, $outputFormat);
 //				break;
-			case 'simpleSearch':
+			case 'filter':
 				$output = $renderer->render($view, array(
 					'resourceName' => $resourceName,
 					'resourceDefinition' => $resourceDefinition
@@ -120,7 +120,8 @@ abstract class ResourceController extends RestfulController
 					$filters = $this->stripUnusedFilters($requestParams['filters']);
 					$resourceList = $resourceFactory->search($resourceDefinition->attributes, $filters);
 					$output = $renderer->render($view, array(
-						'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
+						'resourceName' => $resourceName,
+						'resources' => $pathExtension === 'php' ? $resourceList : $resourceList->getAttributes()
 					));
 				} else {
 					$output = $renderer->render($view, array(
@@ -137,7 +138,8 @@ abstract class ResourceController extends RestfulController
 				}
 				$resourceList = $resourceFactory->search($resourceDefinition->attributes, $filters);
 				$output = $renderer->render($view, array(
-					'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
+					'resourceName' => $resourceName,
+					'resources' => $pathExtension === 'php' ? $resourceList : $resourceList->getAttributes()
 				));
 				break;
 			default:
@@ -146,20 +148,24 @@ abstract class ResourceController extends RestfulController
 					$filters['id'] = $resourceId;
 				}
 
-
 				$resourceList = $resourceFactory->getBy($resourceDefinition->attributes, $filters);
-
 				if (isset($resourceId) && $viewName === '') {
-					$view = $resourceDefinition->views->getByProperty('name', 'item.' . $extension);
+					$viewName = 'item';
+					if (!empty($nameExtension)) {
+						$viewName .= $nameExtension;
+					}
+					$view = $resourceDefinition->views->getByProperty('name', $viewName);
 				}
 
-				if ($view->name === 'item.php') {
+				if ($view->name === 'item') {
 					$output = $renderer->render($view, array(
-						'resource' => $extension === 'php' ? $resourceList->get(0) : $resourceList->get(0)->getAttributes()
+						'resourceName' => $resourceName,
+						'resource' => $pathExtension === 'php' ? $resourceList->get(0) : $resourceList->get(0)->getAttributes()
 					));
 				} else {
 					$output = $renderer->render($view, array(
-						'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
+						'resourceName' => $resourceName,
+						'resources' => $pathExtension === 'php' ? $resourceList : $resourceList->getAttributes()
 					));
 				}
 				break;

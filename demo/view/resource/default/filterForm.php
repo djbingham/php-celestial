@@ -5,8 +5,15 @@
  * @var Sloth\Module\Graph\Definition\Resource $resourceDefinition
  */
 ?>
-<form action="<?= $app->createUrl(array('graph', lcfirst($resourceName) . '.php')) ?>" method="get">
-	<h2>Search Resources (<?= $resourceName ?>)</h2>
+<h2>Search Resources (<?= $resourceName ?>)</h2>
+<p>
+	<a href="<?= $app->createUrl(array('graph', $resourceName, 'definition')) ?>">Definition</a>
+	&nbsp;|&nbsp;
+	<a href="<?= $app->createUrl(array('graph', $resourceName, 'list')) ?>"><?= ucfirst($resourceName) ?> List</a>
+	&nbsp;|&nbsp;
+	<a href="<?= $app->createUrl(array('graph', $resourceName, 'search')) ?>"><?= ucfirst($resourceName) ?> Search</a>
+</p>
+<form action="<?= $app->createUrl(array('graph', lcfirst($resourceName))) ?>" method="get">
 	<?= renderAttributeListInputs($resourceDefinition->attributes) ?>
 	<button type="submit">Search</button>
 </form>
@@ -37,7 +44,7 @@ function renderAttributeInput($attributeName, $ancestors)
 	} else {
 		$inputName = $attributeName;
 	}
-	return sprintf('<label>%s</label> <input name="%s"><br>', $attributeName, $inputName);
+	return sprintf('<label>%s</label> <input name="%s"><br><br>', $attributeName, $inputName);
 }
 
 function renderAttributeSubListInputs($ancestorName, array $attributes, array $ancestors)

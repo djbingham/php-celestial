@@ -18,6 +18,12 @@ class View
 		return $function;
 	}
 
+	public function getNameExtension()
+	{
+		$extensionStartPos = strrpos($this->name, '.') + 1;
+		return strToLower(substr($this->name, $extensionStartPos));
+	}
+
 	public function getPathExtension()
 	{
 		$extensionStartPos = strrpos($this->path, '.') + 1;

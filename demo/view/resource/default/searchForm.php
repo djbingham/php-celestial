@@ -5,8 +5,15 @@
  * @var Sloth\Module\Graph\Definition\Resource $resourceDefinition
  */
 ?>
-<form action="<?= $app->createUrl(array('graph', lcfirst($resourceName), 'searchResult.php')) ?>" method="get">
-	<h2>Search Resources (<?= $resourceName ?>)</h2>
+<h2>Search Resources (<?= $resourceName ?>)</h2>
+<p>
+	<a href="<?= $app->createUrl(array('graph', $resourceName, 'definition')) ?>">Definition</a>
+	&nbsp;|&nbsp;
+	<a href="<?= $app->createUrl(array('graph', $resourceName, 'list')) ?>"><?= ucfirst($resourceName) ?> List</a>
+	&nbsp;|&nbsp;
+	<a href="<?= $app->createUrl(array('graph', $resourceName, 'filter')) ?>"><?= ucfirst($resourceName) ?> Filter</a>
+</p>
+<form action="<?= $app->createUrl(array('graph', lcfirst($resourceName), 'searchResult')) ?>" method="get">
 	<?= renderAttributeListInputs($resourceDefinition->attributes) ?>
 	<button type="submit">Search</button>
 </form>

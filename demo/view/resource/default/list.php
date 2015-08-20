@@ -1,13 +1,26 @@
 <?php
 /**
+ * @var Sloth\App $app
+ * @var string $resourceName
  * @var Sloth\Module\Graph\ResourceList $resources
  */
 ?>
 <h2>Resource List</h2>
+<p>
+	<a href="<?= $app->createUrl(array('graph', $resourceName, 'definition')) ?>">Definition</a>
+	&nbsp;|&nbsp;
+	<a href="<?= $app->createUrl(array('graph', $resourceName, 'filter')) ?>">Filter</a>
+	&nbsp;|&nbsp;
+	<a href="<?= $app->createUrl(array('graph', $resourceName, 'search')) ?>">Search</a>
+</p>
 <dl>
 	<?php foreach ($resources as $index => $resource): ?>
 
-		<dt>Resource #<?= $index ?></dt>
+		<dt>
+			<a href="<?= $app->createUrl(array('graph', $resourceName, $resource->getAttribute('id'))) ?>">
+				Resource #<?= $index ?>
+			</a>
+		</dt>
 		<dd>
 			<?= renderAttributeList($resource->getAttributes()); ?>
 		</dd>

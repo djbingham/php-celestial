@@ -9,7 +9,7 @@
     <?php foreach ($resources as $resourceName) { ?>
         <li>
             <a href="<?= $app->createUrl(array('graph', lcfirst($resourceName), 'definition')) ?>">
-                <?=$resourceName ?>
+                <?= ucfirst($resourceName) ?>
             </a>
         </li>
     <?php } ?>

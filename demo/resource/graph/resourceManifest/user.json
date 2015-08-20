@@ -30,43 +30,35 @@
 			"engine": "moustache",
 			"path": "user/list.html"
 		},
-		".php": {
-			"engine": "php",
-			"path": "default/list.php"
-		},
 		"definition": {
 			"engine": "php",
 			"path": "default/definition.php"
 		},
 		"list": {
-			"engine": "moustache",
-			"path": "user/list.html"
+			"engine": "php",
+			"path": "default/list.php"
 		},
 		"list.html": {
 			"engine": "moustache",
 			"path": "user/list.html"
 		},
-		"list.php": {
-			"engine": "php",
-			"path": "default/list.php"
-		},
 		"list.json": {
 			"engine": "json",
 			"path": "default/list.json"
 		},
-		"item.php": {
+		"item": {
 			"engine": "php",
 			"path": "default/item.php"
 		},
-		"simpleSearch.php": {
+		"filter": {
 			"engine": "php",
-			"path": "default/simpleSearchForm.php"
+			"path": "default/filterForm.php"
 		},
-		"search.php": {
+		"search": {
 			"engine": "php",
 			"path": "default/searchForm.php"
 		},
-		"searchResult.php": {
+		"searchResult": {
 			"engine": "php",
 			"path": "default/list.php"
 		}
