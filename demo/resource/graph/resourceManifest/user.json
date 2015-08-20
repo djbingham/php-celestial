@@ -34,7 +34,7 @@
 			"engine": "php",
 			"path": "default/list.php"
 		},
-		"definition.php": {
+		"definition": {
 			"engine": "php",
 			"path": "default/definition.php"
 		},

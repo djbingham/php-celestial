@@ -128,7 +128,7 @@ class Request
             'queryString' => $this->queryString(),
             'fragment' => $this->fragment(),
             'params' => array(
-                'getChild' => $this->params()->get(),
+                'get' => $this->params()->get(),
                 'post' => $this->params()->post(),
                 'cookie' => $this->params()->cookie(),
                 'server' => $this->params()->server(),

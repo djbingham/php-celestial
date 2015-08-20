@@ -1,6 +1,8 @@
 <?php
 namespace Sloth\Module\Graph;
 
+use Sloth\Module\Graph\Resource as MyResource;
+
 class ResourceList implements ResourceListInterface
 {
 	/**
@@ -160,7 +162,7 @@ class ResourceList implements ResourceListInterface
 
     /**
      * @param int $index
-     * @return Resource
+     * @return MyResource
      */
 	public function get($index)
 	{

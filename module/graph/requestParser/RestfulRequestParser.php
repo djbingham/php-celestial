@@ -83,16 +83,16 @@ class RestfulRequestParser implements RequestParserInterface
 		$resourcePathParts = explode('/', $resourcePath);
 		$otherPathParts = array();
 
-		foreach ($resourcePathParts as $i => $pathPart) {
-			$resourcePathParts[$i] = ucfirst($pathPart);
-		}
-
-		$manifestPathParts = $resourcePathParts;
-		$lastPathPartIndex = count($manifestPathParts) - 1;
-		$lastPathPart = $manifestPathParts[$lastPathPartIndex];
-		$extensionStartPos = strrpos($lastPathPart, '.');
-		if ($extensionStartPos !== false) {
-			$manifestPathParts[$lastPathPartIndex] = substr($lastPathPart, 0, $extensionStartPos);
+		$manifestPathParts = array();
+		$extension = null;
+		foreach ($resourcePathParts as $index => $pathPart) {
+			$extensionStartPos = strrpos($pathPart, '.');
+			if ($extensionStartPos !== false && $extension === null) {
+				$manifestPathParts[$index] = ucfirst(substr($pathPart, 0, $extensionStartPos));
+				$extension = substr($pathPart, $extensionStartPos);
+			} else {
+				$manifestPathParts[$index] = $pathPart;
+			}
 		}
 
 		$factoryClass = null;
@@ -106,16 +106,17 @@ class RestfulRequestParser implements RequestParserInterface
 				$manifestFile = null;
 				$factoryClass = $this->getFactoryClass(implode('\\', $manifestPathParts));
 				break;
+			} else {
+				$manifestFile = null;
+				$factoryClass = null;
 			}
 
 			array_unshift($otherPathParts, array_pop($resourcePathParts));
 			array_pop($manifestPathParts);
 		}
 
-		if (empty($otherPathParts)) {
-			if ($extensionStartPos !== false) {
-				$otherPathParts[] = substr($lastPathPart, $extensionStartPos);
-			}
+		if (empty($otherPathParts) && !empty($extension)) {
+			array_push($otherPathParts, $extension);
 		}
 
 		if (!is_a($factoryClass, 'Sloth\Module\Resource\ResourceFactory', true) && !empty($factoryClass)) {
@@ -127,7 +128,7 @@ class RestfulRequestParser implements RequestParserInterface
 		return array(
 			'manifestFile' => $manifestFile,
 			'factoryClass' => $factoryClass,
-			'resourceRoute' => implode('/', $resourcePathParts),
+			'resourceRoute' => implode('/', $manifestPathParts),
 			'unresolvedRoute' => trim(implode('/', $otherPathParts), '/')
 		);
 	}
@@ -139,23 +140,25 @@ class RestfulRequestParser implements RequestParserInterface
 		$viewName = '';
 		if (!empty($unresolvedRoute)) {
 			$pathParts = explode('/', $unresolvedRoute);
-			$viewName = lcfirst(array_pop($pathParts));
+			$resourceId = array_shift($pathParts);
 
-			if (!array_key_exists($viewName, $manifest['views'])) {
-				$extensionStartPos = strrpos($viewName, '.');
-				$extension = '';
-				if ($extensionStartPos !== false) {
-					$extension = substr($viewName, 0, $extensionStartPos);
-				}
-				if (array_key_exists($extension, $manifest['views'])) {
-					$viewName = $extension;
+			if (array_key_exists(lcfirst($resourceId), $manifest['views'])) {
+				$viewName = lcfirst($resourceId);
+				if (!empty($pathParts)) {
+					$resourceId = array_shift($pathParts);
 				} else {
-					$resourceId = $viewName;
-					$viewName = lcfirst(array_pop($pathParts));
+					$resourceId = null;
 				}
-			} elseif (count($pathParts) > 0) {
-				$resourceId = lcfirst(array_pop($pathParts));
+			} elseif (!empty($pathParts)) {
+				$viewName = lcfirst(array_shift($pathParts));
 			}
+		}
+
+		$extensionStartPos = strpos($resourceId, '.');
+		if ($extensionStartPos !== false) {
+			$extension = substr($resourceId, $extensionStartPos);
+			$resourceId = substr($resourceId, 0, $extensionStartPos);
+			$viewName = $viewName . $extension;
 		}
 
 		$unresolvedRoute = null;

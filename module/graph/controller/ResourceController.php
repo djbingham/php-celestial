@@ -20,13 +20,19 @@ abstract class ResourceController extends RestfulController
 
 	public function execute(Request $request, $route)
 	{
-		$requestPath = $request->path();
+		$requestRouteRegex = sprintf('/^%s/', str_replace('/', '\/', $route));
+		$requestPath = preg_replace($requestRouteRegex, '', $request->path());
 		$lastPathPartPos = strrpos($requestPath, '/') + 1;
 		$function = strtolower(substr($requestPath, $lastPathPartPos));
-		if (empty($function)) {
+
+		$extensionStartPos = strrpos($function, '.');
+		if ($extensionStartPos !== false) {
+			$function = substr($function, 0, $extensionStartPos);
+		} elseif (empty($function)) {
 			$function = 'index';
 		}
-		if (in_array($function, array('getChild', 'post', 'put', 'delete', 'index'))) {
+
+		if (in_array($function, array('post', 'put', 'delete', 'index'))) {
 			$requestProperties = $request->toArray();
 			$requestProperties['method'] = $function;
 			$requestProperties['uri'] = substr($request->uri(), 0, $lastPathPartPos);
@@ -38,9 +44,14 @@ abstract class ResourceController extends RestfulController
 
 	protected function index()
 	{
-		$manifestDirectory = implode(DIRECTORY_SEPARATOR, array($this->app->rootDirectory(), 'resource', 'manifest'));
+		$manifestDirectory = implode(DIRECTORY_SEPARATOR, array($this->app->rootDirectory(), 'resource', 'graph', 'resourceManifest'));
 		$resources = $this->getResourceNames($manifestDirectory);
-		return $this->render('resource/index.html', array(
+		$view = new Graph\Definition\View();
+		$view->name = 'index';
+		$view->path = 'default/index.php';
+		$view->engine = 'php';
+		$renderer = $this->getRenderer();
+		return $renderer->render($view, array(
 			'resources' => $resources
 		));
 	}
@@ -68,7 +79,6 @@ abstract class ResourceController extends RestfulController
 		$viewName = $parsedRequest->getViewName();
 		$resourceId = $parsedRequest->getResourceId();
 		$resourceName = $parsedRequest->getResourceRoute();
-		$resourceManifest = $parsedRequest->getManifest();
 
 		$resourceDefinitionBuilder = $resourceModule->resourceDefinitionBuilder();
 		$resourceDefinition = $resourceDefinitionBuilder->buildFromName($resourceName);
@@ -78,14 +88,15 @@ abstract class ResourceController extends RestfulController
 		$function = $view->getFunctionName();
 		$extension = $view->getPathExtension();
 
-		$renderer = new Graph\Renderer($this->app, array(
-			'moustache' => new Graph\Renderer\Mustache(),
-			'php' => new Graph\Renderer\Php(),
-			'json' => new Graph\Renderer\Json()
-		));
-		$renderer->setResourceManifest($resourceManifest);
+		$renderer = $this->getRenderer();
 
 		switch ($function) {
+			case 'definition':
+				$output = $renderer->render($view, array(
+					'resourceName' => $resourceName,
+					'resourceDefinition' => $resourceDefinition
+				));
+				break;
 //			case 'create':
 //				$output = $resourceModule->renderer()->renderCreateForm($resourceFactory, $outputFormat);
 //				break;
@@ -129,17 +140,12 @@ abstract class ResourceController extends RestfulController
 					'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
 				));
 				break;
-			case 'definition':
-				$output = $renderer->render($view, array(
-					'resourceName' => $resourceName,
-					'resourceDefinition' => $resourceDefinition
-				));
-				break;
 			default:
 				$filters = $this->convertRequestParamsToSimpleSearchFilters($requestParams);
 				if (isset($resourceId)) {
 					$filters['id'] = $resourceId;
 				}
+
 
 				$resourceList = $resourceFactory->getBy($resourceDefinition->attributes, $filters);
 
@@ -324,11 +330,20 @@ abstract class ResourceController extends RestfulController
 		if ($resourceList->count() !== 1) {
 			throw new Exception\NotFoundException(
 				sprintf(
-					'Request to getChild by resource ID did not lead to exactly one resource. Resources found: %s',
+					'Request to get resource by ID did not lead to exactly one resource. Resources found: %s',
 					$resourceList->count()
 				)
 			);
 		}
 		return $resourceList->get(0);
+	}
+
+	protected function getRenderer()
+	{
+		return new Graph\Renderer($this->app, array(
+			'moustache' => new Graph\Renderer\Mustache(),
+			'php' => new Graph\Renderer\Php(),
+			'json' => new Graph\Renderer\Json()
+		));
 	}
 }
