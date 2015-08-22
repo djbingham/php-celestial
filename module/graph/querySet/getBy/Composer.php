@@ -1,6 +1,7 @@
 <?php
 namespace Sloth\Module\Graph\QuerySet\GetBy;
 
+use Sloth\Module\Graph\QuerySet\Base;
 use Sloth\Module\Graph\QuerySet\Filter;
 use Sloth\Module\Graph\QuerySet\QuerySet;
 use Sloth\Module\Graph\QuerySet\QuerySetItem;
@@ -8,23 +9,8 @@ use Sloth\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 use SlothMySql\Abstractory\Value\ATable as QueryTable;
 
-class Composer
+class Composer extends Base\Composer
 {
-	/**
-	 * @var DatabaseWrapper
-	 */
-	private $database;
-
-	/**
-	 * @var Definition\Table
-	 */
-	private $tableDefinition;
-
-	/**
-	 * @var array
-	 */
-	private $filters = array();
-
 	/**
 	 * @var array
 	 */
@@ -75,7 +61,7 @@ class Composer
 			} else {
 				$descendantFilters = array();
 			}
-			$descendantQuerySet = $this->buildQuerySetForLinkDescendants($link, $descendantFilters, $link);
+			$descendantQuerySet = $this->buildQuerySetForLinkDescendants($link, $descendantFilters);
 			if (!is_null($descendantQuerySet)) {
 				foreach ($descendantQuerySet as $descendantQuerySetItem) {
 					$querySet->push($descendantQuerySetItem);

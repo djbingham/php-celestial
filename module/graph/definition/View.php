@@ -20,13 +20,21 @@ class View
 
 	public function getNameExtension()
 	{
-		$extensionStartPos = strrpos($this->name, '.') + 1;
-		return strToLower(substr($this->name, $extensionStartPos));
+		$extensionStartPos = strrpos($this->name, '.');
+		$extension = null;
+		if ($extensionStartPos !== false) {
+			$extension = strToLower(substr($this->name, $extensionStartPos + 1));
+		}
+		return $extension;
 	}
 
 	public function getPathExtension()
 	{
-		$extensionStartPos = strrpos($this->path, '.') + 1;
-		return strToLower(substr($this->path, $extensionStartPos));
+		$extensionStartPos = strrpos($this->path, '.');
+		$extension = null;
+		if ($extensionStartPos !== false) {
+			$extension = strToLower(substr($this->path, $extensionStartPos + 1));
+		}
+		return $extension;
 	}
 }

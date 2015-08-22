@@ -51,10 +51,10 @@ class App
             $path = implode('/', $pathParts);
             $url = sprintf('%s/%s', $url, $path);
         }
-        return $url;
+        return rtrim($url, '/');
     }
 
-    public function redirectUrl($newUrl)
+    public function redirect($newUrl)
     {
         header(sprintf('Location: %s', $newUrl));
         exit;

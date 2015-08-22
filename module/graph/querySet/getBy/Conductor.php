@@ -1,31 +1,15 @@
 <?php
 namespace Sloth\Module\Graph\QuerySet\GetBy;
 
-use Sloth\Module\Graph\QuerySet\DataParser;
+use Sloth\Module\Graph\QuerySet\Base;
 use Sloth\Module\Graph\QuerySet\QuerySet;
 use Sloth\Module\Graph\QuerySet\QuerySetItem;
 use Sloth\Module\Graph\Definition;
-use SlothMySql\DatabaseWrapper;
 use SlothMySql\QueryBuilder\Query\Constraint;
 use SlothMySql\QueryBuilder\Query\Select;
 
-class Conductor
+class Conductor extends Base\Conductor
 {
-	/**
-	 * @var DatabaseWrapper
-	 */
-	private $database;
-
-	/**
-	 * @var DataParser
-	 */
-	private $dataParser;
-
-	/**
-	 * @var QuerySet
-	 */
-	private $querySetToExecute;
-
 	/**
 	 * @var QuerySet
 	 */
@@ -35,24 +19,6 @@ class Conductor
 	 * @var array
 	 */
 	private $fetchedData = array();
-
-	public function setDatabase(DatabaseWrapper $database)
-	{
-		$this->database = $database;
-		return $this;
-	}
-
-	public function setDataParser(DataParser $dataParser)
-	{
-		$this->dataParser = $dataParser;
-		return $this;
-	}
-
-	public function setQuerySet(QuerySet $querySet)
-	{
-		$this->querySetToExecute = $querySet;
-		return $this;
-	}
 
 	public function conduct()
 	{

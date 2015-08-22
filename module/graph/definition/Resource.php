@@ -21,6 +21,11 @@ class Resource
 	public $attributes;
 
 	/**
+	 * @var mixed
+	 */
+	public $primaryAttribute;
+
+	/**
 	 * @var Definition\ViewList
 	 */
 	public $views;

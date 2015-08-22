@@ -2,12 +2,21 @@
 namespace Sloth\Module\Graph\RequestParser;
 
 use Sloth\App;
+use Sloth\Module\Graph;
 use Sloth\Request;
 use Sloth\Exception;
 
 class RestfulRequestParser implements RequestParserInterface
 {
+	/**
+	 * @var App
+	 */
 	protected $app;
+
+	/**
+	 * @var Graph\Factory
+	 */
+	protected $module;
 
 	/**
 	 * @param string $resourceRoute
@@ -38,9 +47,10 @@ class RestfulRequestParser implements RequestParserInterface
         return sprintf('SlothDemo\\Resource\\%sFactory', $resourceRoute);
     }
 
-	public function __construct(App $app)
+	public function __construct(App $app, Graph\Factory $module)
 	{
 		$this->app = $app;
+		$this->module = $module;
 	}
 
 	public function parse(Request $request, $controllerRoute)
@@ -56,7 +66,10 @@ class RestfulRequestParser implements RequestParserInterface
 		$parsedResourcePath = $this->parseResourcePathToResourceLocation($resourcePath);
 
 		$requestProperties = $request->toArray();
-		if (!is_null($parsedResourcePath['manifestFile'])) {
+		$requestProperties['originalRequest'] = $request;
+		$requestProperties['params'] = new Request\Params($requestProperties['params']);
+
+		if ($parsedResourcePath['manifestFile'] !== null) {
 			$requestProperties['manifest'] = $this->parseManifestFile($parsedResourcePath['manifestFile']);
 			if (array_key_exists('factoryClass', $requestProperties['manifest'])) {
 				$requestProperties['factoryClass'] = $requestProperties['manifest']['factoryClass'];
@@ -66,14 +79,20 @@ class RestfulRequestParser implements RequestParserInterface
 		} else {
 			$requestProperties['factoryClass'] = $parsedResourcePath['factoryClass'];
 		}
+
 		$requestProperties['resourceRoute'] = $parsedResourcePath['resourceRoute'];
 		$requestProperties['unresolvedRoute'] = $parsedResourcePath['unresolvedRoute'];
 
 		$furtherRequestProperties = $this->parseRequestProperties($requestProperties, $requestProperties['manifest']);
-
 		$requestProperties['viewName'] = $furtherRequestProperties['viewName'];
 		$requestProperties['resourceId'] = $furtherRequestProperties['resourceId'];
 		$requestProperties['unresolvedRoute'] = $furtherRequestProperties['unresolvedRoute'];
+
+		$resourceDefinitionFactory = $this->module->resourceDefinitionBuilder();
+		$resourceDefinition = $resourceDefinitionFactory->buildFromManifest($requestProperties['manifest']);
+		$requestProperties['resourceDefinition'] = $resourceDefinition;
+		$requestProperties['resourceFactory'] = $this->module->resourceFactory($resourceDefinition->table);
+		$requestProperties['view'] = $resourceDefinition->views->getByProperty('name', $requestProperties['viewName']);
 
 		return $this->instantiateParsedRequest($requestProperties);
 	}
@@ -138,6 +157,7 @@ class RestfulRequestParser implements RequestParserInterface
 		$unresolvedRoute = $requestProperties['unresolvedRoute'];
 		$resourceId = null;
 		$viewName = '';
+
 		if (!empty($unresolvedRoute)) {
 			$pathParts = explode('/', $unresolvedRoute);
 			$resourceId = array_shift($pathParts);
@@ -184,6 +204,11 @@ class RestfulRequestParser implements RequestParserInterface
 			$manifest = array();
 		} elseif (is_file($filePath)) {
 			$manifest = json_decode(file_get_contents($filePath), true);
+			if ($manifest === null) {
+				throw new Exception\InvalidArgumentException(
+					sprintf('Error decoding manifest file (probably invalid JSON). File path: %s', $filePath)
+				);
+			}
 		} else {
 			throw new Exception\InvalidArgumentException(
 				sprintf('Manifest file not found: %s', $filePath)

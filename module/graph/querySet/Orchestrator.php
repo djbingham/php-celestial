@@ -1,8 +1,8 @@
 <?php
 namespace Sloth\Module\Graph\QuerySet;
 
-use Sloth\Module\Graph\QuerySet\GetBy\Composer;
-use Sloth\Module\Graph\QuerySet\GetBy\Conductor;
+use Sloth\Module\Graph\QuerySet\Base\Composer;
+use Sloth\Module\Graph\QuerySet\Base\Conductor;
 use Sloth\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 
@@ -63,9 +63,11 @@ class Orchestrator
 		return $this;
 	}
 
-	public function execute(Definition\Table $resourceDefinition, array $filters)
+	public function execute(Definition\Table $resourceDefinition, array $filters = array(), array $data = array())
 	{
-		$filters = $this->filterParser->parse($resourceDefinition, $filters);
+		if ($this->filterParser !== null) {
+			$filters = $this->filterParser->parse($resourceDefinition, $filters);
+		}
 		$querySet = $this->composer
 			->setDatabase($this->database)
 			->setResource($resourceDefinition)
@@ -75,6 +77,7 @@ class Orchestrator
 			->setDatabase($this->database)
 			->setDataParser($this->dataParser)
 			->setQuerySet($querySet)
+			->setData($data)
 			->conduct();
 		$resourceData = $this->dataParser->formatResourceData($data, $resourceDefinition, $filters);
 		return $resourceData;

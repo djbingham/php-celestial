@@ -187,7 +187,7 @@ class ResourceController extends RestfulController
         $updatedResourceId = $updatedResource->getAttribute($primaryAttribute);
         $redirectUri = $this->createRedirectUri($request->uri(), $resourceId, $updatedResourceId, $outputFormat);
 
-        $this->app->redirectUrl($this->app->createUrl(array($redirectUri)));
+        $this->app->redirect($this->app->createUrl(array($redirectUri)));
 	}
 
     protected function createRedirectUri($originalUri, $originalResourceId, $updatedResourceId, $outputFormat)

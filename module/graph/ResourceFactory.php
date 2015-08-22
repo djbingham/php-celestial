@@ -6,7 +6,7 @@ class ResourceFactory implements ResourceFactoryInterface
 	/**
 	 * @var Definition\Table
 	 */
-	protected $resourceDefinition;
+	protected $tableDefinition;
 
 	/**
 	 * @var QuerySetFactory
@@ -15,13 +15,47 @@ class ResourceFactory implements ResourceFactoryInterface
 
 	public function __construct(Definition\Table $definition, QuerySetFactory $querySetFactory)
 	{
-		$this->resourceDefinition = $definition;
+		$this->tableDefinition = $definition;
 		$this->querySetFactory = $querySetFactory;
 	}
 
-	public function getResourceDefinition()
+	public function getTableDefinition()
 	{
-		return $this->resourceDefinition;
+		return $this->tableDefinition;
+	}
+
+	public function getBy(array $attributesToInclude, array $filters)
+	{
+		$tableDefinition = $this->filterResourceAttributes($this->tableDefinition, $attributesToInclude);
+		$data = $this->querySetFactory->getBy()->execute($tableDefinition, $filters);
+        return $this->instantiateResourceList($data);
+	}
+
+	public function search(array $attributesToInclude, array $filters)
+	{
+		$tableDefinition = $this->filterResourceAttributes($this->tableDefinition, $attributesToInclude);
+		$data = $this->querySetFactory->search()->execute($tableDefinition, $filters);
+		return $this->instantiateResourceList($data);
+	}
+
+	public function create(array $attributes)
+	{
+		$attributes = $this->encodeAttributes($attributes);
+		$data = $this->querySetFactory->insert()->execute($this->tableDefinition, array(), $attributes);
+		return $this->instantiateResource($data);
+	}
+
+	public function update(array $filters, array $attributes)
+	{
+		$attributes = $this->encodeAttributes($attributes);
+		$data = $this->querySetFactory->update()->execute($this->tableDefinition, $filters, $attributes);
+		return $this->instantiateResource($data);
+	}
+
+	public function delete(array $filters)
+	{
+		$data = $this->querySetFactory->delete()->execute($this->tableDefinition, $filters);
+		return $this->instantiateResource($data);
 	}
 
 	public function instantiateResource(array $attributes)
@@ -31,47 +65,7 @@ class ResourceFactory implements ResourceFactoryInterface
 		return $resource;
 	}
 
-	public function getBy(array $attributes, array $filters)
-	{
-		$resourceDefinition = $this->filterResourceAttributes($this->resourceDefinition, $attributes);
-		$data = $this->querySetFactory->getBy()->execute($resourceDefinition, $filters);
-        return $this->instantiateResourceList($data);
-	}
-
-	public function search(array $attributes, array $filters)
-	{
-		$resourceDefinition = $this->filterResourceAttributes($this->resourceDefinition, $attributes);
-		$data = $this->querySetFactory->search()->execute($resourceDefinition, $filters);
-		return $this->instantiateResourceList($data);
-	}
-
-	public function create(array $attributes)
-	{
-		$querySet = $this->querySetFactory->insertRecord();
-		$querySet->setResourceDefinition($this->resourceDefinition)
-			->setAttributeValues($attributes);
-		return $this->instantiateResource($querySet->execute());
-	}
-
-	public function update(ResourceInterface $resource)
-	{
-		$database = $this->querySetFactory->getDatabase();
-		$attributes = $this->encodeAttributes($resource->getAttributes());
-		$query = $this->querySetFactory->updateById($this->resourceDefinition, $attributes);
-		$database->execute($query);
-		return $resource;
-	}
-
-	public function delete(ResourceInterface $resource)
-	{
-		$database = $this->querySetFactory->getDatabase();
-		$attributes = $this->encodeAttributes($resource->getAttributes());
-		$query = $this->querySetFactory->deleteByAttributes($this->resourceDefinition, $attributes);
-		$database->execute($query);
-		return $resource;
-	}
-
-	protected function instantiateResourceList(array $data)
+	public function instantiateResourceList(array $data)
 	{
 		$resourceList = new ResourceList($this);
 		foreach ($data as $row) {
@@ -84,7 +78,11 @@ class ResourceFactory implements ResourceFactoryInterface
 	protected function encodeAttributes(array $attributes)
 	{
 		foreach ($attributes as $name => $value) {
-			$attributes[$name] = utf8_encode($value);
+			if (is_array($value)) {
+				$attributes[$name] = $this->encodeAttributes($value);
+			} else {
+				$attributes[$name] = utf8_encode($value);
+			}
 		}
 		return $attributes;
 	}
@@ -101,23 +99,23 @@ class ResourceFactory implements ResourceFactoryInterface
 		return $attributes;
 	}
 
-    private function filterResourceAttributes(Definition\Table $resourceDefinition, array $attributeMap)
+    private function filterResourceAttributes(Definition\Table $tableDefinition, array $attributeMap)
     {
-        foreach ($resourceDefinition->fields as $attributeIndex => $attribute) {
+        foreach ($tableDefinition->fields as $attributeIndex => $attribute) {
             if (!array_key_exists($attribute->name, $attributeMap)) {
-                $resourceDefinition->fields->removeByIndex($attributeIndex);
+                $tableDefinition->fields->removeByIndex($attributeIndex);
             }
         }
-		for ($linkIndex = 0; $linkIndex < $resourceDefinition->links->length(); $linkIndex++) {
-			$link = $resourceDefinition->links->getByIndex($linkIndex);
+		for ($linkIndex = 0; $linkIndex < $tableDefinition->links->length(); $linkIndex++) {
+			$link = $tableDefinition->links->getByIndex($linkIndex);
             /** @var \Sloth\Module\Graph\Definition\Table\Join $link */
             if (array_key_exists($link->name, $attributeMap)) {
 				$this->filterResourceAttributes($link->getChildTable(), $attributeMap[$link->name]);
 			} else {
-				$resourceDefinition->links->removeByIndex($linkIndex);
+				$tableDefinition->links->removeByIndex($linkIndex);
 				$linkIndex--;
             }
         }
-        return $resourceDefinition;
+        return $tableDefinition;
     }
 }

@@ -40,8 +40,33 @@ class QuerySetFactory
 		return $orchestrator;
 	}
 
-	public function insertRecord()
+	public function insert()
 	{
-//		return new QuerySet\InsertRecord($this->queryFactory, $this->attributeMapper);
+		$orchestrator = new QuerySet\Orchestrator();
+		$orchestrator->setDatabase($this->database)
+			->setDataParser(new QuerySet\DataParser())
+			->setComposer(new QuerySet\Insert\Composer())
+			->setConductor(new QuerySet\Insert\Conductor());
+		return $orchestrator;
+	}
+
+	public function update()
+	{
+		$orchestrator = new QuerySet\Orchestrator();
+		$orchestrator->setDatabase($this->database)
+			->setDataParser(new QuerySet\DataParser())
+			->setComposer(new QuerySet\Update\Composer())
+			->setConductor(new QuerySet\Update\Conductor());
+		return $orchestrator;
+	}
+
+	public function delete()
+	{
+		$orchestrator = new QuerySet\Orchestrator();
+		$orchestrator->setDatabase($this->database)
+			->setDataParser(new QuerySet\DataParser())
+			->setComposer(new QuerySet\Delete\Composer())
+			->setConductor(new QuerySet\Delete\Conductor());
+		return $orchestrator;
 	}
 }
