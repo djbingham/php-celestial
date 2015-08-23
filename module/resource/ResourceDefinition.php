@@ -35,7 +35,7 @@ class ResourceDefinition implements Base\ResourceDefinition
         $this->manifest = $manifest;
         $this->attributeList = new Definition\AttributeList($manifest['attributes']);
         $this->tableList = new Definition\TableList($manifest['tables']);
-        $this->tableSelectOrder = $manifest['tableSelectOrder'];
+//        $this->tableSelectOrder = $manifest['tableSelectOrder'];
         foreach ($manifest['views'] as $viewName => $viewPath) {
             $this->views[$viewName] = $viewPath;
         }
