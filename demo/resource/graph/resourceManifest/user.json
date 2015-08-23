@@ -29,7 +29,7 @@
 			"path": "default/list.php"
 		},
 		".html": {
-			"engine": "moustache",
+			"engine": "mustache",
 			"path": "user/list.html"
 		},
 		"definition": {
@@ -41,7 +41,7 @@
 			"path": "default/list.php"
 		},
 		"list.html": {
-			"engine": "moustache",
+			"engine": "mustache",
 			"path": "user/list.html"
 		},
 		"list.json": {

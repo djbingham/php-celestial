@@ -356,7 +356,7 @@ abstract class ResourceController extends RestfulController
 	protected function getRenderer()
 	{
 		return new Graph\Renderer($this->app, array(
-			'moustache' => new Graph\Renderer\Mustache(),
+			'mustache' => new Graph\Renderer\Mustache(),
 			'php' => new Graph\Renderer\Php(),
 			'json' => new Graph\Renderer\Json()
 		));

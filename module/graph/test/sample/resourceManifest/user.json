@@ -27,7 +27,7 @@
 			"path": "default/list.php"
 		},
 		".html": {
-			"engine": "moustache",
+			"engine": "mustache",
 			"path": "user/list.html"
 		},
 		".php": {
@@ -35,11 +35,11 @@
 			"path": "default/list.php"
 		},
 		"list": {
-			"engine": "moustache",
+			"engine": "mustache",
 			"path": "user/list.html"
 		},
 		"list.html": {
-			"engine": "moustache",
+			"engine": "mustache",
 			"path": "user/list.html"
 		},
 		"list.php": {
