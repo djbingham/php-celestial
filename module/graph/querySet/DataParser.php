@@ -66,34 +66,37 @@ class DataParser
 
 	private function extractResourceData(Definition\Table $tableDefinition, array $rawData, array $linkFilters = array())
 	{
+		$tableAlias = $tableDefinition->getAlias();
 		$fieldData = array();
-		foreach ($rawData[$tableDefinition->getAlias()] as $rowIndex => $rowData) {
-			/** @var \Sloth\Module\Graph\Definition\Table\Field $field */
-			if ($this->rowMatchesExpectedData($rowData, $linkFilters)) {
-				foreach ($tableDefinition->fields as $field) {
-					$fieldAlias = $field->getAlias();
-					if (array_key_exists($fieldAlias, $rowData)) {
-						$fieldData[$rowIndex][$field->name] = $rowData[$fieldAlias];
-					}
-				}
-			}
-			/** @var \Sloth\Module\Graph\Definition\Table\Join $link */
-			foreach ($tableDefinition->links as $link) {
-				if (in_array($link->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
-					foreach ($link->getChildTable()->fields as $field) {
+		if (array_key_exists($tableAlias, $rawData)) {
+			foreach ($rawData[$tableAlias] as $rowIndex => $rowData) {
+				/** @var \Sloth\Module\Graph\Definition\Table\Field $field */
+				if ($this->rowMatchesExpectedData($rowData, $linkFilters)) {
+					foreach ($tableDefinition->fields as $field) {
 						$fieldAlias = $field->getAlias();
 						if (array_key_exists($fieldAlias, $rowData)) {
-							$fieldData[$rowIndex][$link->name][$field->name] = $rowData[$fieldAlias];
+							$fieldData[$rowIndex][$field->name] = $rowData[$fieldAlias];
 						}
 					}
-				} else {
-					$childLinkFilters = $this->getLinkData($link, $rowData);
-					if ($this->rowMatchesExpectedData($rowData, $linkFilters)) {
-						$childData = $this->extractResourceData($link->getChildTable(), $rawData, $childLinkFilters);
+				}
+				/** @var \Sloth\Module\Graph\Definition\Table\Join $link */
+				foreach ($tableDefinition->links as $link) {
+					if (in_array($link->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
+						foreach ($link->getChildTable()->fields as $field) {
+							$fieldAlias = $field->getAlias();
+							if (array_key_exists($fieldAlias, $rowData)) {
+								$fieldData[$rowIndex][$link->name][$field->name] = $rowData[$fieldAlias];
+							}
+						}
+					} else {
+						$childLinkFilters = $this->getLinkData($link, $rowData);
+						if ($this->rowMatchesExpectedData($rowData, $linkFilters)) {
+							$childData = $this->extractResourceData($link->getChildTable(), $rawData, $childLinkFilters);
 
-						$fieldData[$rowIndex][$link->name] = array();
-						foreach ($childData as $childRow) {
-							$fieldData[$rowIndex][$link->name][] = $childRow;
+							$fieldData[$rowIndex][$link->name] = array();
+							foreach ($childData as $childRow) {
+								$fieldData[$rowIndex][$link->name][] = $childRow;
+							}
 						}
 					}
 				}
