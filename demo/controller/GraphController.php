@@ -2,6 +2,7 @@
 namespace Sloth\Demo\Controller;
 
 use Sloth\Module\Graph;
+use SlothDemo\Parser\GraphRequestParser;
 
 class GraphController extends Graph\Controller\ResourceController
 {
@@ -15,5 +16,10 @@ class GraphController extends Graph\Controller\ResourceController
 	{
 		$directoryParts = array(dirname(dirname(__DIR__)), 'demo', 'resource', 'graph', 'tableManifest');
 		return implode(DIRECTORY_SEPARATOR, $directoryParts);
+	}
+
+	protected function getRequestParser()
+	{
+		return new GraphRequestParser($this->app, $this->getResourceModule());
 	}
 }

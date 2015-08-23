@@ -15,12 +15,24 @@ abstract class ResourceController extends RestfulController
 	 */
 	private $resourceModule;
 
+	/**
+	 * @return string
+	 */
 	abstract protected function getResourceManifestDirectory();
+
+	/**
+	 * @return string
+	 */
 	abstract protected function getTableManifestDirectory();
+
+	/**
+	 * @return Graph\RequestParser\RestfulRequestParser
+	 */
+	abstract protected function getRequestParser();
 
 	public function parseRequest(Request $request, $route, $quit = false)
 	{
-		$requestParser = new Graph\RequestParser\RestfulRequestParser($this->app, $this->getResourceModule());
+		$requestParser = $this->getRequestParser();
 		$parsedRequest = $requestParser->parse($request, $route);
 		if ($parsedRequest->getUnresolvedRoute() === 'index') {
 			$parsedRequest->setMethod('index');
@@ -32,7 +44,7 @@ abstract class ResourceController extends RestfulController
 		}
 		return $parsedRequest;
 	}
-	
+
 	protected function getResourceNames($directory)
 	{
 		$directoryContents = scandir($directory);

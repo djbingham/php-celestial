@@ -6,7 +6,7 @@ use Sloth\Module\Graph;
 use Sloth\Request;
 use Sloth\Exception;
 
-class RestfulRequestParser implements RequestParserInterface
+abstract class RestfulRequestParser implements RequestParserInterface
 {
 	/**
 	 * @var App
@@ -22,30 +22,19 @@ class RestfulRequestParser implements RequestParserInterface
 	 * @param string $resourceRoute
 	 * @return string
 	 */
-	protected function getTableManifestFile($resourceRoute)
-	{
-        $pathParts = array($this->app->rootDirectory(), 'resource', 'graph', 'tableManifest', $resourceRoute);
-        return sprintf('%s.json', implode(DIRECTORY_SEPARATOR, $pathParts));
-	}
+	abstract protected function getTableManifestFile($resourceRoute);
 
     /**
      * @param string $resourceRoute
      * @return string
      */
-    protected function getResourceManifestFile($resourceRoute)
-    {
-        $pathParts = array($this->app->rootDirectory(), 'resource', 'graph', 'resourceManifest', $resourceRoute);
-        return sprintf('%s.json', implode(DIRECTORY_SEPARATOR, $pathParts));
-    }
+    abstract protected function getResourceManifestFile($resourceRoute);
 
 	/**
 	 * @param string $resourceRoute
 	 * @return string
 	 */
-	protected function getFactoryClass($resourceRoute)
-    {
-        return sprintf('SlothDemo\\Resource\\%sFactory', $resourceRoute);
-    }
+	abstract protected function getResourceFactoryClass($resourceRoute);
 
 	public function __construct(App $app, Graph\Factory $module)
 	{
@@ -125,7 +114,7 @@ class RestfulRequestParser implements RequestParserInterface
 				break;
 			} elseif (class_exists($factoryClass)) {
 				$manifestFile = null;
-				$factoryClass = $this->getFactoryClass(implode('\\', $manifestPathParts));
+				$factoryClass = $this->getResourceFactoryClass(implode('\\', $manifestPathParts));
 				break;
 			} else {
 				$manifestFile = null;
@@ -219,13 +208,13 @@ class RestfulRequestParser implements RequestParserInterface
 		return $manifest;
 	}
 
-	protected function getDefaultFactoryClass()
-	{
-		return 'Sloth\\Module\\Resource\\ResourceFactory';
-	}
-
 	protected function instantiateParsedRequest($requestProperties)
 	{
 		return new RestfulParsedRequest($requestProperties);
+	}
+
+	protected function getDefaultFactoryClass()
+	{
+		return 'Sloth\\Module\\Resource\\ResourceFactory';
 	}
 }
