@@ -7,11 +7,13 @@ class GraphController extends Graph\Controller\ResourceController
 {
 	protected function getResourceManifestDirectory()
 	{
-		return dirname(dirname(__DIR__)) . '/demo/resource/graph/resourceManifest';
+		$directoryParts = array(dirname(dirname(__DIR__)), 'demo', 'resource', 'graph', 'resourceManifest');
+		return implode(DIRECTORY_SEPARATOR, $directoryParts);
 	}
 
 	protected function getTableManifestDirectory()
 	{
-		return dirname(dirname(__DIR__)) . '/demo/resource/graph/tableManifest';
+		$directoryParts = array(dirname(dirname(__DIR__)), 'demo', 'resource', 'graph', 'tableManifest');
+		return implode(DIRECTORY_SEPARATOR, $directoryParts);
 	}
 }

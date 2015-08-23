@@ -24,8 +24,9 @@ class Renderer implements RendererInterface
 
 	public function render(View $view, array $params = array())
 	{
-		$viewPath = $this->app->rootDirectory() . DIRECTORY_SEPARATOR . 'view' . DIRECTORY_SEPARATOR .
-			'resource' . DIRECTORY_SEPARATOR . $view->path;
+		$viewPath = str_replace('/', DIRECTORY_SEPARATOR, $view->path);
+		$viewPathParts = array($this->app->rootDirectory(), 'view', 'resource', $viewPath);
+		$viewPath = implode(DIRECTORY_SEPARATOR, $viewPathParts);
 		$engine = $this->engines[$view->engine];
 		if (!array_key_exists('app', $params)) {
 			$params['app'] = $this->app;
