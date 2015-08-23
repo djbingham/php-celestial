@@ -1,14 +1,20 @@
 <?php
 /**
  * @var Sloth\App $app
+ * @var string $resourceName
  * @var Sloth\Module\Graph\Resource $resource
+ * @var Sloth\Module\Graph\Definition\Resource $resourceDefinition
  */
+$primaryAttribute = $resourceDefinition->primaryAttribute;
+$resourceId = $resource->getAttribute($primaryAttribute);
 ?>
-<h2>Resource #<?= $resource->getAttribute('id') ?></h2>
+<h2>Resource #<?= $resourceId ?></h2>
 <p>
 	<a href="<?= $app->createUrl(array('graph', 'index')) ?>">Resource Index</a>
 	&nbsp;|&nbsp;
 	<a href="<?= $app->createUrl(array('graph', $resourceName, 'list')) ?>"><?= ucfirst($resourceName) ?> List</a>
+	&nbsp;|&nbsp;
+	<a href="<?= $app->createUrl(array('graph', $resourceName, 'update', $resourceId)) ?>">Update</a>
 </p>
 <dl>
 	<?= renderAttributeList($resource->getAttributes()); ?>

@@ -113,11 +113,13 @@ abstract class ResourceController extends RestfulController
 				if ($view->name === 'item') {
 					$output = $renderer->render($view, array(
 						'resourceName' => $resourceName,
+						'resourceDefinition' => $resourceDefinition,
 						'resource' => $pathExtension === 'php' ? $resourceList->get(0) : $resourceList->get(0)->getAttributes()
 					));
 				} else {
 					$output = $renderer->render($view, array(
 						'resourceName' => $resourceName,
+						'resourceDefinition' => $resourceDefinition,
 						'resources' => $pathExtension === 'php' ? $resourceList : $resourceList->getAttributes()
 					));
 				}

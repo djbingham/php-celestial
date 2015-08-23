@@ -12,6 +12,8 @@
 	<a href="<?= $app->createUrl(array('graph', $resourceName, 'filter')) ?>">Filter</a>
 	&nbsp;|&nbsp;
 	<a href="<?= $app->createUrl(array('graph', $resourceName, 'search')) ?>">Search</a>
+	&nbsp;|&nbsp;
+	<a href="<?= $app->createUrl(array('graph', $resourceName, 'create')) ?>">Create</a>
 </p>
 <dl>
 	<?php foreach ($resources as $index => $resource): ?>
