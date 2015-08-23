@@ -12,7 +12,7 @@ class Router extends Base\Router
 	{
 		$output = null;
 		$canCacheRequest = $this->canCache($request);
-		$requestUri = $request->uri();
+		$requestUri = $request->getUri();
 
 		if ($canCacheRequest) {
 			$output = $this->searchCache($requestUri);
@@ -46,7 +46,7 @@ class Router extends Base\Router
 
 	protected function canCache(Request $request)
 	{
-		return $request->method() === 'getChild';
+		return $request->getMethod() === 'getChild';
 	}
 
 	protected function searchCache($uri)
@@ -66,7 +66,7 @@ class Router extends Base\Router
 
 	protected function searchRoutes(Request $request)
 	{
-		$requestPathParts = explode('/', $request->path());
+		$requestPathParts = explode('/', $request->getPath());
 		$controller = null;
 		$route = '';
 
@@ -90,7 +90,7 @@ class Router extends Base\Router
 
 	protected function searchControllers(Request $request)
 	{
-		$requestPathParts = explode('/', rtrim($request->path(), '/'));
+		$requestPathParts = explode('/', rtrim($request->getPath(), '/'));
 
 		$controllerClass = '';
 		$route = '';

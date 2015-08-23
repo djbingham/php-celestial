@@ -52,11 +52,12 @@ abstract class RestfulController extends Controller
     public function execute(Request $request, $route)
     {
 		$parsedRequest = $this->parseRequest($request, $route);
-		$method = 'handle' . ucfirst($parsedRequest->method());
+		$method = 'handle' . ucfirst($parsedRequest->getMethod());
 
 		if (!method_exists($this, $method)) {
 			throw new Exception\InvalidRequestException(sprintf('Method not found: %s', $method));
 		}
+
 		return $this->$method($parsedRequest, $route);
     }
 }

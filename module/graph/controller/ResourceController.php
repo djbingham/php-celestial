@@ -18,20 +18,17 @@ abstract class ResourceController extends RestfulController
 	abstract protected function getResourceManifestDirectory();
 	abstract protected function getTableManifestDirectory();
 
-	public function parseRequest(Request $request, $route)
+	public function parseRequest(Request $request, $route, $quit = false)
 	{
 		$requestParser = new Graph\RequestParser\RestfulRequestParser($this->app, $this->getResourceModule());
 		$parsedRequest = $requestParser->parse($request, $route);
-
-		$function = $parsedRequest->getView()->getFunctionName();
-		if (in_array($function, array('put', 'delete', 'index')) && $parsedRequest->method() === 'post') {
-			$functionRegex = sprintf('/\/%s\//', $function);
-			$requestProperties = $request->toArray();
-			$requestProperties['method'] = $function;
-			$requestProperties['uri'] = rtrim(preg_replace($functionRegex, '/', $request->uri()), '/');
-			$requestProperties['path'] = rtrim(preg_replace($functionRegex, '/', $request->path()), '/');
-
-			$parsedRequest = $this->parseRequest(Request::fromArray($requestProperties), $route);
+		if ($parsedRequest->getUnresolvedRoute() === 'index') {
+			$parsedRequest->setMethod('index');
+		} else {
+			$function = $parsedRequest->getView()->getFunctionName();
+			if (in_array($function, array('put', 'delete')) && $parsedRequest->getMethod() === 'post') {
+				$parsedRequest->setMethod($function);
+			}
 		}
 		return $parsedRequest;
 	}
@@ -66,7 +63,7 @@ abstract class ResourceController extends RestfulController
 	{
 		$renderer = $this->getRenderer();
 
-		$requestParams = $request->params()->get();
+		$requestParams = $request->getParams()->get();
 		$resourceName = $request->getResourceRoute();
 		$resourceDefinition = $request->getResourceDefinition();
 		$resourceFactory = $request->getResourceFactory();
@@ -80,74 +77,31 @@ abstract class ResourceController extends RestfulController
 
 		switch ($function) {
 			case 'definition':
-				$output = $renderer->render($view, array(
-					'resourceName' => $resourceName,
-					'resourceDefinition' => $resourceDefinition
-				));
+				$output = $this->handleGetDefinition($request, $route);
 				break;
 			case 'create':
-				$output = $renderer->render($view, array(
-					'resourceName' => $resourceName,
-					'resourceDefinition' => $resourceDefinition
-				));
+				$output = $this->handleGetCreate($request, $route);
 				break;
 			case 'update':
-				if (strlen($resourceId) === 0) {
-					throw new Exception\InvalidRequestException(
-						'Update form cannot be produced without specifying a resource'
-					);
-				}
-				$primaryAttribute = $resourceDefinition->primaryAttribute;
-				$filters = array(
-					$primaryAttribute => $resourceId
-				);
-				$resource = $resourceFactory->getBy($resourceDefinition->attributes, $filters)->get(0);
-
-				$output = $renderer->render($view, array(
-					'resourceDefinition' => $resourceDefinition,
-					'resource' => $resource
-				));
+				$output = $this->handleGetUpdate($request, $route);
 				break;
 			case 'filter':
-				$output = $renderer->render($view, array(
-					'resourceName' => $resourceName,
-					'resourceDefinition' => $resourceDefinition
-				));
+				$output = $this->handleGetFilter($request, $route);
 				break;
 			case 'search':
-				if (array_key_exists('filters', $requestParams)) {
-					$filters = $this->stripUnusedFilters($requestParams['filters']);
-					$resourceList = $resourceFactory->search($resourceDefinition->attributes, $filters);
-					$output = $renderer->render($view, array(
-						'resourceName' => $resourceName,
-						'resources' => $pathExtension === 'php' ? $resourceList : $resourceList->getAttributes()
-					));
-				} else {
-					$output = $renderer->render($view, array(
-						'resourceName' => $resourceName,
-						'resourceDefinition' => $resourceDefinition
-					));
-				}
+				$output = $this->handleGetSearchForm($request, $route);
 				break;
 			case 'searchResult':
-				if (array_key_exists('filters', $requestParams)) {
-					$filters = $this->stripUnusedFilters($requestParams['filters']);
-				} else {
-					$filters = array();
-				}
-				$resourceList = $resourceFactory->search($resourceDefinition->attributes, $filters);
-				$output = $renderer->render($view, array(
-					'resourceName' => $resourceName,
-					'resources' => $pathExtension === 'php' ? $resourceList : $resourceList->getAttributes()
-				));
+				$output = $this->handleGetSearchResult($request, $route);
 				break;
 			default:
 				$filters = $this->convertRequestParamsToSimpleSearchFilters($requestParams);
 				if (isset($resourceId)) {
-					$filters['id'] = $resourceId;
+					$filters[$resourceDefinition->primaryAttribute] = $resourceId;
 				}
 
 				$resourceList = $resourceFactory->getBy($resourceDefinition->attributes, $filters);
+
 				if (isset($resourceId) && $viewName === '') {
 					$viewName = 'item';
 					if (!empty($nameExtension)) {
@@ -173,9 +127,110 @@ abstract class ResourceController extends RestfulController
 		return $output;
 	}
 
+	protected function handleIndex(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	{
+		$manifestDirectory = implode(DIRECTORY_SEPARATOR, array($this->app->rootDirectory(), 'resource', 'graph', 'resourceManifest'));
+		$resources = $this->getResourceNames($manifestDirectory);
+		$view = new Graph\Definition\View();
+		$view->name = 'index';
+		$view->path = 'default/index.php';
+		$view->engine = 'php';
+		$renderer = $this->getRenderer();
+		return $renderer->render($view, array(
+			'resources' => $resources
+		));
+	}
+
+	protected function handleGetDefinition(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	{
+		return $this->getRenderer()->render($request->getView(), array(
+			'resourceName' => $request->getResourceRoute(),
+			'resourceDefinition' => $request->getResourceDefinition()
+		));
+	}
+
+	protected function handleGetCreate(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	{
+		return $this->getRenderer()->render($request->getView(), array(
+			'resourceName' => $request->getResourceRoute(),
+			'resourceDefinition' => $request->getResourceDefinition()
+		));
+	}
+
+	protected function handleGetUpdate(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	{
+		$resourceDefinition = $request->getResourceDefinition();
+		$resourceId = $request->getResourceId();
+		$primaryAttribute = $resourceDefinition->primaryAttribute;
+
+		if (strlen($resourceId) === 0) {
+			throw new Exception\InvalidRequestException(
+				'Update form cannot be produced without specifying a resource'
+			);
+		}
+
+		$filters = array(
+			$primaryAttribute => $resourceId
+		);
+		$resource = $request->getResourceFactory()->getBy($resourceDefinition->attributes, $filters)->get(0);
+
+		return $this->getRenderer()->render($request->getView(), array(
+			'resourceName' => $request->getResourceRoute(),
+			'resourceDefinition' => $request->getResourceDefinition(),
+			'resource' => $resource
+		));
+	}
+
+	protected function handleGetFilter(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	{
+		return $this->getRenderer()->render($request->getView(), array(
+			'resourceName' => $request->getResourceRoute(),
+			'resourceDefinition' => $request->getResourceDefinition()
+		));
+	}
+
+	protected function handleGetSearchForm(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	{
+		$resourceDefinition = $request->getResourceDefinition();
+		$requestParams = $request->getParams()->get();
+		$extension = $request->getView()->getPathExtension();
+		if (array_key_exists('filters', $requestParams)) {
+			$filters = $this->stripUnusedSearchFilters($requestParams['filters']);
+			$resourceList = $request->getResourceFactory()->search($resourceDefinition->attributes, $filters);
+			$output = $this->getRenderer()->render($request->getView(), array(
+				'resourceName' => $request->getResourceRoute(),
+				'resourceDefinition' => $resourceDefinition,
+				'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
+			));
+		} else {
+			$output = $this->getRenderer()->render($request->getView(), array(
+				'resourceName' => $request->getResourceRoute(),
+				'resourceDefinition' => $resourceDefinition
+			));
+		}
+		return $output;
+	}
+
+	protected function handleGetSearchResult(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	{
+		$requestParams = $request->getParams()->get();
+		$extension = $request->getView()->getPathExtension();
+		if (array_key_exists('filters', $requestParams)) {
+			$filters = $this->stripUnusedSearchFilters($requestParams['filters']);
+		} else {
+			$filters = array();
+		}
+		$resourceList = $request->getResourceFactory()->search($request->getResourceDefinition()->attributes, $filters);
+		return $this->getRenderer()->render($request->getView(), array(
+			'resourceName' => $request->getResourceRoute(),
+			'resourceDefinition' => $request->getResourceDefinition(),
+			'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
+		));
+	}
+
 	protected function handlePost(Graph\RequestParser\RestfulParsedRequest $request, $route)
 	{
-		$attributes = $request->params()->post();
+		$attributes = $request->getParams()->post();
 		$resourceDefinition = $request->getResourceDefinition();
 		$resourceFactory = $request->getResourceFactory();
 		$uriExtension = $request->getView()->getNameExtension();
@@ -193,7 +248,7 @@ abstract class ResourceController extends RestfulController
 
 		$resourceId = $resource->getAttribute($resourceDefinition->primaryAttribute);
 
-		$requestUri = preg_replace(sprintf('/\.%s$/', $uriExtension), '', trim($request->uri(), '/'));
+		$requestUri = preg_replace(sprintf('/\.%s$/', $uriExtension), '', trim($request->getUri(), '/'));
 
 		$redirectUrl = $this->app->createUrl(array($requestUri, $resourceId));
 		if ($uriExtension !== null) {
@@ -205,14 +260,14 @@ abstract class ResourceController extends RestfulController
 
 	protected function handlePut(Graph\RequestParser\RestfulParsedRequest $request, $route)
 	{
-		$attributes = $request->params()->post();
+		$attributes = $request->getParams()->post();
 		$resourceDefinition = $request->getResourceDefinition();
 		$resourceFactory = $request->getResourceFactory();
 		$uriExtension = $request->getView()->getNameExtension();
 		$primaryAttributeName = $resourceDefinition->primaryAttribute;
 
 		if (empty($attributes)) {
-			throw new Exception\InvalidRequestException('POST request received with no parameters');
+			throw new Exception\InvalidRequestException('PUT request received with no parameters');
 		} elseif (!array_key_exists($primaryAttributeName, $attributes)) {
 			throw new Exception\InvalidRequestException(
 				sprintf('PUT request received with no value for primary attribute `%s`', $primaryAttributeName)
@@ -224,11 +279,11 @@ abstract class ResourceController extends RestfulController
 		);
 
 		$resource = $resourceFactory->update($filters, $attributes);
-		$resourceId = $resource->getAttribute($primaryAttributeName);
 
-		$requestUri = preg_replace(sprintf('/\.%s$/', $uriExtension), '', trim($request->uri(), '/'));
+		$requestUri = preg_replace(sprintf('/\.%s$/', $uriExtension), '', trim($request->getUri(), '/'));
+		$requestUri = preg_replace(sprintf('/\/%s/', $request->getView()->getFunctionName()), '', $requestUri);
 
-		$redirectUrl = $this->app->createUrl(array($requestUri, $resourceId));
+		$redirectUrl = $this->app->createUrl(array($requestUri));
 		if ($uriExtension !== null) {
 			$redirectUrl .= '.' . $uriExtension;
 		}
@@ -289,7 +344,7 @@ abstract class ResourceController extends RestfulController
 		return $attributes;
 	}
 
-	protected function stripUnusedFilters(array $filters)
+	protected function stripUnusedSearchFilters(array $filters)
 	{
 		foreach ($filters as $index => $filter) {
 			if ($filter['comparator'] === '') {

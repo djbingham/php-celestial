@@ -29,19 +29,19 @@ abstract class RequestParser implements Base\RequestParser
 
     public function parse(Request $request, $controllerRoute)
     {
-        $resourceRoute = str_replace($controllerRoute, '', $request->path());
+        $resourceRoute = str_replace($controllerRoute, '', $request->getPath());
         $pathParts = explode('.', $resourceRoute);
         $resourcePath = trim(array_shift($pathParts), '/');
         $extension = array_pop($pathParts);
 
         if (!empty($pathParts)) {
             throw new Exception\InvalidRequestException(
-                sprintf('Too many period (.) characters in the request path: `%s`', $request->path())
+                sprintf('Too many period (.) characters in the request path: `%s`', $request->getPath())
             );
         }
         if (empty($resourcePath)) {
             throw new Exception\InvalidRequestException(
-                sprintf('No resource specified in request path: %s', $request->path())
+                sprintf('No resource specified in request path: %s', $request->getPath())
             );
         }
         $parsedResourcePath = $this->parseResourcePath($resourcePath);

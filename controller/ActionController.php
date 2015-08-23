@@ -11,7 +11,7 @@ class ActionController extends Controller
 	{
         $escapedControllerRoute = str_replace('/', '\/', $controllerRoute);
         $controllerRouteRegex = sprintf('/^%s/', $escapedControllerRoute);
-        $actionRoute = preg_replace($controllerRouteRegex, '', $request->path());
+        $actionRoute = preg_replace($controllerRouteRegex, '', $request->getPath());
         $actionRoute = trim($actionRoute, '/');
         $actionRouteParts = explode('/', $actionRoute);
         $action = array_shift($actionRouteParts);

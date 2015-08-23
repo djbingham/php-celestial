@@ -26,7 +26,10 @@ class Conductor extends Base\Conductor
 		while ($this->querySetToExecute->length() > 0) {
 			$querySetItem = $this->querySetToExecute->shift();
 			$this->executedQuerySet->push($querySetItem);
-			$this->executeQuerySetItem($querySetItem);
+			$fetchedData = $this->executeQuerySetItem($querySetItem);
+			if (empty($fetchedData)) {
+				break;
+			}
 		}
 		return $this->fetchedData;
 	}

@@ -89,32 +89,32 @@ class Request
         return $instance;
     }
 
-	public function method()
+	public function getMethod()
 	{
 		return $this->method;
 	}
 
-	public function uri()
+	public function getUri()
 	{
 		return $this->uri;
 	}
 
-	public function path()
+	public function getPath()
 	{
 		return rtrim($this->path, '/');
 	}
 
-	public function queryString()
+	public function getQueryString()
 	{
 		return $this->queryString;
 	}
 
-	public function fragment()
+	public function getFragment()
 	{
 		return $this->fragment;
 	}
 
-	public function params()
+	public function getParams()
 	{
 		return $this->params;
 	}
@@ -122,16 +122,16 @@ class Request
     public function toArray()
     {
         return array(
-            'method' => $this->method(),
-            'uri' => $this->uri(),
-            'path' => $this->path(),
-            'queryString' => $this->queryString(),
-            'fragment' => $this->fragment(),
+            'method' => $this->getMethod(),
+            'uri' => $this->getUri(),
+            'path' => $this->getPath(),
+            'queryString' => $this->getQueryString(),
+            'fragment' => $this->getFragment(),
             'params' => array(
-                'get' => $this->params()->get(),
-                'post' => $this->params()->post(),
-                'cookie' => $this->params()->cookie(),
-                'server' => $this->params()->server(),
+                'get' => $this->getParams()->get(),
+                'post' => $this->getParams()->post(),
+                'cookie' => $this->getParams()->cookie(),
+                'server' => $this->getParams()->server(),
             )
         );
     }

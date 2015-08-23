@@ -17,7 +17,7 @@ class ResourceController extends RestfulController
 {
     public function execute(Request $request, $route)
     {
-        $requestPath = $request->path();
+        $requestPath = $request->getPath();
         $lastPathPartPos = strrpos($requestPath, '/') + 1;
         $function = strtolower(substr($requestPath, $lastPathPartPos));
         if (empty($function)) {
@@ -26,8 +26,8 @@ class ResourceController extends RestfulController
         if (in_array($function, array('getChild', 'post', 'put', 'delete', 'index'))) {
             $requestProperties = $request->toArray();
             $requestProperties['method'] = $function;
-            $requestProperties['uri'] = substr($request->uri(), 0, $lastPathPartPos);
-            $requestProperties['path'] = substr($request->path(), 0, $lastPathPartPos);
+            $requestProperties['uri'] = substr($request->getUri(), 0, $lastPathPartPos);
+            $requestProperties['path'] = substr($request->getPath(), 0, $lastPathPartPos);
             $request = Request::fromArray($requestProperties);
         }
         return parent::execute($request, $route);
@@ -61,7 +61,7 @@ class ResourceController extends RestfulController
         $resourceFactory = $this->instantiateResourceFactory($parsedRequest);
         $unresolvedRoute = $parsedRequest->getUnresolvedRoute();
         $outputFormat = $parsedRequest->getFormat();
-        $requestParams = $request->params()->get();
+        $requestParams = $request->getParams()->get();
 
         if (preg_match('/\//', $unresolvedRoute)) {
             list($resourceId, $function) = explode('/', $unresolvedRoute);
@@ -147,7 +147,7 @@ class ResourceController extends RestfulController
         $parsedRequest = $resourceModule->parser()->parse($request, $route);
         $resourceFactory = $this->instantiateResourceFactory($parsedRequest);
         $outputFormat = $parsedRequest->getFormat();
-        $attributes = $request->params()->post();
+        $attributes = $request->getParams()->post();
 
         if (empty($attributes)) {
             throw new Exception\InvalidRequestException('POST request received with no parameters');
@@ -157,7 +157,7 @@ class ResourceController extends RestfulController
 
         $primaryAttribute = $resourceFactory->getDefinition()->primaryAttribute();
         $resourceId = $resource->getAttribute($primaryAttribute);
-        $redirectUri = $this->createRedirectUri($request->uri(), null, $resourceId, $outputFormat);
+        $redirectUri = $this->createRedirectUri($request->getUri(), null, $resourceId, $outputFormat);
 
         echo "<hr>";
         var_dump($redirectUri);
@@ -173,7 +173,7 @@ class ResourceController extends RestfulController
         $resourceFactory = $this->instantiateResourceFactory($parsedRequest);
         $resourceId = $parsedRequest->getUnresolvedRoute();
         $outputFormat = $parsedRequest->getFormat();
-        $attributes = $request->params()->post();
+        $attributes = $request->getParams()->post();
 
         if (empty($attributes)) {
             throw new Exception\InvalidRequestException('PUT request received with no parameters');
@@ -185,7 +185,7 @@ class ResourceController extends RestfulController
 
         $primaryAttribute = $resourceFactory->getDefinition()->primaryAttribute();
         $updatedResourceId = $updatedResource->getAttribute($primaryAttribute);
-        $redirectUri = $this->createRedirectUri($request->uri(), $resourceId, $updatedResourceId, $outputFormat);
+        $redirectUri = $this->createRedirectUri($request->getUri(), $resourceId, $updatedResourceId, $outputFormat);
 
         $this->app->redirect($this->app->createUrl(array($redirectUri)));
 	}

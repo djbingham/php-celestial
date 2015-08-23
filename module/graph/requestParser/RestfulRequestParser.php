@@ -55,12 +55,12 @@ class RestfulRequestParser implements RequestParserInterface
 
 	public function parse(Request $request, $controllerRoute)
 	{
-		$resourceRoute = str_replace($controllerRoute, '', $request->path());
+		$resourceRoute = str_replace($controllerRoute, '', $request->getPath());
 		$resourcePath = trim($resourceRoute, '/');
 
 		if (empty($resourcePath)) {
 			throw new Exception\InvalidRequestException(
-				sprintf('No resource specified in request path: %s', $request->path())
+				sprintf('No resource specified in request path: %s', $request->getPath())
 			);
 		}
 		$parsedResourcePath = $this->parseResourcePathToResourceLocation($resourcePath);
@@ -83,16 +83,18 @@ class RestfulRequestParser implements RequestParserInterface
 		$requestProperties['resourceRoute'] = $parsedResourcePath['resourceRoute'];
 		$requestProperties['unresolvedRoute'] = $parsedResourcePath['unresolvedRoute'];
 
-		$furtherRequestProperties = $this->parseRequestProperties($requestProperties, $requestProperties['manifest']);
-		$requestProperties['viewName'] = $furtherRequestProperties['viewName'];
-		$requestProperties['resourceId'] = $furtherRequestProperties['resourceId'];
-		$requestProperties['unresolvedRoute'] = $furtherRequestProperties['unresolvedRoute'];
+		if (array_key_exists('manifest', $requestProperties)) {
+			$furtherRequestProperties = $this->parseRequestProperties($requestProperties, $requestProperties['manifest']);
+			$requestProperties['viewName'] = $furtherRequestProperties['viewName'];
+			$requestProperties['resourceId'] = $furtherRequestProperties['resourceId'];
+			$requestProperties['unresolvedRoute'] = $furtherRequestProperties['unresolvedRoute'];
 
-		$resourceDefinitionFactory = $this->module->resourceDefinitionBuilder();
-		$resourceDefinition = $resourceDefinitionFactory->buildFromManifest($requestProperties['manifest']);
-		$requestProperties['resourceDefinition'] = $resourceDefinition;
-		$requestProperties['resourceFactory'] = $this->module->resourceFactory($resourceDefinition->table);
-		$requestProperties['view'] = $resourceDefinition->views->getByProperty('name', $requestProperties['viewName']);
+			$resourceDefinitionFactory = $this->module->resourceDefinitionBuilder();
+			$resourceDefinition = $resourceDefinitionFactory->buildFromManifest($requestProperties['manifest']);
+			$requestProperties['resourceDefinition'] = $resourceDefinition;
+			$requestProperties['resourceFactory'] = $this->module->resourceFactory($resourceDefinition->table);
+			$requestProperties['view'] = $resourceDefinition->views->getByProperty('name', $requestProperties['viewName']);
+		}
 
 		return $this->instantiateParsedRequest($requestProperties);
 	}
