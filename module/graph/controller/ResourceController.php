@@ -32,21 +32,7 @@ abstract class ResourceController extends RestfulController
 		}
 		return $parsedRequest;
 	}
-
-	protected function index()
-	{
-		$manifestDirectory = implode(DIRECTORY_SEPARATOR, array($this->app->rootDirectory(), 'resource', 'graph', 'resourceManifest'));
-		$resources = $this->getResourceNames($manifestDirectory);
-		$view = new Graph\Definition\View();
-		$view->name = 'index';
-		$view->path = 'default/index.php';
-		$view->engine = 'php';
-		$renderer = $this->getRenderer();
-		return $renderer->render($view, array(
-			'resources' => $resources
-		));
-	}
-
+	
 	protected function getResourceNames($directory)
 	{
 		$directoryContents = scandir($directory);
@@ -131,8 +117,7 @@ abstract class ResourceController extends RestfulController
 
 	protected function handleIndex(Graph\RequestParser\RestfulParsedRequest $request, $route)
 	{
-		$manifestDirectory = implode(DIRECTORY_SEPARATOR, array($this->app->rootDirectory(), 'resource', 'graph', 'resourceManifest'));
-		$resources = $this->getResourceNames($manifestDirectory);
+		$resources = $this->getResourceNames($this->getResourceManifestDirectory());
 		$view = new Graph\Definition\View();
 		$view->name = 'index';
 		$view->path = 'default/index.php';
