@@ -71,14 +71,6 @@
 		"update": {
 			"engine": "php",
 			"path": "default/updateForm.php"
-		},
-		"put": {
-			"engine": "php",
-			"path": "default/item.php"
-		},
-		"put.html": {
-			"engine": "php",
-			"path": "default/item.php"
 		}
 	}
 }
