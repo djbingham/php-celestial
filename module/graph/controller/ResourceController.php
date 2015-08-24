@@ -30,6 +30,11 @@ abstract class ResourceController extends RestfulController
 	 */
 	abstract protected function getRequestParser();
 
+	/**
+	 * @return Graph\RendererInterface
+	 */
+	abstract protected function getRenderer();
+
 	public function parseRequest(Request $request, $route, $quit = false)
 	{
 		$requestParser = $this->getRequestParser();
@@ -351,15 +356,6 @@ abstract class ResourceController extends RestfulController
 			}
 		}
 		return array_values($filters);
-	}
-
-	protected function getRenderer()
-	{
-		return new Graph\Renderer($this->app, array(
-			'mustache' => new Graph\Renderer\Mustache(),
-			'php' => new Graph\Renderer\Php(),
-			'json' => new Graph\Renderer\Json()
-		));
 	}
 
 	protected function createRedirectUri($originalUri, $originalResourceId, $updatedResourceId)

@@ -1,5 +1,5 @@
 <?php
-namespace SlothDemo\Parser;
+namespace SlothDemo\Helper;
 
 use Sloth\Module\Graph\RequestParser\RestfulRequestParser;
 
