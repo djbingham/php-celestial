@@ -23,7 +23,7 @@ trait ResourceBuilderAssertions
 		$this->assertEquals(3, $table->links->length());
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\ValidatorList', $table->validators);
 		$this->assertEquals(0, $table->validators->length());
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\ViewList', $table->views);
+		$this->assertInstanceOf('Sloth\Module\Render\ViewList', $table->views);
 		$this->assertEquals(0, $table->views->length());
 
 		$this->assertEquals('id', $table->fields->getByIndex(0)->name);
@@ -177,7 +177,7 @@ trait ResourceBuilderAssertions
 		$this->assertEquals(1, $table->links->length());
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\ValidatorList', $table->validators);
 		$this->assertEquals(0, $table->validators->length());
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\ViewList', $table->views);
+		$this->assertInstanceOf('Sloth\Module\Render\ViewList', $table->views);
 		$this->assertEquals(0, $table->views->length());
 
 		$this->assertSame($table, $table->fields->getByIndex(0)->table);

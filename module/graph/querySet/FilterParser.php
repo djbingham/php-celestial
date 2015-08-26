@@ -13,6 +13,9 @@ class FilterParser implements FilterParserInterface
 			if (array_key_exists($field->name, $filters)) {
 				$parsedFilters[$field->name] = new Filter();
 				$parsedFilters[$field->name]->field = $field;
+				if (is_array($filters[$field->name])) {
+					$parsedFilters[$field->name]->comparator = 'IN';
+				}
 				$parsedFilters[$field->name]->value = $filters[$field->name];
 			}
 		}

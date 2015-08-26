@@ -1,5 +1,7 @@
 {
+	"name": "User",
 	"table": "User",
+	"primaryAttribute": "id",
 	"attributes": {
 		"id": true,
 		"forename": true,
