@@ -10,7 +10,7 @@ use SlothMySql\DatabaseWrapper;
 use SlothMySql\QueryBuilder\Query\Constraint;
 use SlothMySql\QueryBuilder\Query\Select;
 
-class Conductor extends Base\Conductor
+class Conductor extends Base\AbstractConductor
 {
 	public function conduct()
 	{

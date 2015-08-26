@@ -9,7 +9,7 @@ use Sloth\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 use SlothMySql\Abstractory\Value\ATable as QueryTable;
 
-class Composer extends Base\Composer
+class Composer extends Base\AbstractComposer
 {
 	public function compose()
 	{

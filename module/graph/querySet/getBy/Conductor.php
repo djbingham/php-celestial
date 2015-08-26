@@ -8,7 +8,7 @@ use Sloth\Module\Graph\Definition;
 use SlothMySql\QueryBuilder\Query\Constraint;
 use SlothMySql\QueryBuilder\Query\Select;
 
-class Conductor extends Base\Conductor
+class Conductor extends Base\AbstractConductor
 {
 	/**
 	 * @var QuerySet
@@ -102,7 +102,8 @@ class Conductor extends Base\Conductor
 		$queryValue = $this->database->value()->guess($queryValues);
 		$constraint = $this->database->query()->constraint()
 			->setSubject($queryField)
-			->in($queryValue);
+			->setComparator('IN')
+			->setValue($queryValue);
 		return $constraint;
 	}
 
@@ -121,7 +122,9 @@ class Conductor extends Base\Conductor
 					if ($linkToTargetTable instanceof Definition\Table\Join) {
 						$constraint = $this->buildLinkConstraint($linkToTargetTable, $targetLinkData);
 						if ($constraint instanceof Constraint) {
-							$targetQuerySetItem->getQuery()->where($constraint);
+							/** @var Select $query */
+							$query = $targetQuerySetItem->getQuery();
+							$query->where($constraint);
 						}
 					}
 				}

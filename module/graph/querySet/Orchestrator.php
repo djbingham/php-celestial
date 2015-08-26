@@ -1,8 +1,8 @@
 <?php
 namespace Sloth\Module\Graph\QuerySet;
 
-use Sloth\Module\Graph\QuerySet\Base\Composer;
-use Sloth\Module\Graph\QuerySet\Base\Conductor;
+use Sloth\Module\Graph\QuerySet\Base\AbstractComposer;
+use Sloth\Module\Graph\QuerySet\Base\AbstractConductor;
 use Sloth\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 
@@ -14,12 +14,12 @@ class Orchestrator
 	private $database;
 
 	/**
-	 * @var Composer
+	 * @var AbstractComposer
 	 */
 	private $composer;
 
 	/**
-	 * @var Conductor
+	 * @var AbstractConductor
 	 */
 	private $conductor;
 
@@ -39,13 +39,13 @@ class Orchestrator
 		return $this;
 	}
 
-	public function setComposer(Composer $composer)
+	public function setComposer(AbstractComposer $composer)
 	{
 		$this->composer = $composer;
 		return $this;
 	}
 
-	public function setConductor(Conductor $conductor)
+	public function setConductor(AbstractConductor $conductor)
 	{
 		$this->conductor = $conductor;
 		return $this;

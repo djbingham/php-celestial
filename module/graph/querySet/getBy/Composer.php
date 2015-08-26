@@ -1,6 +1,7 @@
 <?php
 namespace Sloth\Module\Graph\QuerySet\GetBy;
 
+use Sloth\Module\Graph\Exception\InvalidTableException;
 use Sloth\Module\Graph\QuerySet\Base;
 use Sloth\Module\Graph\QuerySet\Filter;
 use Sloth\Module\Graph\QuerySet\QuerySet;
@@ -9,7 +10,7 @@ use Sloth\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 use SlothMySql\Abstractory\Value\ATable as QueryTable;
 
-class Composer extends Base\Composer
+class Composer extends Base\AbstractComposer
 {
 	/**
 	 * @var array
@@ -96,7 +97,7 @@ class Composer extends Base\Composer
 			->from($this->getQueryTable($tableDefinition->name, $tableDefinition->getAlias()))
 			->setJoins($this->buildQueryJoinsFromResource($tableDefinition));
 
-		$constraint = $this->buildQueryConstraintFromFilters($filters, $tableDefinition, $tableDefinition->getAlias());
+		$constraint = $this->buildQueryConstraintFromFilters($filters, $tableDefinition);
 		if ($constraint !== null) {
 			$query->where($constraint);
 		}
@@ -158,9 +159,9 @@ class Composer extends Base\Composer
 		return $joinConstraint;
 	}
 
-	private function buildQueryConstraintFromFilters(array $filters, Definition\Table $tableDefinition, $parentAlias)
+	private function buildQueryConstraintFromFilters(array $filters, Definition\Table $tableDefinition)
 	{
-		$constraints = $this->buildQueryConstraintListFromFilters($filters, $tableDefinition, $parentAlias);
+		$constraints = $this->buildQueryConstraintListFromFilters($filters, $tableDefinition);
 
 		$firstConstraint = null;
 		if (count($constraints) > 0) {
@@ -172,13 +173,13 @@ class Composer extends Base\Composer
 		return $firstConstraint;
 	}
 
-	private function buildQueryConstraintListFromFilters(array $filters, Definition\Table $tableDefinition, $parentAlias)
+	private function buildQueryConstraintListFromFilters(array $filters, Definition\Table $tableDefinition)
 	{
 		$constraints = array();
 		foreach ($filters as $filterName => $filter) {
 			if ($filter instanceof Filter) {
 				$field = $filter->field;
-				$field = $this->buildQueryFieldFromAlias($field->getAlias(), $parentAlias);
+				$field = $this->buildQueryFieldFromAlias($field->getAlias());
 				$fieldConstraint = $this->database->query()->constraint()
 					->setSubject($field);
 				if (is_array($filter->value)) {
@@ -199,7 +200,7 @@ class Composer extends Base\Composer
 					$resourceLink = $tableDefinition->links->getByName($filterName);
 					if (in_array($resourceLink->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
 						$childTable = $resourceLink->getChildTable();
-						$constraints = array_merge($constraints, $this->buildQueryConstraintListFromFilters($filter, $childTable, $filterName));
+						$constraints = array_merge($constraints, $this->buildQueryConstraintListFromFilters($filter, $childTable));
 					}
 				}
 			}
@@ -207,7 +208,7 @@ class Composer extends Base\Composer
 		return $constraints;
 	}
 
-	private function buildQueryFieldFromAlias($fieldAlias, $parentAlias)
+	private function buildQueryFieldFromAlias($fieldAlias)
 	{
 		$nameParts = explode('.', $fieldAlias);
 		list($tableName, $fieldName) = $nameParts;
@@ -301,6 +302,7 @@ class Composer extends Base\Composer
 			$join->table($this->getQueryTable($link->getChildTable()->name, $link->getChildTable()->getAlias()));
 
 			if (!isset($firstSubJoin)) {
+				/** @var \Sloth\Module\Graph\Definition\Table\Join\SubJoin $firstSubJoin */
 				$firstSubJoinName = array_keys($subJoins)[0];
 				$firstSubJoin = $subJoins[$firstSubJoinName];
 			}
@@ -332,6 +334,10 @@ class Composer extends Base\Composer
 		$queryJoins = array_merge($queryJoins, $this->buildQueryJoinsFromResource($tableDefinition));
 		$query->setJoins($queryJoins);
 
+		if (!isset($firstSubJoin)) {
+			throw new InvalidTableException('Attempting to build query for a sub-join where no sub-join exists');
+		}
+
 		$firstTableAlias = $firstSubJoin->childTable->getAlias();
 		$linkField = $this->getQueryTable($firstTableAlias, $firstTableAlias)
 			->field($firstSubJoin->childField->name)
@@ -343,7 +349,7 @@ class Composer extends Base\Composer
 		$query->setFields($queryFields)
 			->from($this->getQueryTable($table->name, $table->getAlias()));
 
-		$queryConstraint = $this->buildQueryConstraintFromFilters($filters, $link->getChildTable(), $link->name);
+		$queryConstraint = $this->buildQueryConstraintFromFilters($filters, $link->getChildTable());
 		if (!is_null($queryConstraint)) {
 			$query->where($queryConstraint);
 		}

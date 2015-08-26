@@ -6,7 +6,7 @@ use Sloth\Module\Graph\QuerySet\QuerySet;
 use Sloth\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 
-abstract class Conductor
+abstract class AbstractConductor
 {
 	/**
 	 * @var DatabaseWrapper

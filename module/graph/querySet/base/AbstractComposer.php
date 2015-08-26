@@ -4,7 +4,7 @@ namespace Sloth\Module\Graph\QuerySet\Base;
 use Sloth\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 
-abstract class Composer
+abstract class AbstractComposer
 {
 	/**
 	 * @var DatabaseWrapper
