@@ -17,31 +17,27 @@ abstract class RestfulController extends Controller
 
 	/**
 	 * @param RestfulParsedRequest $request
-	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handleGet(RestfulParsedRequest $request, $route);
+	abstract protected function handleGet(RestfulParsedRequest $request);
 
 	/**
 	 * @param RestfulParsedRequest $request
-	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handlePost(RestfulParsedRequest $request, $route);
+	abstract protected function handlePost(RestfulParsedRequest $request);
 
 	/**
 	 * @param RestfulParsedRequest $request
-	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handlePut(RestfulParsedRequest $request, $route);
+	abstract protected function handlePut(RestfulParsedRequest $request);
 
 	/**
 	 * @param RestfulParsedRequest $request
-	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handleDelete(RestfulParsedRequest $request, $route);
+	abstract protected function handleDelete(RestfulParsedRequest $request);
 
 	/**
 	 * @param Request $request

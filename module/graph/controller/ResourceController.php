@@ -62,7 +62,7 @@ abstract class ResourceController extends RestfulController
 		return $resourceNames;
 	}
 
-	protected function handleGet(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	protected function handleGet(Graph\RequestParser\RestfulParsedRequest $request)
 	{
 		$renderer = $this->getRenderer();
 
@@ -80,22 +80,22 @@ abstract class ResourceController extends RestfulController
 
 		switch ($function) {
 			case 'definition':
-				$output = $this->handleGetDefinition($request, $route);
+				$output = $this->handleGetDefinition($request);
 				break;
 			case 'create':
-				$output = $this->handleGetCreate($request, $route);
+				$output = $this->handleGetCreate($request);
 				break;
 			case 'update':
-				$output = $this->handleGetUpdate($request, $route);
+				$output = $this->handleGetUpdate($request);
 				break;
 			case 'filter':
-				$output = $this->handleGetFilter($request, $route);
+				$output = $this->handleGetFilter($request);
 				break;
 			case 'search':
-				$output = $this->handleGetSearchForm($request, $route);
+				$output = $this->handleGetSearchForm($request);
 				break;
 			case 'searchResult':
-				$output = $this->handleGetSearchResult($request, $route);
+				$output = $this->handleGetSearchResult($request);
 				break;
 			default:
 				$filters = $this->convertRequestParamsToSimpleSearchFilters($requestParams);
@@ -132,7 +132,7 @@ abstract class ResourceController extends RestfulController
 		return $output;
 	}
 
-	protected function handleIndex(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	protected function handleIndex(Graph\RequestParser\RestfulParsedRequest $request)
 	{
 		$resources = $this->getResourceNames($this->getResourceManifestDirectory());
 		$view = new Graph\Definition\View();
@@ -145,7 +145,7 @@ abstract class ResourceController extends RestfulController
 		));
 	}
 
-	protected function handleGetDefinition(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	protected function handleGetDefinition(Graph\RequestParser\RestfulParsedRequest $request)
 	{
 		return $this->getRenderer()->render($request->getView(), array(
 			'resourceName' => $request->getResourceRoute(),
@@ -153,7 +153,7 @@ abstract class ResourceController extends RestfulController
 		));
 	}
 
-	protected function handleGetCreate(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	protected function handleGetCreate(Graph\RequestParser\RestfulParsedRequest $request)
 	{
 		return $this->getRenderer()->render($request->getView(), array(
 			'resourceName' => $request->getResourceRoute(),
@@ -161,7 +161,7 @@ abstract class ResourceController extends RestfulController
 		));
 	}
 
-	protected function handleGetUpdate(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	protected function handleGetUpdate(Graph\RequestParser\RestfulParsedRequest $request)
 	{
 		$resourceDefinition = $request->getResourceDefinition();
 		$resourceId = $request->getResourceId();
@@ -185,7 +185,7 @@ abstract class ResourceController extends RestfulController
 		));
 	}
 
-	protected function handleGetFilter(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	protected function handleGetFilter(Graph\RequestParser\RestfulParsedRequest $request)
 	{
 		return $this->getRenderer()->render($request->getView(), array(
 			'resourceName' => $request->getResourceRoute(),
@@ -193,7 +193,7 @@ abstract class ResourceController extends RestfulController
 		));
 	}
 
-	protected function handleGetSearchForm(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	protected function handleGetSearchForm(Graph\RequestParser\RestfulParsedRequest $request)
 	{
 		$resourceDefinition = $request->getResourceDefinition();
 		$requestParams = $request->getParams()->get();
@@ -215,7 +215,7 @@ abstract class ResourceController extends RestfulController
 		return $output;
 	}
 
-	protected function handleGetSearchResult(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	protected function handleGetSearchResult(Graph\RequestParser\RestfulParsedRequest $request)
 	{
 		$requestParams = $request->getParams()->get();
 		$extension = $request->getView()->getPathExtension();
@@ -232,7 +232,7 @@ abstract class ResourceController extends RestfulController
 		));
 	}
 
-	protected function handlePost(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	protected function handlePost(Graph\RequestParser\RestfulParsedRequest $request)
 	{
 		$attributes = $request->getParams()->post();
 		$resourceDefinition = $request->getResourceDefinition();
@@ -262,7 +262,7 @@ abstract class ResourceController extends RestfulController
 		$this->app->redirect($redirectUrl);
 	}
 
-	protected function handlePut(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	protected function handlePut(Graph\RequestParser\RestfulParsedRequest $request)
 	{
 		$attributes = $request->getParams()->post();
 		$resourceDefinition = $request->getResourceDefinition();
@@ -295,7 +295,7 @@ abstract class ResourceController extends RestfulController
 		$this->app->redirect($redirectUrl);
 	}
 
-	protected function handleDelete(Graph\RequestParser\RestfulParsedRequest $request, $route)
+	protected function handleDelete(Graph\RequestParser\RestfulParsedRequest $request)
 	{
 		$resourceModule = $this->getGraphFactory();
 		$resourceFactory = $this->instantiateResourceFactory($request);
