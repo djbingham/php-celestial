@@ -18,14 +18,4 @@ abstract class Controller
     {
         return $this->app->module($name);
     }
-
-	protected function render($view, array $parameters = array())
-	{
-        return $this->app->render()->full($view, $parameters);
-	}
-
-    protected function capture($view, array $parameters = array())
-    {
-        return $this->app->render()->captureFull($view, $parameters);
-    }
 }

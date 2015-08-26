@@ -26,7 +26,7 @@ class Resource
 	public $primaryAttribute;
 
 	/**
-	 * @var Definition\ViewList
+	 * @var \Sloth\Module\Render\ViewList
 	 */
 	public $views;
 

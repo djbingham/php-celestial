@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\Graph\Helper;
+namespace Sloth\Helper;
 
 use Sloth\Exception\InvalidArgumentException;
 

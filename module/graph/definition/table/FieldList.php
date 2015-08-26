@@ -2,7 +2,7 @@
 namespace Sloth\Module\Graph\Definition\Table;
 
 use Sloth\Module\Graph\Definition\Table\Field;
-use Sloth\Module\Graph\Helper\ObjectList;
+use Sloth\Helper\ObjectList;
 
 class FieldList extends ObjectList
 {

@@ -26,51 +26,51 @@
 	"views": {
 		"": {
 			"engine": "php",
-			"path": "default/list.php"
+			"path": "resource/default/list.php"
 		},
 		".html": {
 			"engine": "mustache",
-			"path": "user/list.html"
+			"path": "resource/user/list.html"
 		},
 		"definition": {
 			"engine": "php",
-			"path": "default/definition.php"
+			"path": "resource/default/definition.php"
 		},
 		"list": {
 			"engine": "php",
-			"path": "default/list.php"
+			"path": "resource/default/list.php"
 		},
 		"list.html": {
 			"engine": "mustache",
-			"path": "user/list.html"
+			"path": "resource/user/list.html"
 		},
 		"list.json": {
 			"engine": "json",
-			"path": "default/list.json"
+			"path": "resource/default/list.json"
 		},
 		"item": {
 			"engine": "php",
-			"path": "default/item.php"
+			"path": "resource/default/item.php"
 		},
 		"filter": {
 			"engine": "php",
-			"path": "default/filterForm.php"
+			"path": "resource/default/filterForm.php"
 		},
 		"search": {
 			"engine": "php",
-			"path": "default/searchForm.php"
+			"path": "resource/default/searchForm.php"
 		},
 		"searchResult": {
 			"engine": "php",
-			"path": "default/list.php"
+			"path": "resource/default/list.php"
 		},
 		"create": {
 			"engine": "php",
-			"path": "default/createForm.php"
+			"path": "resource/default/createForm.php"
 		},
 		"update": {
 			"engine": "php",
-			"path": "default/updateForm.php"
+			"path": "resource/default/updateForm.php"
 		}
 	}
 }

@@ -7,9 +7,9 @@ class ViewListBuilder
 {
 	public function build(array $manifestViews)
 	{
-		$views = new Definition\ViewList();
+		$views = new \Sloth\Module\Render\ViewList();
 		foreach ($manifestViews as $viewName => $viewManifest) {
-			$view = new Definition\View();
+			$view = new \Sloth\Module\Render\View();
 			$view->name = $viewName;
 			$view->path = $viewManifest['path'];
 			$view->engine = $viewManifest['engine'];

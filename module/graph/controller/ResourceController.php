@@ -31,7 +31,7 @@ abstract class ResourceController extends RestfulController
 	abstract protected function getRequestParser();
 
 	/**
-	 * @return Graph\RendererInterface
+	 * @return \Sloth\Module\Render\Face\RendererInterface
 	 */
 	abstract protected function getRenderer();
 
@@ -135,9 +135,9 @@ abstract class ResourceController extends RestfulController
 	protected function handleIndex(Graph\RequestParser\RestfulParsedRequest $request)
 	{
 		$resources = $this->getResourceNames($this->getResourceManifestDirectory());
-		$view = new Graph\Definition\View();
+		$view = new \Sloth\Module\Render\View();
 		$view->name = 'index';
-		$view->path = 'default/index.php';
+		$view->path = 'resource/default/index.php';
 		$view->engine = 'php';
 		$renderer = $this->getRenderer();
 		return $renderer->render($view, array(
@@ -282,7 +282,7 @@ abstract class ResourceController extends RestfulController
 			$primaryAttributeName => $attributes[$primaryAttributeName]
 		);
 
-		$resource = $resourceFactory->update($filters, $attributes);
+		$resourceFactory->update($filters, $attributes);
 
 		$requestUri = preg_replace(sprintf('/\.%s$/', $uriExtension), '', trim($request->getUri(), '/'));
 		$requestUri = preg_replace(sprintf('/\/%s/', $request->getView()->getFunctionName()), '', $requestUri);

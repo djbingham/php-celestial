@@ -1,7 +1,9 @@
 <?php
-namespace Sloth\Module\Graph\Renderer;
+namespace Sloth\Module\Render\Engine;
 
-class Php
+use Sloth\Module\Render\Face\RenderEngineInterface;
+
+class Php implements RenderEngineInterface
 {
 	public function render($viewPath, array $parameters = array())
 	{

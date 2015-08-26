@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Graph\Definition;
 
-use Sloth\Module\Graph\Helper\ObjectList;
+use Sloth\Helper\ObjectList;
 
 class TableList extends ObjectList
 {

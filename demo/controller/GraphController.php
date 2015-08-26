@@ -2,7 +2,6 @@
 namespace Sloth\Demo\Controller;
 
 use Sloth\Module\Graph;
-use SlothDemo\Helper\GraphRenderer;
 use SlothDemo\Helper\GraphRequestParser;
 
 class GraphController extends Graph\Controller\ResourceController
@@ -26,10 +25,6 @@ class GraphController extends Graph\Controller\ResourceController
 
 	protected function getRenderer()
 	{
-		return new GraphRenderer($this->app, array(
-			'mustache' => new Graph\Renderer\Mustache(),
-			'php' => new Graph\Renderer\Php(),
-			'json' => new Graph\Renderer\Json()
-		));
+		return $this->app->render();
 	}
 }

@@ -53,7 +53,7 @@ class RestfulParsedRequest extends Request implements ParsedRequestInterface
 	protected $resourceFactory;
 
 	/**
-	 * @var Graph\Definition\View
+	 * @var \Sloth\Module\Render\View
 	 */
 	protected $view;
 
@@ -186,7 +186,7 @@ class RestfulParsedRequest extends Request implements ParsedRequestInterface
 		return $this->resourceFactory;
 	}
 
-	public function setView(Graph\Definition\View $view)
+	public function setView(\Sloth\Module\Render\View $view)
 	{
 		$this->view = $view;
 		return $this;

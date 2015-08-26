@@ -1,8 +1,8 @@
 <?php
 namespace SlothDemo\Helper;
 
-use Sloth\Module\Graph\Definition\View;
-use Sloth\Module\Graph\Renderer;
+use Sloth\Module\Render\View;
+use Sloth\Module\Render\Renderer;
 
 class GraphRenderer extends Renderer
 {

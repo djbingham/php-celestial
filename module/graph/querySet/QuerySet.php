@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Graph\QuerySet;
 
-use Sloth\Module\Graph\Helper\ObjectList;
+use Sloth\Helper\ObjectList;
 use Sloth\Module\Graph\QuerySet\QuerySetItem;
 use Sloth\Module\Graph\Definition;
 

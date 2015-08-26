@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Graph\Definition\Table\Join;
 
-use Sloth\Module\Graph\Helper\ObjectList;
+use Sloth\Helper\ObjectList;
 
 class SubJoinList extends ObjectList
 {

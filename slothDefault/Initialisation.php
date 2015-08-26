@@ -1,19 +1,20 @@
 <?php
 namespace SlothDefault;
 
-use Sloth\App;
 use SlothDefault;
 use SlothMySql;
 
 class Initialisation extends \Sloth\Base\Initialisation
 {
-	public function getApp()
-	{
-		if (!isset($this->app)) {
-			$this->app = new App($this->config);
-		}
-		return $this->app;
-	}
+	/**
+	 * @var SlothDefault\Router
+	 */
+	private $router;
+
+	/**
+	 * @var SlothMySql\DatabaseWrapper
+	 */
+	private $database;
 
 	public function getRouter()
 	{
@@ -39,17 +40,5 @@ class Initialisation extends \Sloth\Base\Initialisation
 			$this->database = new SlothMySql\DatabaseWrapper($connection, $queryBuilder);
 		}
 		return $this->database;
-	}
-
-	public function getRenderer()
-	{
-		if (!isset($this->renderer)) {
-			$this->renderer = new SlothDefault\Renderer(array(
-                'app' => $this->getApp(),
-				'viewDirectory' => $this->config->rootDirectory() . DIRECTORY_SEPARATOR . 'view',
-				'templateEngine' => new \Mustache_Autoloader()
-			));
-		}
-		return $this->renderer;
 	}
 }

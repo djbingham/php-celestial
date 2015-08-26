@@ -1,7 +1,8 @@
 <?php
-namespace Sloth\Module\Graph\Definition;
+namespace Sloth\Module\Render;
 
-use Sloth\Module\Graph\Helper\ObjectList;
+use Sloth\Helper\ObjectList;
+use Sloth\Module\Render\View;
 
 class ViewList extends ObjectList
 {

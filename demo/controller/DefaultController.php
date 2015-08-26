@@ -8,6 +8,6 @@ class DefaultController extends ActionController
 {
 	public function actionIndex(Request $request)
 	{
-		$this->render('default/index');
+		return $this->render('default/index.html');
 	}
 }

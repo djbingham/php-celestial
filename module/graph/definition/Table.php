@@ -4,6 +4,7 @@ namespace Sloth\Module\Graph\Definition;
 use Sloth\Module\Graph\Definition\Table\FieldList;
 use Sloth\Module\Graph\Definition\Table\Join;
 use Sloth\Module\Graph\Definition\Table\JoinList;
+use Sloth\Module\Render\ViewList;
 
 class Table
 {

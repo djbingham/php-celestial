@@ -1,11 +1,28 @@
 <?php
-namespace Sloth\Module\Graph\Definition;
+namespace Sloth\Module\Render;
 
-class View
+use Sloth\Module\Render\Face\ViewInterface;
+
+class View implements ViewInterface
 {
 	public $name;
 	public $path;
 	public $engine;
+
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	public function getPath()
+	{
+		return $this->path;
+	}
+
+	public function getEngineName()
+	{
+		return $this->engine;
+	}
 
 	public function getFunctionName()
 	{

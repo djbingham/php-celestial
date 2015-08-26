@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Graph\QuerySet;
 
-use Sloth\Module\Graph\Helper\ObjectList;
+use Sloth\Helper\ObjectList;
 
 class FilterList extends ObjectList
 {
