@@ -11,29 +11,9 @@ use Sloth\Module\Graph;
 abstract class ResourceController extends RestfulController
 {
 	/**
-	 * @var Graph\Factory
-	 */
-	private $resourceModule;
-
-	/**
-	 * @return string
-	 */
-	abstract protected function getResourceManifestDirectory();
-
-	/**
-	 * @return string
-	 */
-	abstract protected function getTableManifestDirectory();
-
-	/**
 	 * @return Graph\RequestParser\RestfulRequestParser
 	 */
 	abstract protected function getRequestParser();
-
-	/**
-	 * @return \Sloth\Module\Render\Face\RendererInterface
-	 */
-	abstract protected function getRenderer();
 
 	public function parseRequest(Request $request, $route, $quit = false)
 	{
@@ -134,7 +114,7 @@ abstract class ResourceController extends RestfulController
 
 	protected function handleIndex(Graph\RequestParser\RestfulParsedRequest $request)
 	{
-		$resources = $this->getResourceNames($this->getResourceManifestDirectory());
+		$resources = $this->getResourceNames($this->getResourceModule()->getResourceManifestDirectory());
 		$view = new \Sloth\Module\Render\View();
 		$view->name = 'index';
 		$view->path = 'resource/default/index.php';
@@ -310,26 +290,20 @@ abstract class ResourceController extends RestfulController
 		return $output;
 	}
 
+	/**
+	 * @return Graph\ModuleCore
+	 */
 	protected function getResourceModule()
 	{
-		if (!isset($this->resourceModule)) {
-			$tableManifestValidator = new Graph\TableManifestValidator();
-			$resourceManifestValidator = new Graph\ResourceManifestValidator();
-			$this->resourceModule = $this->initialiseResourceModule();
-			$this->resourceModule->setResourceManifestDirectory($this->getResourceManifestDirectory())
-				->setTableManifestDirectory($this->getTableManifestDirectory())
-				->setResourceManifestValidator($resourceManifestValidator)
-				->setTableManifestValidator($tableManifestValidator);
-		}
-		return $this->resourceModule;
+		return $this->module('graph');
 	}
 
 	/**
-	 * @return Graph\Factory
+	 * @return \Sloth\Module\Render\Face\RendererInterface
 	 */
-	protected function initialiseResourceModule()
+	protected function getRenderer()
 	{
-		return $this->module('graph');
+		return $this->module('render');
 	}
 
 	protected function convertRequestParamsToSimpleSearchFilters(array $requestParams)

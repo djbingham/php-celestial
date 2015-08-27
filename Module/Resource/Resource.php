@@ -42,6 +42,10 @@ class Resource implements Base\Resource
 
 	public function getAttribute($name)
 	{
-		return $this->attributes[$name];
+		$attribute = null;
+		if (array_key_exists($name, $this->attributes)) {
+			$attribute = $this->attributes[$name];
+		}
+		return $attribute;
 	}
 }

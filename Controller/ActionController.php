@@ -3,6 +3,7 @@ namespace Sloth\Controller;
 
 use Sloth\Base\Controller;
 use Sloth\Exception\InvalidRequestException;
+use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Render\View;
 use Sloth\Request;
 
@@ -34,6 +35,14 @@ class ActionController extends Controller
 		$view->name = $viewPath;
 		$view->path = $viewPath;
 		$view->engine = $engine;
-		return $this->app->render()->render($view, $parameters);
+		return $this->getRenderModule()->render($view, $parameters);
+	}
+
+	/**
+	 * @return RendererInterface
+	 */
+	protected function getRenderModule()
+	{
+		return $this->module('render');
 	}
 }

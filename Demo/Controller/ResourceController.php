@@ -2,6 +2,8 @@
 namespace Sloth\Demo\Controller;
 
 use Sloth\Base\Controller;
+use Sloth\Module\Render\Face\RendererInterface;
+use Sloth\Module\Render\View;
 use Sloth\Module\Resource\AttributeMapper;
 use Sloth\Request;
 use Sloth\Exception;
@@ -15,6 +17,11 @@ use SlothDemo\Module\Resource;
 
 class ResourceController extends Controller
 {
+	/**
+	 * @var Resource\Loader
+	 */
+	private $resourceModule;
+
 	public function execute(Request $request, $route)
 	{
 		$requestPath = $request->getPath();
@@ -40,13 +47,25 @@ class ResourceController extends Controller
 		return $this->$method($request, $route);
 	}
 
-	protected function index()
+	protected function handleIndex()
 	{
 		$manifestDirectory = implode(DIRECTORY_SEPARATOR, array($this->app->rootDirectory(), 'resource', 'manifest'));
 		$resources = $this->getResourceNames($manifestDirectory);
-		return $this->render('resource/index.html', array(
+		$view = new View();
+		$view->name = 'index';
+		$view->path = 'resource/index.php';
+		$view->engine = 'php';
+		return $this->getRenderModule()->render($view, array(
 			'resources' => $resources
 		));
+	}
+
+	/**
+	 * @return RendererInterface
+	 */
+	protected function getRenderModule()
+	{
+		return $this->module('render');
 	}
 
 	protected function getResourceNames($directory)
@@ -243,7 +262,10 @@ class ResourceController extends Controller
 	 */
 	protected function getResourceModuleLoader()
 	{
-		return $this->module('resource');
+		if (!isset($this->resourceModule)) {
+			$this->resourceModule = new Resource\Loader($this->app);
+		}
+		return $this->resourceModule;
 	}
 
 	/**

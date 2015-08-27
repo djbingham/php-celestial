@@ -14,7 +14,7 @@ abstract class RestfulRequestParser implements RequestParserInterface
 	protected $app;
 
 	/**
-	 * @var Graph\Factory
+	 * @var Graph\ModuleCore
 	 */
 	protected $module;
 
@@ -36,7 +36,7 @@ abstract class RestfulRequestParser implements RequestParserInterface
 	 */
 	abstract protected function getResourceFactoryClass($resourceRoute);
 
-	public function __construct(App $app, Graph\Factory $module)
+	public function __construct(App $app, Graph\ModuleCore $module)
 	{
 		$this->app = $app;
 		$this->module = $module;

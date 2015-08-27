@@ -40,23 +40,23 @@ $primaryAttribute = $definition->primaryAttribute();
 <?php $renderAttributes($definition->attributeList()->getAll()); ?>
 
 <p>
-    <a href="<?= $this->app->createUrl(array("resource", lcfirst($definition->name()))) ?>">
+    <a href="<?= $app->createUrl(array("resource", lcfirst($definition->name()))) ?>">
         Index
     </a>
     <br>
-    <a href="<?= $this->app->createUrl(array("resource", lcfirst($definition->name()), "simpleSearch")) ?>">
+    <a href="<?= $app->createUrl(array("resource", lcfirst($definition->name()), "simpleSearch")) ?>">
         Simple Search
     </a>
     <br>
-    <a href="<?= $this->app->createUrl(array("resource", lcfirst($definition->name()), "search")) ?>">
+    <a href="<?= $app->createUrl(array("resource", lcfirst($definition->name()), "search")) ?>">
         Detailed Search
     </a>
     <br>
-    <a href="<?= $this->app->createUrl(array("resource", lcfirst($definition->name()), "create")) ?>">
+    <a href="<?= $app->createUrl(array("resource", lcfirst($definition->name()), "create")) ?>">
         Create
     </a>
     <br>
 </p>
 <p>
-    <a href="<?= $this->app->createUrl(array("resource")) ?>">Resource Definition Index</a>
+    <a href="<?= $app->createUrl(array("resource", "index")) ?>">Resource Definition Index</a>
 </p>

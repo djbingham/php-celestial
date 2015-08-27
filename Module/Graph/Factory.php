@@ -1,16 +1,11 @@
 <?php
 namespace Sloth\Module\Graph;
 
-use Sloth\Module\Graph\DefinitionBuilder\TableFieldBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\TableFieldListBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\LinkListBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\ResourceDefinitionBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\TableDefinitionBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\ValidatorListBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\ViewListBuilder;
 use Sloth\App;
+use Sloth\Exception\InvalidArgumentException;
+use Sloth\Module\Face\ModuleFactoryInterface;
 
-class Factory
+class Factory implements ModuleFactoryInterface
 {
 	/**
 	 * @var App
@@ -18,87 +13,68 @@ class Factory
 	private $app;
 
 	/**
+	 * @var string
+	 */
+	private $tableDirectory;
+
+	/**
+	 * @var string
+	 */
+	private $resourceDirectory;
+
+	/**
 	 * @var TableManifestValidator
 	 */
-	private $tableManifestValidator;
+	private $tableValidator;
 
 	/**
 	 * @var ResourceManifestValidator
 	 */
-	private $resourceManifestValidator;
+	private $resourceValidator;
 
-	/**
-	 * @var string
-	 */
-	private $resourceManifestDirectory;
-
-	/**
-	 * @var string
-	 */
-	private $tableManifestDirectory;
-
-	public function __construct(App $app)
+	public function __construct(array $dependencies)
 	{
-		$this->app = $app;
+		$this->validateDependencies($dependencies);
+		$this->app = $dependencies['app'];
+		$this->tableDirectory = $dependencies['tableDirectory'];
+		$this->resourceDirectory = $dependencies['resourceDirectory'];
+		$this->tableValidator = $dependencies['tableValidator'];
+		$this->resourceValidator = $dependencies['resourceValidator'];
 	}
 
-	public function setResourceManifestValidator(ResourceManifestValidator $resourceManifestValidator)
+	public function initialise()
 	{
-		$this->resourceManifestValidator = $resourceManifestValidator;
-		return $this;
+		$module = new ModuleCore($this->app);
+		$module->setTableManifestDirectory($this->tableDirectory)
+			->setResourceManifestDirectory($this->resourceDirectory)
+			->setTableManifestValidator($this->tableValidator)
+			->setResourceManifestValidator($this->resourceValidator);
+		return $module;
 	}
 
-	public function setTableManifestValidator(TableManifestValidator $tableManifestValidator)
+	private function validateDependencies(array $dependencies)
 	{
-		$this->tableManifestValidator = $tableManifestValidator;
-		return $this;
-	}
-
-	public function setResourceManifestDirectory($directory)
-	{
-		$this->resourceManifestDirectory = $directory;
-		return $this;
-	}
-
-	public function setTableManifestDirectory($directory)
-	{
-		$this->tableManifestDirectory = $directory;
-		return $this;
-	}
-
-	public function resourceDefinitionBuilder()
-	{
-		$validatorListBuilder = new ValidatorListBuilder();
-		$attributeListBuilder = null;
-		$viewListBuilder = new ViewListBuilder();
-		$tableFieldBuilder = new TableFieldBuilder($validatorListBuilder);
-
-		$tableBuilder = new TableDefinitionBuilder($this->tableManifestValidator, $this->tableManifestDirectory);
-		$tableBuilder->setSubBuilders(array(
-			'tableFieldListBuilder' => new TableFieldListBuilder($tableFieldBuilder),
-			'linkListBuilder' => new LinkListBuilder($tableBuilder),
-			'validatorListBuilder' => $validatorListBuilder,
-			'viewListBuilder' => $viewListBuilder
-		));
-
-		$resourceBuilder = new ResourceDefinitionBuilder();
-		$resourceBuilder
-			->setManifestDirectory($this->resourceManifestDirectory)
-			->setManifestValidator($this->resourceManifestValidator)
-			->setSubBuilders(array(
-				'tableBuilder' => $tableBuilder,
-				'validatorListBuilder' => $validatorListBuilder,
-				'attributeListBuilder' => $attributeListBuilder,
-				'viewListBuilder' => $viewListBuilder
-			));
-
-		return $resourceBuilder;
-	}
-
-	public function resourceFactory(Definition\Table $definition)
-	{
-		$querySetFactory = new QuerySetFactory();
-        $querySetFactory->setDatabase($this->app->database());
-		return new ResourceFactory($definition, $querySetFactory);
+		$required = array('app', 'tableDirectory', 'resourceDirectory', 'tableValidator', 'resourceValidator');
+		$missing = array_diff($required, array_keys($dependencies));
+		if (!empty($missing)) {
+			throw new InvalidArgumentException(
+				'Missing required dependencies for Render module: ' . implode(', ', $missing)
+			);
+		}
+		if (!($dependencies['app'] instanceof App)) {
+			throw new InvalidArgumentException('Invalid app given in dependencies for Render module');
+		}
+		if (!is_dir($dependencies['tableDirectory'])) {
+			throw new InvalidArgumentException('Invalid table directory given in dependencies for Render module');
+		}
+		if (!is_dir($dependencies['resourceDirectory'])) {
+			throw new InvalidArgumentException('Invalid resource directory given in dependencies for Render module');
+		}
+		if (!($dependencies['tableValidator'] instanceof TableManifestValidator)) {
+			throw new InvalidArgumentException('Invalid table validator given in dependencies for Render module');
+		}
+		if (!($dependencies['resourceValidator'] instanceof ResourceManifestValidator)) {
+			throw new InvalidArgumentException('Invalid resource validator given in dependencies for Render module');
+		}
 	}
 }

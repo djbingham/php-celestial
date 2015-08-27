@@ -25,11 +25,11 @@ $resourceUrl = $app->createUrl(array(
     <button type="submit">Update</button>
 </form>
 <p>
-    <a href="<?= $this->app->createUrl(array("resource", 'recipe')) ?>">
+    <a href="<?= $app->createUrl(array("resource", 'recipe')) ?>">
         Index
     </a>
     <br>
-    <a href="<?= $this->app->createUrl(array("resource", 'recipe', $resource->getAttribute('name'))) ?>">
+    <a href="<?= $app->createUrl(array("resource", 'recipe', $resource->getAttribute('name'))) ?>">
         View
     </a>
     <br>

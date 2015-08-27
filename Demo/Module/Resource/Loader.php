@@ -4,7 +4,7 @@ namespace SlothDemo\Module\Resource;
 use Sloth\App;
 use Sloth\Module\Resource\Renderer;
 
-class Loader implements \Sloth\Module\Base\Loader
+class Loader
 {
     /**
      * @var App

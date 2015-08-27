@@ -13,21 +13,15 @@ class App
 		$this->config = $config;
 	}
 
-    public function module($name)
-    {
-        $moduleClass = $this->config->modules()->get($name);
-        return new $moduleClass($this);
-    }
+	public function module($name)
+	{
+		return $this->config->initialisation()->getModuleLoader()->getModule($name);
+	}
 
 	public function database()
 	{
 		return $this->config->initialisation()->getDatabase();
 	}
-
-    public function render()
-    {
-        return $this->config->initialisation()->getRenderer();
-    }
 
 	public function rootDirectory()
 	{
@@ -44,19 +38,19 @@ class App
 		return $this->config->rootUrl();
 	}
 
-    public function createUrl(array $pathParts = array())
-    {
-        $url = $this->rootUrl();
-        if (!empty($pathParts)) {
-            $path = implode('/', $pathParts);
-            $url = sprintf('%s/%s', $url, $path);
-        }
-        return rtrim($url, '/');
-    }
+	public function createUrl(array $pathParts = array())
+	{
+		$url = $this->rootUrl();
+		if (!empty($pathParts)) {
+			$path = implode('/', $pathParts);
+			$url = sprintf('%s/%s', $url, $path);
+		}
+		return rtrim($url, '/');
+	}
 
-    public function redirect($newUrl)
-    {
-        header(sprintf('Location: %s', $newUrl));
-        exit;
-    }
+	public function redirect($newUrl)
+	{
+		header(sprintf('Location: %s', $newUrl));
+		exit;
+	}
 }

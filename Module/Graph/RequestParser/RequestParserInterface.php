@@ -9,9 +9,9 @@ interface RequestParserInterface
 {
 	/**
 	 * @param App $app
-	 * @param Graph\Factory $module
+	 * @param Graph\ModuleCore $module
 	 */
-	public function __construct(App $app, Graph\Factory $module);
+	public function __construct(App $app, Graph\ModuleCore $module);
 
     /**
      * @param Request $request
