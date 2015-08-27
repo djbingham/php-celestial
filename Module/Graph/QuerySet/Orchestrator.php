@@ -63,14 +63,14 @@ class Orchestrator
 		return $this;
 	}
 
-	public function execute(Definition\Table $resourceDefinition, array $filters = array(), array $data = array())
+	public function execute(Definition\Table $tableDefinition, array $filters = array(), array $data = array())
 	{
 		if ($this->filterParser !== null) {
-			$filters = $this->filterParser->parse($resourceDefinition, $filters);
+			$filters = $this->filterParser->parse($tableDefinition, $filters);
 		}
 		$querySet = $this->composer
 			->setDatabase($this->database)
-			->setResource($resourceDefinition)
+			->setResource($tableDefinition)
 			->setFilters($filters)
 			->compose();
 		$data = $this->conductor
@@ -79,7 +79,7 @@ class Orchestrator
 			->setQuerySet($querySet)
 			->setData($data)
 			->conduct();
-		$resourceData = $this->dataParser->formatResourceData($data, $resourceDefinition, $filters);
+		$resourceData = $this->dataParser->formatResourceData($data, $tableDefinition, $filters);
 		return $resourceData;
 	}
 }
