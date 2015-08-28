@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\Graph\Test\QueryBuilder;
+namespace Sloth\Module\Graph\Test\Unit\QuerySet\GetBy;
 
 require_once dirname(dirname(dirname(__DIR__))) . '/UnitTest.php';
 
