@@ -29,7 +29,7 @@ abstract class AbstractComposer
 		return $this;
 	}
 
-	public function setResource(Definition\Table $tableDefinition)
+	public function setTable(Definition\Table $tableDefinition)
 	{
 		$this->tableDefinition = $tableDefinition;
 		return $this;

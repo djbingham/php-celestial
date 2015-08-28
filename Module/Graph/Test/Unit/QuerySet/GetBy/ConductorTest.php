@@ -48,7 +48,7 @@ EOT;
 		// todo: Properly mock the query set, rather than relying on Composer to build one
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($table);
+			->setTable($table);
 
 		$querySet = $composer->compose();
 
@@ -103,7 +103,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($table)
+			->setTable($table)
 			->setFilters($filters);
 
 		$querySet = $composer->compose();
@@ -192,7 +192,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($table)
+			->setTable($table)
 			->setFilters($filters);
 
 		$querySet = $composer->compose();
@@ -270,7 +270,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($table);
+			->setTable($table);
 
 		$querySet = $composer->compose();
 
@@ -385,7 +385,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($table);
+			->setTable($table);
 
 		$querySet = $composer->compose();
 
@@ -503,7 +503,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($table);
+			->setTable($table);
 
 		$querySet = $composer->compose();
 
@@ -682,7 +682,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($table);
+			->setTable($table);
 
 		$querySet = $composer->compose();
 
@@ -854,7 +854,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($table)
+			->setTable($table)
 			->setFilters($filters);
 
 		$querySet = $composer->compose();
@@ -963,7 +963,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($table);
+			->setTable($table);
 
 		$querySet = $composer->compose();
 
@@ -1102,7 +1102,7 @@ EOT;
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
-			->setResource($table);
+			->setTable($table);
 
 		$querySet = $composer->compose();
 

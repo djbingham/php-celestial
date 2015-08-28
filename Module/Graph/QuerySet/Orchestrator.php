@@ -70,7 +70,7 @@ class Orchestrator
 		}
 		$querySet = $this->composer
 			->setDatabase($this->database)
-			->setResource($tableDefinition)
+			->setTable($tableDefinition)
 			->setFilters($filters)
 			->compose();
 		$data = $this->conductor
