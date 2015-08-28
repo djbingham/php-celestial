@@ -53,7 +53,7 @@ class QuerySetItem
 		return $this->links;
 	}
 
-	public function setLinks($links)
+	public function setLinks(Definition\Table\JoinList $links)
 	{
 		$this->links = $links;
 		return $this;
@@ -64,7 +64,7 @@ class QuerySetItem
 		return $this->parentLink;
 	}
 
-	public function setParentLink($parentLink)
+	public function setParentLink(Definition\Table\Join $parentLink)
 	{
 		$this->parentLink = $parentLink;
 		return $this;

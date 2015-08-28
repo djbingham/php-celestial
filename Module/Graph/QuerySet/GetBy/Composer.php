@@ -25,12 +25,6 @@ class Composer extends Base\AbstractComposer
 		return $this;
 	}
 
-	public function setResource(Definition\Table $tableDefinition)
-	{
-		$this->tableDefinition = $tableDefinition;
-		return $this;
-	}
-
 	public function setFilters(array $filters)
 	{
 		$this->filters = $filters;
@@ -39,19 +33,17 @@ class Composer extends Base\AbstractComposer
 
 	public function compose()
 	{
-		return $this->buildQuerySetForResourceAndDescendants($this->tableDefinition, $this->filters);
+		return $this->buildQuerySetForTableAndDescendants($this->tableDefinition, $this->filters);
 	}
 
-	private function buildQuerySetForResourceAndDescendants(Definition\Table $tableDefinition, array $filters, Definition\Table\Join $parentLink = null)
+	private function buildQuerySetForTableAndDescendants(Definition\Table $tableDefinition, array $filters, Definition\Table\Join $parentLink = null)
 	{
 		$querySet = new QuerySet();
 		$querySetItem = new QuerySetItem();
 		$querySetItem->setTableName($tableDefinition->getAlias())
-			->setQuery($this->buildQueryForResource($tableDefinition, $filters))
+			->setQuery($this->buildQueryForTable($tableDefinition, $filters))
 			->setLinks($this->getLinksToManyRowsFromTable($tableDefinition));
-		if ($parentLink === null) {
-			$querySetItem->setParentLink($parentLink);
-		}
+
 		$querySet->push($querySetItem);
 
 		$linksToManyRows = $this->getLinksToManyRowsFromTable($tableDefinition);
@@ -90,12 +82,12 @@ class Composer extends Base\AbstractComposer
 		return $foundLinks;
 	}
 
-	private function buildQueryForResource(Definition\Table $tableDefinition, array $filters)
+	private function buildQueryForTable(Definition\Table $tableDefinition, array $filters)
 	{
 		$query = $this->database->query()->select()
 			->setFields($this->buildQueryFieldsFromTable($tableDefinition))
 			->from($this->getQueryTable($tableDefinition->name, $tableDefinition->getAlias()))
-			->setJoins($this->buildQueryJoinsFromResource($tableDefinition));
+			->setJoins($this->buildQueryJoinsFromTable($tableDefinition));
 
 		$constraint = $this->buildQueryConstraintFromFilters($filters, $tableDefinition);
 		if ($constraint !== null) {
@@ -105,10 +97,10 @@ class Composer extends Base\AbstractComposer
 		return $query;
 	}
 
-	private function buildQueryJoinsFromResource(Definition\Table $resource)
+	private function buildQueryJoinsFromTable(Definition\Table $table)
 	{
 		$joins = array();
-		foreach ($resource->links as $link) {
+		foreach ($table->links as $link) {
 			/** @var \Sloth\Module\Graph\Definition\Table\Join $link */
 			if (in_array($link->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
 				$childTable = $link->getChildTable();
@@ -126,7 +118,7 @@ class Composer extends Base\AbstractComposer
 					->table($this->getQueryTable($childTable->name, $childTable->getAlias()))
 					->on($firstJoinConstraint);
 
-				$joins = array_merge($joins, $this->buildQueryJoinsFromResource($childTable));
+				$joins = array_merge($joins, $this->buildQueryJoinsFromTable($childTable));
 			}
 		}
 		return $joins;
@@ -197,9 +189,9 @@ class Composer extends Base\AbstractComposer
 				$constraints[] = $fieldConstraint;
 			} else {
 				if ($tableDefinition->links->length() > 0) {
-					$resourceLink = $tableDefinition->links->getByName($filterName);
-					if (in_array($resourceLink->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
-						$childTable = $resourceLink->getChildTable();
+					$tableLink = $tableDefinition->links->getByName($filterName);
+					if (in_array($tableLink->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
+						$childTable = $tableLink->getChildTable();
 						$constraints = array_merge($constraints, $this->buildQueryConstraintListFromFilters($filter, $childTable));
 					}
 				}
@@ -215,11 +207,11 @@ class Composer extends Base\AbstractComposer
 		return $this->getQueryTable($tableName, $tableName)->field($fieldName);
 	}
 
-	private function buildQueryFieldsFromTable(Definition\Table $resource)
+	private function buildQueryFieldsFromTable(Definition\Table $table)
 	{
-		$resourceFields = $this->buildQueryFieldsFromFields($resource->fields);
-		$linkFields = $this->buildQueryFieldsFromLinks($resource->links);
-		return array_merge($resourceFields, $linkFields);
+		$tableFields = $this->buildQueryFieldsFromFields($table->fields);
+		$linkFields = $this->buildQueryFieldsFromLinks($table->links);
+		return array_merge($tableFields, $linkFields);
 	}
 
 	private function buildQueryFieldsFromFields(Definition\Table\FieldList $fields)
@@ -255,20 +247,20 @@ class Composer extends Base\AbstractComposer
 		$childTable = $link->getChildTable();
 		$querySet = null;
 		if ($link->type === Definition\Table\Join::MANY_TO_MANY) {
-			$querySet = $this->buildQuerySetForSubJoinedResourceAndDescendants($link, $filters);
+			$querySet = $this->buildQuerySetForSubJoinedTableAndDescendants($link, $filters);
 		} elseif ($link->type === Definition\Table\Join::ONE_TO_MANY) {
-			$querySet = $this->buildQuerySetForResourceAndDescendants($childTable, $filters, $link);
+			$querySet = $this->buildQuerySetForTableAndDescendants($childTable, $filters, $link);
 		}
 		return $querySet;
 	}
 
-	private function buildQuerySetForSubJoinedResourceAndDescendants(Definition\Table\Join $link, array $filters)
+	private function buildQuerySetForSubJoinedTableAndDescendants(Definition\Table\Join $link, array $filters)
 	{
 		$tableDefinition = $link->getChildTable();
 		$querySet = new QuerySet();
 		$querySetItem = new QuerySetItem();
 		$querySetItem->setTableName($tableDefinition->getAlias())
-			->setQuery($this->buildQueryForSubJoinsAndResource($link, $filters))
+			->setQuery($this->buildQueryForSubJoinsAndTable($link, $filters))
 			->setLinks($this->getLinksToManyRowsFromTable($tableDefinition));
 		if ($link !== null) {
 			$querySetItem->setParentLink($link);
@@ -289,7 +281,7 @@ class Composer extends Base\AbstractComposer
 		return $querySet;
 	}
 
-	private function buildQueryForSubJoinsAndResource(Definition\Table\Join $link, array $filters)
+	private function buildQueryForSubJoinsAndTable(Definition\Table\Join $link, array $filters)
 	{
 		$tableDefinition = $link->getChildTable();
 		$query = $this->database->query()->select();
@@ -331,7 +323,7 @@ class Composer extends Base\AbstractComposer
 				$queryJoins[] = $join;
 			}
 		}
-		$queryJoins = array_merge($queryJoins, $this->buildQueryJoinsFromResource($tableDefinition));
+		$queryJoins = array_merge($queryJoins, $this->buildQueryJoinsFromTable($tableDefinition));
 		$query->setJoins($queryJoins);
 
 		if (!isset($firstSubJoin)) {
@@ -357,10 +349,10 @@ class Composer extends Base\AbstractComposer
 		return $query;
 	}
 
-	private function groupSubJoinsByChild(Definition\Table\Join $resourceLink)
+	private function groupSubJoinsByChild(Definition\Table\Join $tableLink)
 	{
 		$groupedJoins = array();
-		foreach ($resourceLink->constraints as $constraint) {
+		foreach ($tableLink->constraints as $constraint) {
 			/** @var \Sloth\Module\Graph\Definition\Table\Join\Constraint $constraint */
 			foreach ($constraint->subJoins as $subJoin) {
 				/** @var \Sloth\Module\Graph\Definition\Table\Join\SubJoin $subJoin */
