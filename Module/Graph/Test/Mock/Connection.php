@@ -1,6 +1,8 @@
 <?php
 namespace Sloth\Module\Graph\Test\Mock;
 
+use SlothMySql\Face\QueryInterface;
+
 class Connection extends \SlothMySql\Connection\MySqli
 {
 	/**
@@ -19,11 +21,11 @@ class Connection extends \SlothMySql\Connection\MySqli
 	protected $nextData;
 
 	/**
-	 * @param \SlothMySql\Abstractory\AQuery $query
+	 * @param QueryInterface $query
 	 * @return $this
 	 * @throws \Exception if query doesn't match next expected query
 	 */
-	public function executeQuery(\SlothMySql\Abstractory\AQuery $query)
+	public function executeQuery(QueryInterface $query)
 	{
 		$this->assertEqualsNextExpectedQuery((string) $query);
 		array_shift($this->expectedQuerySequence);
