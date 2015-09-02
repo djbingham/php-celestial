@@ -17,6 +17,12 @@ class Join
 	const MANY_TO_ONE = 'manyToOne';
 	const ONE_TO_MANY = 'oneToMany';
 	const ONE_TO_ONE = 'oneToOne';
+	const ACTION_INSERT = 'insert';
+	const ACTION_UPDATE = 'update';
+	const ACTION_DELETE = 'delete';
+	const ACTION_ASSOCIATE = 'associate';
+	const ACTION_IGNORE = 'ignore';
+	const ACTION_REJECT = 'reject';
 
 	/**
 	 * @var string
@@ -36,7 +42,22 @@ class Join
 	/**
 	 * @var string
 	 */
-	public $type = Join::ONE_TO_ONE;
+	public $type = self::ONE_TO_ONE;
+
+	/**
+	 * @var string
+	 */
+	public $onInsert = self::ACTION_INSERT;
+
+	/**
+	 * @var string
+	 */
+	public $onUpdate = self::ACTION_UPDATE;
+
+	/**
+	 * @var string
+	 */
+	public $onDelete = self::ACTION_DELETE;
 
 	/**
 	 * @var TableList

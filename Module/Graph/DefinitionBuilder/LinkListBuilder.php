@@ -25,6 +25,15 @@ class LinkListBuilder
 				$link->intermediaryTables = $this->buildIntermediaryTables($linkManifest['via']);
 			}
 			$link->type = $linkManifest['type'];
+			if (array_key_exists('onInsert', $linkManifest)) {
+				$link->onInsert = $linkManifest['onInsert'];
+			}
+			if (array_key_exists('onUpdate', $linkManifest)) {
+				$link->onUpdate = $linkManifest['onUpdate'];
+			}
+			if (array_key_exists('onDelete', $linkManifest)) {
+				$link->onDelete = $linkManifest['onDelete'];
+			}
 			$link->parentTable = $table;
 			$link->childTableName = $linkManifest['table'];
 			$link->joinManifest = $linkManifest['joins'];

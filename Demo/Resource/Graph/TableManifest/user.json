@@ -20,6 +20,9 @@
 		"friends": {
 			"type": "manyToMany",
 			"table": "User",
+			"onInsert": "associate",
+			"onUpdate": "associate",
+			"onDelete": "associate",
 			"via": {
 				"friendLink": "UserFriend"
 			},
@@ -31,6 +34,9 @@
 		"posts": {
 			"type": "oneToMany",
 			"table": "Post",
+			"onInsert": "insert",
+			"onUpdate": "ignore",
+			"onDelete": "ignore",
 			"joins": {
 				"this.id": "Post.authorId"
 			}
@@ -38,6 +44,9 @@
 		"address": {
 			"type": "oneToOne",
 			"table": "UserAddress",
+			"onInsert": "insert",
+			"onUpdate": "update",
+			"onDelete": "delete",
 			"joins": {
 				"this.id": "address.userId"
 			}

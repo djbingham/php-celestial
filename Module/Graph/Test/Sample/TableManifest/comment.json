@@ -30,6 +30,9 @@
 		"author": {
 			"type": "manyToOne",
 			"table": "User",
+			"onInsert": "associate",
+			"onUpdate": "ignore",
+			"onDelete": "ignore",
 			"joins": {
 				"this.authorId": "author.id"
 			}
@@ -37,6 +40,9 @@
 		"post": {
 			"type": "manyToOne",
 			"table": "Post",
+			"onInsert": "associate",
+			"onUpdate": "ignore",
+			"onDelete": "ignore",
 			"joins": {
 				"this.postId": "Post.id"
 			}
@@ -44,6 +50,9 @@
 		"replies": {
 			"type": "oneToMany",
 			"table": "Comment",
+			"onInsert": "insert",
+			"onUpdate": "ignore",
+			"onDelete": "ignore",
 			"joins": {
 				"this.id": "replies.parentId"
 			}

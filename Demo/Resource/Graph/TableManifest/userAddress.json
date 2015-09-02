@@ -25,6 +25,9 @@
 		"landlord": {
 			"type": "oneToOne",
 			"table": "User",
+			"onInsert": "ignore",
+			"onUpdate": "ignore",
+			"onDelete": "ignore",
 			"joins": {
 				"this.landlordId": "landlord.id"
 			}

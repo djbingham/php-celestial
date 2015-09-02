@@ -57,6 +57,10 @@ trait ResourceBuilderAssertions
 		$this->assertEquals('friends', $linkToFriends->name);
 		$this->assertSame($table, $linkToFriends->parentTable);
 		$this->assertEquals('User', $linkToFriends->childTableName);
+		$this->assertEquals(Definition\Table\Join::MANY_TO_MANY, $linkToFriends->type);
+		$this->assertEquals(Definition\Table\Join::ACTION_ASSOCIATE, $linkToFriends->onInsert);
+		$this->assertEquals(Definition\Table\Join::ACTION_ASSOCIATE, $linkToFriends->onUpdate);
+		$this->assertEquals(Definition\Table\Join::ACTION_ASSOCIATE, $linkToFriends->onDelete);
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\TableList', $linkToFriends->intermediaryTables);
 		$this->assertEquals(1, $linkToFriends->intermediaryTables->length());
 		$this->assertEquals('friendLink', $linkToFriends->intermediaryTables->getByIndex(0)->alias);
@@ -109,6 +113,10 @@ trait ResourceBuilderAssertions
 		$linkToPosts = $table->links->getByName('posts');
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Join', $linkToPosts);
 		$this->assertEquals('posts', $linkToPosts->name);
+		$this->assertEquals(Definition\Table\Join::ONE_TO_MANY, $linkToPosts->type);
+		$this->assertEquals(Definition\Table\Join::ACTION_INSERT, $linkToPosts->onInsert);
+		$this->assertEquals(Definition\Table\Join::ACTION_IGNORE, $linkToPosts->onUpdate);
+		$this->assertEquals(Definition\Table\Join::ACTION_IGNORE, $linkToPosts->onDelete);
 		$this->assertSame($table, $linkToPosts->parentTable);
 		$this->assertEquals('Post', $linkToPosts->childTableName);
 		$this->assertNull($linkToPosts->intermediaryTables);
@@ -140,6 +148,10 @@ trait ResourceBuilderAssertions
         $linkToAddress = $table->links->getByName('address');
         $this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Join', $linkToAddress);
         $this->assertEquals('address', $linkToAddress->name);
+		$this->assertEquals(Definition\Table\Join::ONE_TO_ONE, $linkToAddress->type);
+		$this->assertEquals(Definition\Table\Join::ACTION_INSERT, $linkToAddress->onInsert);
+		$this->assertEquals(Definition\Table\Join::ACTION_UPDATE, $linkToAddress->onUpdate);
+		$this->assertEquals(Definition\Table\Join::ACTION_DELETE, $linkToAddress->onDelete);
         $this->assertSame($table, $linkToAddress->parentTable);
         $this->assertEquals('UserAddress', $linkToAddress->childTableName);
         $this->assertNull($linkToAddress->intermediaryTables);
@@ -219,6 +231,10 @@ trait ResourceBuilderAssertions
 	{
 		$linkToAuthor = $table->links->getByName('author');
 		$this->assertEquals('author', $linkToAuthor->name);
+		$this->assertEquals(Definition\Table\Join::MANY_TO_ONE, $linkToAuthor->type);
+		$this->assertEquals(Definition\Table\Join::ACTION_ASSOCIATE, $linkToAuthor->onInsert);
+		$this->assertEquals(Definition\Table\Join::ACTION_IGNORE, $linkToAuthor->onUpdate);
+		$this->assertEquals(Definition\Table\Join::ACTION_IGNORE, $linkToAuthor->onDelete);
 		$this->assertSame($table, $linkToAuthor->parentTable);
 		$this->assertEquals('User', $linkToAuthor->childTableName);
 		$this->assertNull($linkToAuthor->intermediaryTables);

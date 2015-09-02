@@ -20,6 +20,9 @@
 		"author": {
 			"type": "manyToOne",
 			"table": "User",
+			"onInsert": "associate",
+			"onUpdate": "ignore",
+			"onDelete": "ignore",
 			"joins": {
 				"this.authorId": "author.id"
 			}
