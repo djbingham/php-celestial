@@ -47,6 +47,15 @@ class FieldList extends ObjectList
 	}
 
 	/**
+	 * @param string $name
+	 * @return Field
+	 */
+	public function getByAlias($name)
+	{
+		return $this->getByProperty('alias', $name);
+	}
+
+	/**
 	 * @param string $tableAlias
 	 * @return FieldList
 	 */
@@ -90,6 +99,19 @@ class FieldList extends ObjectList
 		foreach ($this->items as $index => $item) {
 			/** @var Field $item */
 			if ($item->name === $fieldName) {
+				$foundIndex = $index;
+				break;
+			}
+		}
+		return $foundIndex;
+	}
+
+	public function indexOfAlias($fieldAlias)
+	{
+		$foundIndex = -1;
+		foreach ($this->items as $index => $item) {
+			/** @var Field $item */
+			if ($item->alias === $fieldAlias) {
 				$foundIndex = $index;
 				break;
 			}
