@@ -3,7 +3,6 @@ namespace Sloth\Module\Graph\QuerySet\Base;
 
 use Sloth\Module\Graph\QuerySet\DataParser;
 use Sloth\Module\Graph\QuerySet\MultiQueryWrapper;
-use Sloth\Module\Graph\QuerySet\QuerySet;
 use Sloth\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 
