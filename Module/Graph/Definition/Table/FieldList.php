@@ -1,7 +1,6 @@
 <?php
 namespace Sloth\Module\Graph\Definition\Table;
 
-use Sloth\Module\Graph\Definition\Table\Field;
 use Sloth\Helper\ObjectList;
 
 class FieldList extends ObjectList
@@ -13,7 +12,7 @@ class FieldList extends ObjectList
 
 	public function push(Field $field)
 	{
-		$this->items[] = $field;
+		$this->append($field);
 		return $this;
 	}
 

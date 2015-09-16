@@ -1,6 +1,9 @@
 <?php
 namespace Sloth\Module\Graph;
 
+use Sloth\Module\Graph\Definition\Table\Field;
+use Sloth\Module\Graph\Definition\Table\Join;
+
 class ResourceFactory implements ResourceFactoryInterface
 {
 	/**
@@ -101,19 +104,32 @@ class ResourceFactory implements ResourceFactoryInterface
 
     private function filterResourceAttributes(Definition\Table $tableDefinition, array $attributeMap)
     {
-        foreach ($tableDefinition->fields as $attributeIndex => $attribute) {
-            if (!array_key_exists($attribute->name, $attributeMap)) {
-                $tableDefinition->fields->removeByIndex($attributeIndex);
+//		$tableJoins = $tableDefinition->links;
+//		/** @var Join $join */
+//		foreach ($tableJoins as $join) {
+//			if (array_key_exists($join->name, $attributeMap)) {
+//				/** @var Join\Constraint $constraint */
+//				foreach ($join->getConstraints() as $constraint) {
+//					$attributeMap[$join->name][$constraint->childField->name] = true;
+//				}
+//			}
+//		}
+
+		/** @var Field $field */
+		foreach ($tableDefinition->fields as $attributeIndex => $field) {
+			if (!array_key_exists($field->name, $attributeMap)) {
+				$tableDefinition->fields->removeByIndex($attributeIndex);
             }
         }
-		for ($linkIndex = 0; $linkIndex < $tableDefinition->links->length(); $linkIndex++) {
-			$link = $tableDefinition->links->getByIndex($linkIndex);
-            /** @var \Sloth\Module\Graph\Definition\Table\Join $link */
-            if (array_key_exists($link->name, $attributeMap)) {
-				$this->filterResourceAttributes($link->getChildTable(), $attributeMap[$link->name]);
+
+		for ($joinIndex = 0; $joinIndex < $tableDefinition->links->length(); $joinIndex++) {
+			/** @var \Sloth\Module\Graph\Definition\Table\Join $join */
+			$join = $tableDefinition->links->getByIndex($joinIndex);
+            if (array_key_exists($join->name, $attributeMap)) {
+				$this->filterResourceAttributes($join->getChildTable(), $attributeMap[$join->name]);
 			} else {
-				$tableDefinition->links->removeByIndex($linkIndex);
-				$linkIndex--;
+				$tableDefinition->links->removeByIndex($joinIndex);
+				$joinIndex--;
             }
         }
         return $tableDefinition;

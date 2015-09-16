@@ -3,6 +3,8 @@ namespace Sloth\Module\Graph\Test\Unit\QuerySet\GetBy;
 
 require_once dirname(dirname(dirname(__DIR__))) . '/UnitTest.php';
 
+use Sloth\Module\Graph\QuerySet\Face\QueryLinkInterface;
+use Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface;
 use Sloth\Module\Graph\QuerySet\GetBy\Composer;
 use Sloth\Module\Graph\QuerySet\FilterParser;
 use Sloth\Module\Graph\Definition;
@@ -33,17 +35,18 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySet', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface', $querySet);
 		$this->assertEquals(1, $querySet->length());
 
-		$querySetItem = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
-		$this->assertAttributeEquals('User', 'tableName', $querySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
-		$this->assertEquals(0, $querySetItem->getLinks()->length());
+		/** @var SingleQueryWrapperInterface $queryWrapper */
+		$queryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $queryWrapper);
+		$this->assertSame($table, $queryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $queryWrapper->getChildLinks());
+		$this->assertEquals(0, $queryWrapper->getChildLinks()->length());
 
-		$query = $querySetItem->getQuery();
+		$query = $queryWrapper->getQuery();
 		$this->assertEquals($expectedQuery, (string)$query);
 	}
 
@@ -78,17 +81,18 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySet', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface', $querySet);
 		$this->assertEquals(1, $querySet->length());
 
-		$querySetItem = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
-		$this->assertAttributeEquals('User', 'tableName', $querySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
-		$this->assertEquals(0, $querySetItem->getLinks()->length());
+		/** @var SingleQueryWrapperInterface $queryWrapper */
+		$queryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $queryWrapper);
+		$this->assertSame($table, $queryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $queryWrapper->getChildLinks());
+		$this->assertEquals(0, $queryWrapper->getChildLinks()->length());
 
-		$query = $querySetItem->getQuery();
+		$query = $queryWrapper->getQuery();
 		$this->assertEquals($expectedQuery, (string)$query);
 	}
 
@@ -123,17 +127,18 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySet', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface', $querySet);
 		$this->assertEquals(1, $querySet->length());
 
-		$querySetItem = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
-		$this->assertAttributeEquals('User', 'tableName', $querySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
-		$this->assertEquals(0, $querySetItem->getLinks()->length());
+		/** @var SingleQueryWrapperInterface $queryWrapper */
+		$queryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $queryWrapper);
+		$this->assertSame($table, $queryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $queryWrapper->getChildLinks());
+		$this->assertEquals(0, $queryWrapper->getChildLinks()->length());
 
-		$query = $querySetItem->getQuery();
+		$query = $queryWrapper->getQuery();
 		$this->assertEquals($expectedQuery, (string)$query);
 	}
 
@@ -189,17 +194,18 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySet', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface', $querySet);
 		$this->assertEquals(1, $querySet->length());
 
-		$querySetItem = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
-		$this->assertAttributeEquals('User', 'tableName', $querySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
-		$this->assertEquals(0, $querySetItem->getLinks()->length());
+		/** @var SingleQueryWrapperInterface $queryWrapper */
+		$queryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $queryWrapper);
+		$this->assertSame($table, $queryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $queryWrapper->getChildLinks());
+		$this->assertEquals(0, $queryWrapper->getChildLinks()->length());
 
-		$query = $querySetItem->getQuery();
+		$query = $queryWrapper->getQuery();
 		$this->assertEquals($expectedQuery, (string)$query);
 	}
 
@@ -238,17 +244,18 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySet', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface', $querySet);
 		$this->assertEquals(1, $querySet->length());
 
-		$querySetItem = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $querySetItem);
-		$this->assertAttributeEquals('User', 'tableName', $querySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $querySetItem->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $querySetItem->getLinks());
-		$this->assertEquals(0, $querySetItem->getLinks()->length());
+		/** @var SingleQueryWrapperInterface $queryWrapper */
+		$queryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $queryWrapper);
+		$this->assertSame($table, $queryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $queryWrapper->getChildLinks());
+		$this->assertEquals(0, $queryWrapper->getChildLinks()->length());
 
-		$query = $querySetItem->getQuery();
+		$query = $queryWrapper->getQuery();
 		$this->assertEquals($expectedQuery, (string)$query);
 	}
 
@@ -264,6 +271,7 @@ EOT;
 
 		$postTable = $table->links->getByName('posts')->getChildTable();
 		$postTable->links->removeByPropertyValue('name', 'author');
+		$postTable->links->removeByPropertyValue('name', 'comments');
 
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
@@ -281,32 +289,34 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySet', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface', $querySet);
 		$this->assertEquals(2, $querySet->length());
 
-		$userQuerySetItem = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
+		/** @var SingleQueryWrapperInterface $userQueryWrapper */
+		$userQueryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $userQueryWrapper);
+		$this->assertSame($table, $userQueryWrapper->getTable());
 
-		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
+		$userLinks = $userQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
-		$this->assertSame($table->links->getByName('posts'), $userLinks->getByIndex(0));
+		$this->assertSame($table->links->getByName('posts'), $userLinks->getByIndex(0)->getJoinDefinition());
 
-		$userQuery = $userQuerySetItem->getQuery();
+		$userQuery = $userQueryWrapper->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
-		$postQuerySetItem = $querySet->getByIndex(1);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $postQuerySetItem);
-		$this->assertAttributeEquals('User_posts', 'tableName', $postQuerySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $postQuerySetItem->getQuery());
+		/** @var SingleQueryWrapperInterface $postQueryWrapper */
+		$postQueryWrapper = $querySet->getByIndex(1);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $postQueryWrapper);
+		$this->assertSame($postTable, $postQueryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $postQueryWrapper->getQuery());
 
-		$postLinks = $postQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $postLinks);
+		$postLinks = $postQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $postLinks);
 		$this->assertEquals(0, $postLinks->length());
 
-		$postQuery = $postQuerySetItem->getQuery();
+		$postQuery = $postQueryWrapper->getQuery();
 		$this->assertEquals($expectedQueries[1], (string)$postQuery);
 	}
 
@@ -321,12 +331,15 @@ EOT;
 		$table->links->removeByPropertyValue('name', 'address');
 
 		$postTable = $table->links->getByName('posts')->getChildTable();
+		$postTable->links->removeByPropertyValue('name', 'comments');
+
 		$authorTable = $postTable->links->getByName('author')->getChildTable();
 		$authorTable->links->removeByPropertyValue('name', 'friends');
 		$authorTable->links->removeByPropertyValue('name', 'address');
 
 		$authorPostTable = $authorTable->links->getByName('posts')->getChildTable();
 		$authorPostTable->links->removeByPropertyValue('name', 'author');
+		$authorPostTable->links->removeByPropertyValue('name', 'comments');
 
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
@@ -349,45 +362,48 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySet', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface', $querySet);
 		$this->assertEquals(3, $querySet->length());
 
-		$userQuerySetItem = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
+		/** @var SingleQueryWrapperInterface $userQueryWrapper */
+		$userQueryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $userQueryWrapper);
+		$this->assertSame($table, $userQueryWrapper->getTable());
 
-		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
+		$userLinks = $userQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
-		$this->assertSame($table->links->getByName('posts'), $userLinks->getByIndex(0));
+		$this->assertSame($table->links->getByName('posts'), $userLinks->getByIndex(0)->getJoinDefinition());
 
-		$userQuery = $userQuerySetItem->getQuery();
+		$userQuery = $userQueryWrapper->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
-		$postAndAuthorQuerySetItem = $querySet->getByIndex(1);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $postAndAuthorQuerySetItem);
-		$this->assertAttributeEquals('User_posts', 'tableName', $postAndAuthorQuerySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $postAndAuthorQuerySetItem->getQuery());
+		/** @var SingleQueryWrapperInterface $postAndAuthorQueryWrapper */
+		$postAndAuthorQueryWrapper = $querySet->getByIndex(1);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $postAndAuthorQueryWrapper);
+		$this->assertSame($postTable, $postAndAuthorQueryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $postAndAuthorQueryWrapper->getQuery());
 
-		$postAndAuthorLinks = $postAndAuthorQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $postAndAuthorLinks);
+		$postAndAuthorLinks = $postAndAuthorQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $postAndAuthorLinks);
 		$this->assertEquals(1, $postAndAuthorLinks->length());
-		$this->assertSame($authorTable->links->getByName('posts'), $postAndAuthorLinks->getByIndex(0));
+		$this->assertSame($authorTable->links->getByName('posts'), $postAndAuthorLinks->getByIndex(0)->getJoinDefinition());
 
-		$postAndAuthorQuery = $postAndAuthorQuerySetItem->getQuery();
+		$postAndAuthorQuery = $postAndAuthorQueryWrapper->getQuery();
 		$this->assertEquals($expectedQueries[1], (string)$postAndAuthorQuery);
 
-		$authorPostQuerySetItem = $querySet->getByIndex(2);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $authorPostQuerySetItem);
-		$this->assertAttributeEquals('User_posts_author_posts', 'tableName', $authorPostQuerySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $authorPostQuerySetItem->getQuery());
+		/** @var SingleQueryWrapperInterface $authorPostQueryWrapper */
+		$authorPostQueryWrapper = $querySet->getByIndex(2);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $authorPostQueryWrapper);
+		$this->assertSame($authorPostTable, $authorPostQueryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $authorPostQueryWrapper->getQuery());
 
-		$authorPostLinks = $authorPostQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $authorPostLinks);
+		$authorPostLinks = $authorPostQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $authorPostLinks);
 		$this->assertEquals(0, $authorPostLinks->length());
 
-		$authorPostLinksQuery = $authorPostQuerySetItem->getQuery();
+		$authorPostLinksQuery = $authorPostQueryWrapper->getQuery();
 		$this->assertEquals($expectedQueries[2], (string)$authorPostLinksQuery);
 	}
 
@@ -423,34 +439,37 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySet', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface', $querySet);
 		$this->assertEquals(2, $querySet->length());
 
-		$userQuerySetItem = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
+		/** @var SingleQueryWrapperInterface $userQueryWrapper */
+		$userQueryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $userQueryWrapper);
+		$this->assertSame($table, $userQueryWrapper->getTable());
 
-		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
+		$userLinks = $userQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
 
+		/** @var QueryLinkInterface $userFriendLink */
 		$userFriendLink = $userLinks->getByIndex(0);
-		$this->assertSame($table->links->getByName('friends'), $userFriendLink);
+		$this->assertSame($table->links->getByName('friends'), $userFriendLink->getJoinDefinition());
 
-		$userQuery = $userQuerySetItem->getQuery();
+		$userQuery = $userQueryWrapper->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
-		$friendQuerySetItem = $querySet->getByIndex(1);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendQuerySetItem);
-		$this->assertAttributeEquals('User_friends', 'tableName', $friendQuerySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
+		/** @var SingleQueryWrapperInterface $friendQueryWrapper */
+		$friendQueryWrapper = $querySet->getByIndex(1);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $friendQueryWrapper);
+		$this->assertSame($friendTable, $friendQueryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
 
-		$friendLinks = $friendQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $friendLinks);
+		$friendLinks = $friendQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $friendLinks);
 		$this->assertEquals(0, $friendLinks->length());
 
-		$friendQuery = $friendQuerySetItem->getQuery();
+		$friendQuery = $friendQueryWrapper->getQuery();
 		$this->assertEquals($expectedQueries[1], (string)$friendQuery);
 	}
 
@@ -496,51 +515,56 @@ EOT;
 		$querySet = $composer->compose();
 
 		// Test query-set data structure contains correct links between queries
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySet', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface', $querySet);
 		$this->assertEquals(3, $querySet->length());
 
-		$userQuerySetItem = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
+		/** @var SingleQueryWrapperInterface $userQueryWrapper */
+		$userQueryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $userQueryWrapper);
+		$this->assertSame($table, $userQueryWrapper->getTable());
 
-		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
+		$userLinks = $userQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
 
+		/** @var QueryLinkInterface $userFriendLink*/
 		$userFriendLink = $userLinks->getByIndex(0);
-		$this->assertSame($table->links->getByName('friends'), $userFriendLink);
+		$this->assertSame($table->links->getByName('friends'), $userFriendLink->getJoinDefinition());
 
-		$friendQuerySetItem = $querySet->getByIndex(1);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendQuerySetItem);
-		$this->assertAttributeEquals('User_friends', 'tableName', $friendQuerySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
+		/** @var SingleQueryWrapperInterface $friendQueryWrapper */
+		$friendQueryWrapper = $querySet->getByIndex(1);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $friendQueryWrapper);
+		$this->assertSame($friendTable, $friendQueryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
 
-		$friendLinks = $friendQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $friendLinks);
+		$friendLinks = $friendQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $friendLinks);
 		$this->assertEquals(1, $friendLinks->length());
 
+		/** @var QueryLinkInterface $friendOfFriendLink */
 		$friendOfFriendLink = $friendLinks->getByIndex(0);
-		$this->assertSame($friendTable->links->getByName('friends'), $friendOfFriendLink);
+		$this->assertSame($friendTable->links->getByName('friends'), $friendOfFriendLink->getJoinDefinition());
 
-		$friendOfFriendQuerySetItem = $querySet->getByIndex(2);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendOfFriendQuerySetItem);
-		$this->assertAttributeEquals('User_friends_friends', 'tableName', $friendOfFriendQuerySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQuerySetItem->getQuery());
+		/** @var SingleQueryWrapperInterface $friendOfFriendQueryWrapper */
+		$friendOfFriendQueryWrapper = $querySet->getByIndex(2);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $friendOfFriendQueryWrapper);
+		$this->assertSame($friendOfFriendTable, $friendOfFriendQueryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQueryWrapper->getQuery());
 
-		$friendOfFriendLinks = $friendOfFriendQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $friendOfFriendLinks);
+		$friendOfFriendLinks = $friendOfFriendQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $friendOfFriendLinks);
 		$this->assertEquals(0, $friendOfFriendLinks->length());
 
 		// Test built query for each query-set item
-		$userQuery = $userQuerySetItem->getQuery();
+		$userQuery = $userQueryWrapper->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
-		$friendQuery = $friendQuerySetItem->getQuery();
+		$friendQuery = $friendQueryWrapper->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuery);
 		$this->assertEquals($expectedQueries[1], (string)$friendQuery);
 
-		$friendOfFriendQuery = $friendOfFriendQuerySetItem->getQuery();
+		$friendOfFriendQuery = $friendOfFriendQueryWrapper->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQuery);
 		$this->assertEquals($expectedQueries[2], (string)$friendOfFriendQuery);
 	}
@@ -604,51 +628,56 @@ EOT;
 		$querySet = $composer->compose();
 
 		// Test query-set data structure contains correct links between queries
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySet', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface', $querySet);
 		$this->assertEquals(3, $querySet->length());
 
-		$userQuerySetItem = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
+		/** @var SingleQueryWrapperInterface $userQueryWrapper */
+		$userQueryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $userQueryWrapper);
+		$this->assertSame($table, $userQueryWrapper->getTable());
 
-		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
+		$userLinks = $userQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
 
+		/** @var QueryLinkInterface $userFriendLink */
 		$userFriendLink = $userLinks->getByIndex(0);
-		$this->assertSame($table->links->getByName('friends'), $userFriendLink);
+		$this->assertSame($table->links->getByName('friends'), $userFriendLink->getJoinDefinition());
 
-		$friendQuerySetItem = $querySet->getByIndex(1);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendQuerySetItem);
-		$this->assertAttributeEquals('User_friends', 'tableName', $friendQuerySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
+		/** @var SingleQueryWrapperInterface $friendQueryWrapper */
+		$friendQueryWrapper = $querySet->getByIndex(1);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $friendQueryWrapper);
+		$this->assertSame($friendTable, $friendQueryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
 
-		$friendLinks = $friendQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $friendLinks);
+		$friendLinks = $friendQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $friendLinks);
 		$this->assertEquals(1, $friendLinks->length());
 
+		/** @var QueryLinkInterface $friendOfFriendLink */
 		$friendOfFriendLink = $friendLinks->getByIndex(0);
-		$this->assertSame($friendTable->links->getByName('friends'), $friendOfFriendLink);
+		$this->assertSame($friendTable->links->getByName('friends'), $friendOfFriendLink->getJoinDefinition());
 
-		$friendOfFriendQuerySetItem = $querySet->getByIndex(2);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendOfFriendQuerySetItem);
-		$this->assertAttributeEquals('User_friends_friends', 'tableName', $friendOfFriendQuerySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQuerySetItem->getQuery());
+		/** @var SingleQueryWrapperInterface $friendOfFriendQueryWrapper */
+		$friendOfFriendQueryWrapper = $querySet->getByIndex(2);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $friendOfFriendQueryWrapper);
+		$this->assertSame($friendOfFriendTable, $friendOfFriendQueryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQueryWrapper->getQuery());
 
-		$friendOfFriendLinks = $friendOfFriendQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $friendOfFriendLinks);
+		$friendOfFriendLinks = $friendOfFriendQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $friendOfFriendLinks);
 		$this->assertEquals(0, $friendOfFriendLinks->length());
 
 		// Test built query for each query-set item
-		$userQuery = $userQuerySetItem->getQuery();
+		$userQuery = $userQueryWrapper->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
-		$friendQuery = $friendQuerySetItem->getQuery();
+		$friendQuery = $friendQueryWrapper->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuery);
 		$this->assertEquals($expectedQueries[1], (string)$friendQuery);
 
-		$friendOfFriendQuery = $friendOfFriendQuerySetItem->getQuery();
+		$friendOfFriendQuery = $friendOfFriendQueryWrapper->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQuery);
 		$this->assertEquals($expectedQueries[2], (string)$friendOfFriendQuery);
 	}
@@ -700,34 +729,37 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySet', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface', $querySet);
 		$this->assertEquals(2, $querySet->length());
 
-		$userQuerySetItem = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
+		/** @var SingleQueryWrapperInterface $userQueryWrapper */
+		$userQueryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $userQueryWrapper);
+		$this->assertSame($table, $userQueryWrapper->getTable());
 
-		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
+		$userLinks = $userQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
 
+		/** @var QueryLinkInterface $userFriendLink */
 		$userFriendLink = $userLinks->getByIndex(0);
-		$this->assertSame($table->links->getByName('friends'), $userFriendLink);
+		$this->assertSame($table->links->getByName('friends'), $userFriendLink->getJoinDefinition());
 
-		$userQuery = $userQuerySetItem->getQuery();
+		$userQuery = $userQueryWrapper->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
-		$friendQuerySetItem = $querySet->getByIndex(1);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendQuerySetItem);
-		$this->assertAttributeEquals('User_friends', 'tableName', $friendQuerySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
+		/** @var SingleQueryWrapperInterface $friendQueryWrapper */
+		$friendQueryWrapper = $querySet->getByIndex(1);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $friendQueryWrapper);
+		$this->assertSame($friendTable, $friendQueryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
 
-		$friendLinks = $friendQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $friendLinks);
+		$friendLinks = $friendQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $friendLinks);
 		$this->assertEquals(0, $friendLinks->length());
 
-		$friendQuery = $friendQuerySetItem->getQuery();
+		$friendQuery = $friendQueryWrapper->getQuery();
 		$this->assertEquals($expectedQueries[1], (string)$friendQuery);
 	}
 
@@ -779,34 +811,37 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySet', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface', $querySet);
 		$this->assertEquals(2, $querySet->length());
 
-		$userQuerySetItem = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $userQuerySetItem);
-		$this->assertAttributeEquals('User', 'tableName', $userQuerySetItem);
+		/** @var SingleQueryWrapperInterface $userQueryWrapper */
+		$userQueryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $userQueryWrapper);
+		$this->assertSame($table, $userQueryWrapper->getTable());
 
-		$userLinks = $userQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $userLinks);
+		$userLinks = $userQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $userLinks);
 		$this->assertEquals(1, $userLinks->length());
 
+		/** @var QueryLinkInterface $userFriendLink */
 		$userFriendLink = $userLinks->getByIndex(0);
-		$this->assertSame($table->links->getByName('friends'), $userFriendLink);
+		$this->assertSame($table->links->getByName('friends'), $userFriendLink->getJoinDefinition());
 
-		$userQuery = $userQuerySetItem->getQuery();
+		$userQuery = $userQueryWrapper->getQuery();
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
-		$friendQuerySetItem = $querySet->getByIndex(1);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QuerySetItem', $friendQuerySetItem);
-		$this->assertAttributeEquals('User_friends', 'tableName', $friendQuerySetItem);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuerySetItem->getQuery());
+		/** @var SingleQueryWrapperInterface $friendQueryWrapper */
+		$friendQueryWrapper = $querySet->getByIndex(1);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface', $friendQueryWrapper);
+		$this->assertSame($friendTable, $friendQueryWrapper->getTable());
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
 
-		$friendLinks = $friendQuerySetItem->getLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $friendLinks);
+		$friendLinks = $friendQueryWrapper->getChildLinks();
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface', $friendLinks);
 		$this->assertEquals(0, $friendLinks->length());
 
-		$friendQuery = $friendQuerySetItem->getQuery();
+		$friendQuery = $friendQueryWrapper->getQuery();
 		$this->assertEquals($expectedQueries[1], (string)$friendQuery);
 	}
 }

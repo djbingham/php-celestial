@@ -3,6 +3,7 @@
 		"id": {
 			"type": "integer(11)",
 			"field": "id",
+			"autoIncrement": true,
 			"validators": []
 		},
 		"forename": {
@@ -17,18 +18,14 @@
 		}
 	},
 	"links": {
-		"friends": {
-			"type": "manyToMany",
-			"table": "User",
-			"onInsert": "associate",
-			"onUpdate": "associate",
-			"onDelete": "associate",
-			"via": {
-				"friendLink": "UserFriend"
-			},
+		"address": {
+			"type": "oneToOne",
+			"table": "UserAddress",
+			"onInsert": "insert",
+			"onUpdate": "update",
+			"onDelete": "delete",
 			"joins": {
-				"this.id": "userFriends.friendId1",
-				"userFriends.friendId2": "friends.id"
+				"this.id": "address.userId"
 			}
 		},
 		"posts": {
@@ -41,14 +38,18 @@
 				"this.id": "Post.authorId"
 			}
 		},
-		"address": {
-			"type": "oneToOne",
-			"table": "UserAddress",
-			"onInsert": "insert",
-			"onUpdate": "update",
-			"onDelete": "delete",
+		"friends": {
+			"type": "manyToMany",
+			"table": "User",
+			"onInsert": "associate",
+			"onUpdate": "associate",
+			"onDelete": "associate",
+			"via": {
+				"friendLink": "UserFriend"
+			},
 			"joins": {
-				"this.id": "address.userId"
+				"this.id": "userFriends.friendId1",
+				"userFriends.friendId2": "friends.id"
 			}
 		}
 	},

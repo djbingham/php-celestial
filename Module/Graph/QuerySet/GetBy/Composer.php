@@ -4,11 +4,13 @@ namespace Sloth\Module\Graph\QuerySet\GetBy;
 use Sloth\Module\Graph\Exception\InvalidTableException;
 use Sloth\Module\Graph\QuerySet\Base;
 use Sloth\Module\Graph\QuerySet\Filter;
-use Sloth\Module\Graph\QuerySet\QuerySet;
-use Sloth\Module\Graph\QuerySet\QuerySetItem;
+use Sloth\Module\Graph\QuerySet\MultiQueryWrapper;
+use Sloth\Module\Graph\QuerySet\QueryLink;
+use Sloth\Module\Graph\QuerySet\QueryLinkList;
+use Sloth\Module\Graph\QuerySet\SingleQueryWrapper;
 use Sloth\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
-use SlothMySql\Abstractory\Value\ATable as QueryTable;
+use SlothMySql\Face\Value\TableInterface;
 
 class Composer extends Base\AbstractComposer
 {
@@ -36,28 +38,35 @@ class Composer extends Base\AbstractComposer
 		return $this->buildQuerySetForTableAndDescendants($this->tableDefinition, $this->filters);
 	}
 
-	private function buildQuerySetForTableAndDescendants(Definition\Table $tableDefinition, array $filters, Definition\Table\Join $parentLink = null)
+	private function buildQuerySetForTableAndDescendants(Definition\Table $tableDefinition, array $filters, QueryLink $parentLink = null)
 	{
-		$querySet = new QuerySet();
-		$querySetItem = new QuerySetItem();
-		$querySetItem->setTableName($tableDefinition->getAlias())
-			->setQuery($this->buildQueryForTable($tableDefinition, $filters))
-			->setLinks($this->getLinksToManyRowsFromTable($tableDefinition));
+		$querySet = new MultiQueryWrapper();
+		$queryWrapper = new SingleQueryWrapper();
 
-		$querySet->push($querySetItem);
+		$query = $this->buildQueryForTable($tableDefinition, $filters);
+		$linksToManyRows = $this->getLinksToManyRowsFromTable($tableDefinition, $queryWrapper);
 
-		$linksToManyRows = $this->getLinksToManyRowsFromTable($tableDefinition);
-		/** @var Definition\Table\Join $link */
+		$queryWrapper->setTable($tableDefinition)
+			->setQuery($query)
+			->setChildLinks($linksToManyRows);
+		if ($parentLink !== null) {
+			$queryWrapper->setParentLink($parentLink);
+		}
+
+		$querySet->push($queryWrapper);
+
+		/** @var QueryLink $link */
 		foreach ($linksToManyRows as $link) {
-			if (array_key_exists($link->name, $filters)) {
-				$descendantFilters = $filters[$link->name];
+			$join = $link->getJoinDefinition();
+			if (array_key_exists($join->name, $filters)) {
+				$descendantFilters = $filters[$join->name];
 			} else {
 				$descendantFilters = array();
 			}
 			$descendantQuerySet = $this->buildQuerySetForLinkDescendants($link, $descendantFilters);
 			if (!is_null($descendantQuerySet)) {
-				foreach ($descendantQuerySet as $descendantQuerySetItem) {
-					$querySet->push($descendantQuerySetItem);
+				foreach ($descendantQuerySet as $descendantSingleQueryWrapper) {
+					$querySet->push($descendantSingleQueryWrapper);
 				}
 			}
 		}
@@ -65,17 +74,20 @@ class Composer extends Base\AbstractComposer
 		return $querySet;
 	}
 
-	private function getLinksToManyRowsFromTable(Definition\Table $tableDefinition)
+	private function getLinksToManyRowsFromTable(Definition\Table $tableDefinition, SingleQueryWrapper $parentQueryWrapper)
 	{
-		$foundLinks = new Definition\Table\JoinList();
-		foreach ($tableDefinition->links as $link) {
-			/** @var \Sloth\Module\Graph\Definition\Table\Join $link */
-			if (in_array($link->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
-				$childLinks = $this->getLinksToManyRowsFromTable($link->getChildTable());
+		$foundLinks = new QueryLinkList();
+		foreach ($tableDefinition->links as $join) {
+			/** @var \Sloth\Module\Graph\Definition\Table\Join $join */
+			if (in_array($join->type, array(Definition\Table\Join::ONE_TO_ONE, Definition\Table\Join::MANY_TO_ONE))) {
+				$childLinks = $this->getLinksToManyRowsFromTable($join->getChildTable(), $parentQueryWrapper);
 				foreach ($childLinks as $childLink) {
 					$foundLinks->push($childLink);
 				}
 			} else {
+				$link = new QueryLink();
+				$link->setParentQueryWrapper($parentQueryWrapper)
+					->setJoinDefinition($join);
 				$foundLinks->push($link);
 			}
 		}
@@ -84,8 +96,8 @@ class Composer extends Base\AbstractComposer
 
 	private function buildQueryForTable(Definition\Table $tableDefinition, array $filters)
 	{
-		$query = $this->database->query()->select()
-			->setFields($this->buildQueryFieldsFromTable($tableDefinition))
+		$query = $this->database->query()->select();
+		$query->setFields($this->buildQueryFieldsFromTable($tableDefinition))
 			->from($this->getQueryTable($tableDefinition->name, $tableDefinition->getAlias()))
 			->setJoins($this->buildQueryJoinsFromTable($tableDefinition));
 
@@ -127,7 +139,7 @@ class Composer extends Base\AbstractComposer
 	/**
 	 * @param string $tableName
 	 * @param string $tableAlias
-	 * @return QueryTable
+	 * @return TableInterface
 	 */
 	private function getQueryTable($tableName, $tableAlias)
 	{
@@ -242,56 +254,64 @@ class Composer extends Base\AbstractComposer
 		return $queryFields;
 	}
 
-	private function buildQuerySetForLinkDescendants(Definition\Table\Join $link, array $filters)
+	private function buildQuerySetForLinkDescendants(QueryLink $link, array $filters)
 	{
-		$childTable = $link->getChildTable();
+		$join = $link->getJoinDefinition();
+		$childTable = $join->getChildTable();
 		$querySet = null;
-		if ($link->type === Definition\Table\Join::MANY_TO_MANY) {
+		if ($join->type === Definition\Table\Join::MANY_TO_MANY) {
 			$querySet = $this->buildQuerySetForSubJoinedTableAndDescendants($link, $filters);
-		} elseif ($link->type === Definition\Table\Join::ONE_TO_MANY) {
+		} elseif ($join->type === Definition\Table\Join::ONE_TO_MANY) {
 			$querySet = $this->buildQuerySetForTableAndDescendants($childTable, $filters, $link);
 		}
 		return $querySet;
 	}
 
-	private function buildQuerySetForSubJoinedTableAndDescendants(Definition\Table\Join $link, array $filters)
+	private function buildQuerySetForSubJoinedTableAndDescendants(QueryLink $link, array $filters)
 	{
-		$tableDefinition = $link->getChildTable();
-		$querySet = new QuerySet();
-		$querySetItem = new QuerySetItem();
-		$querySetItem->setTableName($tableDefinition->getAlias())
-			->setQuery($this->buildQueryForSubJoinsAndTable($link, $filters))
-			->setLinks($this->getLinksToManyRowsFromTable($tableDefinition));
-		if ($link !== null) {
-			$querySetItem->setParentLink($link);
-		}
-		$querySet->push($querySetItem);
+		$join = $link->getJoinDefinition();
+		$childTable = $join->getChildTable();
 
-		foreach ($tableDefinition->links as $childLink) {
-			if (array_key_exists($childLink->name, $filters)) {
-				$descendantFilters = $filters[$childLink->name];
+		$querySet = new MultiQueryWrapper();
+		$queryWrapper = new SingleQueryWrapper();
+
+		$query = $this->buildQueryForSubJoinsAndTable($join, $filters);
+		$childLinks = $this->getLinksToManyRowsFromTable($childTable, $queryWrapper);
+
+		$queryWrapper->setTable($childTable)
+			->setQuery($query)
+			->setParentLink($link)
+			->setChildLinks($childLinks);
+		$querySet->push($queryWrapper);
+
+		$childLinks = $this->getLinksToManyRowsFromTable($childTable, $queryWrapper);
+		/** @var QueryLink $childLink */
+		foreach ($childLinks as $childLink) {
+			$childJoin = $childLink->getJoinDefinition();
+			if (array_key_exists($childJoin->name, $filters)) {
+				$descendantFilters = $filters[$childJoin->name];
 			} else {
 				$descendantFilters = array();
 			}
-			foreach ($this->buildQuerySetForLinkDescendants($childLink, $descendantFilters) as $querySetItem) {
-				$querySet->push($querySetItem);
+			foreach ($this->buildQuerySetForLinkDescendants($childLink, $descendantFilters) as $queryWrapper) {
+				$querySet->push($queryWrapper);
 			}
 		}
 
 		return $querySet;
 	}
 
-	private function buildQueryForSubJoinsAndTable(Definition\Table\Join $link, array $filters)
+	private function buildQueryForSubJoinsAndTable(Definition\Table\Join $join, array $filters)
 	{
-		$tableDefinition = $link->getChildTable();
+		$tableDefinition = $join->getChildTable();
 		$query = $this->database->query()->select();
 
-		$subJoinGroups = $this->groupSubJoinsByChild($link);
+		$subJoinGroups = $this->groupSubJoinsByChild($join);
 
 		$queryJoins = array();
 		foreach ($subJoinGroups as $childTableAlias => $subJoins) {
-			$join = $this->database->query()->join()->inner();
-			$join->table($this->getQueryTable($link->getChildTable()->name, $link->getChildTable()->getAlias()));
+			$queryJoin = $this->database->query()->join()->inner();
+			$queryJoin->table($this->getQueryTable($join->getChildTable()->name, $join->getChildTable()->getAlias()));
 
 			if (!isset($firstSubJoin)) {
 				/** @var \Sloth\Module\Graph\Definition\Table\Join\SubJoin $firstSubJoin */
@@ -302,7 +322,7 @@ class Composer extends Base\AbstractComposer
 			$joinConstraints = array();
 			foreach ($subJoins as $joinDefinition) {
 				/** @var \Sloth\Module\Graph\Definition\Table\Join\SubJoin $joinDefinition */
-				if ($joinDefinition->parentTable->getAlias() !== $link->parentTable->getAlias()) {
+				if ($joinDefinition->parentTable->getAlias() !== $join->parentTable->getAlias()) {
 					$parentTable = $this->getQueryTable($joinDefinition->parentTable->name, $joinDefinition->parentTable->getAlias());
 					$parentField = $parentTable->field($joinDefinition->parentField->name);
 					$childTable = $this->getQueryTable($joinDefinition->childTable->name, $joinDefinition->childTable->getAlias());
@@ -319,8 +339,8 @@ class Composer extends Base\AbstractComposer
 				foreach ($joinConstraints as $joinConstraint) {
 					$constraintCollection->andOn($joinConstraint);
 				}
-				$join->on($constraintCollection);
-				$queryJoins[] = $join;
+				$queryJoin->on($constraintCollection);
+				$queryJoins[] = $queryJoin;
 			}
 		}
 		$queryJoins = array_merge($queryJoins, $this->buildQueryJoinsFromTable($tableDefinition));
@@ -341,7 +361,7 @@ class Composer extends Base\AbstractComposer
 		$query->setFields($queryFields)
 			->from($this->getQueryTable($table->name, $table->getAlias()));
 
-		$queryConstraint = $this->buildQueryConstraintFromFilters($filters, $link->getChildTable());
+		$queryConstraint = $this->buildQueryConstraintFromFilters($filters, $join->getChildTable());
 		if (!is_null($queryConstraint)) {
 			$query->where($queryConstraint);
 		}

@@ -27,6 +27,11 @@ class Field
 	public $type;
 
 	/**
+	 * @var boolean
+	 */
+	public $autoIncrement;
+
+	/**
 	 * @var ValidatorList
 	 */
 	public $validators = array();

@@ -21,6 +21,11 @@ abstract class AbstractComposer
 	 */
 	protected $filters = array();
 
+	/**
+	 * @var array
+	 */
+	protected $data = array();
+
 	abstract public function compose();
 
 	public function setDatabase(DatabaseWrapper $database)
@@ -38,6 +43,12 @@ abstract class AbstractComposer
 	public function setFilters(array $filters)
 	{
 		$this->filters = $filters;
+		return $this;
+	}
+
+	public function setData(array $data)
+	{
+		$this->data = $data;
 		return $this;
 	}
 }

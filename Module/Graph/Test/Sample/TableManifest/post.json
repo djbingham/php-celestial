@@ -3,6 +3,7 @@
 		"id": {
 			"type": "integer(11)",
 			"field": "id",
+			"autoIncrement": true,
 			"validators": []
 		},
 		"authorId": {
@@ -25,6 +26,16 @@
 			"onDelete": "ignore",
 			"joins": {
 				"this.authorId": "author.id"
+			}
+		},
+		"comments": {
+			"type": "oneToMany",
+			"table": "Comment",
+			"onInsert": "insert",
+			"onUpdate": "ignore",
+			"onDelete": "ignore",
+			"joins": {
+				"this.id": "comments.postId"
 			}
 		}
 	},

@@ -172,11 +172,13 @@ class DataParserTest extends UnitTest
 				'posts' => array(
 					array(
 						'authorId' => 1,
-						'content' => 'First post by David'
+						'content' => 'First post by David',
+						'comments' => array()
 					),
 					array(
 						'authorId' => 1,
-						'content' => 'Second post by David'
+						'content' => 'Second post by David',
+						'comments' => array()
 					)
 				)
 			),
@@ -187,11 +189,13 @@ class DataParserTest extends UnitTest
 				'posts' => array(
 					array(
 						'authorId' => 3,
-						'content' => 'First post by Michael'
+						'content' => 'First post by Michael',
+						'comments' => array()
 					),
 					array(
 						'authorId' => 3,
-						'content' => 'Second post by Michael'
+						'content' => 'Second post by Michael',
+						'comments' => array()
 					)
 				)
 			)

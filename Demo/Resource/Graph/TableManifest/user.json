@@ -3,6 +3,7 @@
 		"id": {
 			"type": "integer(11)",
 			"field": "id",
+			"autoIncrement": true,
 			"validators": []
 		},
 		"forename": {

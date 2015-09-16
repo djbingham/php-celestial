@@ -25,7 +25,7 @@
 		"landlord": {
 			"type": "oneToOne",
 			"table": "User",
-			"onInsert": "associate",
+			"onInsert": "ignore",
 			"onUpdate": "ignore",
 			"onDelete": "ignore",
 			"joins": {

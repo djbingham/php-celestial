@@ -2,6 +2,7 @@
 namespace Sloth\Module\Graph\QuerySet\Base;
 
 use Sloth\Module\Graph\QuerySet\DataParser;
+use Sloth\Module\Graph\QuerySet\MultiQueryWrapper;
 use Sloth\Module\Graph\QuerySet\QuerySet;
 use Sloth\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
@@ -19,7 +20,7 @@ abstract class AbstractConductor
 	protected $dataParser;
 
 	/**
-	 * @var QuerySet
+	 * @var MultiQueryWrapper
 	 */
 	protected $querySetToExecute;
 
@@ -42,7 +43,7 @@ abstract class AbstractConductor
 		return $this;
 	}
 
-	public function setQuerySet(QuerySet $querySet)
+	public function setQuerySet(MultiQueryWrapper $querySet)
 	{
 		$this->querySetToExecute = $querySet;
 		return $this;

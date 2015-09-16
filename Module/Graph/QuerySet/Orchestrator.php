@@ -72,6 +72,7 @@ class Orchestrator
 			->setDatabase($this->database)
 			->setTable($tableDefinition)
 			->setFilters($filters)
+			->setData($data)
 			->compose();
 		$data = $this->conductor
 			->setDatabase($this->database)

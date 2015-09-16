@@ -2,16 +2,17 @@
 namespace Sloth\Module\Graph\QuerySet\GetBy;
 
 use Sloth\Module\Graph\QuerySet\Base;
-use Sloth\Module\Graph\QuerySet\QuerySet;
-use Sloth\Module\Graph\QuerySet\QuerySetItem;
+use Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface;
 use Sloth\Module\Graph\Definition;
+use Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface;
+use Sloth\Module\Graph\QuerySet\MultiQueryWrapper;
 use SlothMySql\QueryBuilder\Query\Constraint;
 use SlothMySql\QueryBuilder\Query\Select;
 
 class Conductor extends Base\AbstractConductor
 {
 	/**
-	 * @var QuerySet
+	 * @var MultiQueryWrapperInterface
 	 */
 	private $executedQuerySet;
 
@@ -22,11 +23,11 @@ class Conductor extends Base\AbstractConductor
 
 	public function conduct()
 	{
-		$this->executedQuerySet = new QuerySet();
+		$this->executedQuerySet = new MultiQueryWrapper();
 		while ($this->querySetToExecute->length() > 0) {
-			$querySetItem = $this->querySetToExecute->shift();
-			$this->executedQuerySet->push($querySetItem);
-			$fetchedData = $this->executeQuerySetItem($querySetItem);
+			$queryWrapper = $this->querySetToExecute->shift();
+			$fetchedData = $this->executeQuerySetItem($queryWrapper);
+			$this->executedQuerySet->push($queryWrapper);
 			if (empty($fetchedData)) {
 				break;
 			}
@@ -34,38 +35,41 @@ class Conductor extends Base\AbstractConductor
 		return $this->fetchedData;
 	}
 
-	private function executeQuerySetItem(QuerySetItem $item)
+	private function executeQuerySetItem(SingleQueryWrapperInterface $queryWrapper)
 	{
 		/** @var Select $query */
-		$query = $item->getQuery();
+		$query = $queryWrapper->getQuery();
 		$data = $this->database->execute($query)->getData();
 
-		$newConstraint = $this->buildConstraintForReQuery($item, $data);
+		$newConstraint = $this->buildConstraintForReQuery($queryWrapper, $data);
+
 		if (!empty($newConstraint)) {
 			$newQuery = clone $query;
 			$newQuery->setConstraint($newConstraint);
 			$data = $this->database->execute($newQuery)->getData();
 		}
 
-		$this->fetchedData[$item->getTableName()] = $data;
+		$this->fetchedData[$queryWrapper->getTable()->getAlias()] = $data;
 
-		$linkData = $this->dataParser->extractLinkListData($item->getLinks(), $data);
+		$linkData = $this->dataParser->extractLinkListData($queryWrapper->getChildLinks(), $data);
 		$this->applyLinkDataToQueries($linkData);
 
 		return $data;
 	}
 
-	private function buildConstraintForReQuery(QuerySetItem $querySetItem, array $data)
+	private function buildConstraintForReQuery(SingleQueryWrapperInterface $queryWrapper, array $data)
 	{
 		$constraints = array();
 		$masterConstraint = null;
-		$joinFromParent = $querySetItem->getParentLink();
+		$parentLink = $queryWrapper->getParentLink();
 
-		if ($joinFromParent !== null) {
+		if ($parentLink !== null) {
+			$parentJoin = $parentLink->getJoinDefinition();
 			/** @var Definition\Table\Join\Constraint $constraintDefinition */
-			foreach ($joinFromParent->getConstraints() as $constraintDefinition) {
-				if (!empty($constraintDefinition->subJoins)) {
-					$firstSubJoin = $constraintDefinition->subJoins->getByParentTableAlias($joinFromParent->parentTable->getAlias());
+			foreach ($parentJoin->getConstraints() as $constraintDefinition) {
+				$subJoins = $constraintDefinition->subJoins;
+				if (!empty($subJoins)) {
+					$firstSubJoin = $subJoins->getByParentTableAlias($parentJoin->parentTable->getAlias());
 					$joinToParentField = $firstSubJoin->childField;
 				} else {
 					$joinToParentField = $constraintDefinition->childField;
@@ -109,24 +113,33 @@ class Conductor extends Base\AbstractConductor
 
 	private function applyLinkDataToQueries(array $linkData)
 	{
-		foreach ($this->executedQuerySet as $executedQuerySetItem) {
-			/** @var QuerySetItem $executedQuerySetItem */
-			$links = $executedQuerySetItem->getLinks();
+		/** @var SingleQueryWrapperInterface $targetQueryWrapper */
+		foreach ($this->querySetToExecute as $targetQueryWrapper) {
+			$targetTables = array($targetQueryWrapper->getTable());
 
-			foreach ($this->querySetToExecute as $targetQuerySetItem) {
-				/** @var QuerySetItem $targetQuerySetItem */
-				$targetTableName = $targetQuerySetItem->getTableName();
-				if (array_key_exists($targetTableName, $linkData)) {
-					$targetLinkData = $linkData[$targetTableName];
-					$linkToTargetTable = $links->getByChild($targetTableName);
-					if ($linkToTargetTable instanceof Definition\Table\Join) {
-						$constraint = $this->buildLinkConstraint($linkToTargetTable, $targetLinkData);
-						if ($constraint instanceof Constraint) {
-							/** @var Select $query */
-							$query = $targetQuerySetItem->getQuery();
-							$query->where($constraint);
-						}
+			$joinDefinition = $targetQueryWrapper->getParentLink()->getJoinDefinition();
+			$parentTable = $joinDefinition->parentTable;
+			if ($joinDefinition->type === Definition\Table\Join::MANY_TO_MANY) {
+				$firstConstraint = $joinDefinition->getConstraints()->getByIndex(0);
+				$firstSubJoin = $firstConstraint->subJoins->getByParentTableAlias($parentTable->getAlias());
+				array_unshift($targetTables, $firstSubJoin->childTable);
+			}
+
+			/** @var Definition\Table $targetTable */
+			foreach ($targetTables as $targetTable) {
+				$constraints = array();
+				if (array_key_exists($targetTable->getAlias(), $linkData)) {
+					$targetLinkData = $linkData[$targetTable->getAlias()];
+					$constraints[] = $this->buildLinkConstraint($joinDefinition, $targetLinkData);
+				}
+				$constraint = array_shift($constraints);
+				if ($constraint instanceof Constraint) {
+					foreach ($constraints as $nextConstraint) {
+						$constraint->andWhere($nextConstraint);
 					}
+					/** @var Select $query */
+					$query = $targetQueryWrapper->getQuery();
+					$query->where($constraint);
 				}
 			}
 		}
@@ -138,14 +151,14 @@ class Conductor extends Base\AbstractConductor
 		/** @var \Sloth\Module\Graph\Definition\Table\Join\Constraint $constraintDefinition */
 		foreach ($link->getConstraints() as $constraintDefinition) {
 			if ($constraintDefinition->subJoins !== null && $constraintDefinition->subJoins->length() > 0) {
+				/** @var \Sloth\Module\Graph\Definition\Table\Join\SubJoin $subJoin */
 				foreach ($constraintDefinition->subJoins as $subJoin) {
-					/** @var \Sloth\Module\Graph\Definition\Table\Join\SubJoin $subJoin */
-					$tableName = $subJoin->childTable->getAlias();
 					$field = $subJoin->childField;
-					$queryField = $this->database->value()
-						->table($tableName)
-						->field($field->name);
 					if (array_key_exists($field->getAlias(), $linkData)) {
+						$tableName = $subJoin->childTable->getAlias();
+						$queryField = $this->database->value()
+							->table($tableName)
+							->field($field->name);
 						$fieldValues = $linkData[$field->getAlias()];
 
 						$queryConstraint = $this->database->query()->constraint()->setSubject($queryField);

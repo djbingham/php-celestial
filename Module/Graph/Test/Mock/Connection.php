@@ -21,6 +21,16 @@ class Connection extends \SlothMySql\Connection\MySqli
 	protected $nextData;
 
 	/**
+	 * @var array
+	 */
+	protected $mockLastInsertIdSequence = array();
+
+	/**
+	 * @var integer Value to return on next call to getLastInsertId
+	 */
+	protected $lastInsertId;
+
+	/**
 	 * @param QueryInterface $query
 	 * @return $this
 	 * @throws \Exception if query doesn't match next expected query
@@ -32,6 +42,7 @@ class Connection extends \SlothMySql\Connection\MySqli
 
 		// If next response data is an exception, throw it
 		if (count($this->mockGetDataSequence) > 0) {
+			$this->lastInsertId = array_shift($this->mockLastInsertIdSequence);
 			$this->nextData = array_shift($this->mockGetDataSequence);
 			if ($this->nextData instanceof \Exception) {
 				throw $this->nextData;
@@ -50,6 +61,11 @@ class Connection extends \SlothMySql\Connection\MySqli
 			throw $response;
 		}
 		return $response;
+	}
+
+	public function getLastInsertId()
+	{
+		return $this->lastInsertId;
 	}
 
 	public function connect($host = null, $user = null, $password = null, $database = null, $port = null, $socket = null)
@@ -117,7 +133,7 @@ class Connection extends \SlothMySql\Connection\MySqli
 	}
 
 	/**
-	 * @param mixed $data
+	 * @param array $data
 	 * @return $this
 	 */
 	public function pushQueryResponse($data)
@@ -126,9 +142,19 @@ class Connection extends \SlothMySql\Connection\MySqli
 		return $this;
 	}
 
+	/**
+	 * @param integer $id
+	 * @return $this
+	 */
+	public function pushInsertId($id)
+	{
+		$this->mockLastInsertIdSequence[] = $id;
+		return $this;
+	}
+
 	protected function assertEqualsNextExpectedQuery($actual)
 	{
-		$nextQuery = '';
+		$nextQuery = null;
 		if (count($this->expectedQuerySequence) > 0) {
 			$nextQuery = $this->expectedQuerySequence[0];
 		}

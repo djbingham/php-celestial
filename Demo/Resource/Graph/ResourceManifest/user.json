@@ -11,6 +11,8 @@
 			"postcode": true
 		},
 		"posts": {
+			"id": true,
+			"authorId": true,
 			"content": true
 		},
 		"friends": {

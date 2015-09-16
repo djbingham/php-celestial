@@ -222,6 +222,7 @@ EOT;
 
 		$postTable = $table->links->getByName('posts')->getChildTable();
 		$postTable->links->removeByPropertyValue('name', 'author');
+		$postTable->links->removeByPropertyValue('name', 'comments');
 
 		$expectedQueries = array();
 		$expectedData = array();
@@ -241,6 +242,13 @@ EOT;
 				'User.surname' => 'Bingham'
 			)
 		);
+		$expectedQueries[] = <<<EOT
+SELECT `User_posts`.`id` AS `User_posts.id`,`User_posts`.`authorId` AS `User_posts.authorId`,`User_posts`.`content` AS `User_posts.content`
+FROM `Post` AS `User_posts`
+WHERE `User_posts`.`authorId` IN (1,2)
+EOT;
+		// Expect User_posts to be queried a second time, since we filter on all fields first,
+		// then re-query based on found values of primary key fields
 		$expectedQueries[] = <<<EOT
 SELECT `User_posts`.`id` AS `User_posts.id`,`User_posts`.`authorId` AS `User_posts.authorId`,`User_posts`.`content` AS `User_posts.content`
 FROM `Post` AS `User_posts`
@@ -266,6 +274,7 @@ EOT;
 
 		$dbConnection->expectQuerySequence($expectedQueries)
 			->pushQueryResponse($expectedData['User'])
+			->pushQueryResponse($expectedData['User_posts'])
 			->pushQueryResponse($expectedData['User_posts']);
 
 		$composer = new Composer();
@@ -298,12 +307,15 @@ EOT;
 		$table->links->removeByPropertyValue('name', 'address');
 
 		$postTable = $table->links->getByName('posts')->getChildTable();
+		$postTable->links->removeByPropertyValue('name', 'comments');
+
 		$authorTable = $postTable->links->getByName('author')->getChildTable();
 		$authorTable->links->removeByPropertyValue('name', 'friends');
 		$authorTable->links->removeByPropertyValue('name', 'address');
 
 		$authorPostTable = $authorTable->links->getByName('posts')->getChildTable();
 		$authorPostTable->links->removeByPropertyValue('name', 'author');
+		$authorPostTable->links->removeByPropertyValue('name', 'comments');
 
 		$expectedQueries = array();
 		$expectedData = array();
@@ -323,6 +335,12 @@ EOT;
 				'User.surname' => 'Bingham'
 			)
 		);
+		$expectedQueries[] = <<<EOT
+SELECT `User_posts`.`id` AS `User_posts.id`,`User_posts`.`authorId` AS `User_posts.authorId`,`User_posts`.`content` AS `User_posts.content`,`User_posts_author`.`id` AS `User_posts_author.id`,`User_posts_author`.`forename` AS `User_posts_author.forename`,`User_posts_author`.`surname` AS `User_posts_author.surname`
+FROM `Post` AS `User_posts`
+INNER JOIN `User` AS `User_posts_author` ON (`User_posts`.`authorId` = `User_posts_author`.`id`)
+WHERE `User_posts`.`authorId` IN (1,2)
+EOT;
 		$expectedQueries[] = <<<EOT
 SELECT `User_posts`.`id` AS `User_posts.id`,`User_posts`.`authorId` AS `User_posts.authorId`,`User_posts`.`content` AS `User_posts.content`,`User_posts_author`.`id` AS `User_posts_author.id`,`User_posts_author`.`forename` AS `User_posts_author.forename`,`User_posts_author`.`surname` AS `User_posts_author.surname`
 FROM `Post` AS `User_posts`
@@ -360,6 +378,11 @@ SELECT `User_posts_author_posts`.`id` AS `User_posts_author_posts.id`,`User_post
 FROM `Post` AS `User_posts_author_posts`
 WHERE `User_posts_author_posts`.`authorId` IN (1,2)
 EOT;
+		$expectedQueries[] = <<<EOT
+SELECT `User_posts_author_posts`.`id` AS `User_posts_author_posts.id`,`User_posts_author_posts`.`authorId` AS `User_posts_author_posts.authorId`,`User_posts_author_posts`.`content` AS `User_posts_author_posts.content`
+FROM `Post` AS `User_posts_author_posts`
+WHERE `User_posts_author_posts`.`authorId` IN (1,2)
+EOT;
 		$expectedData['User_posts_author_posts'] = array(
 			array(
 				'User_posts_author_posts.id' => 1,
@@ -381,6 +404,8 @@ EOT;
 		$dbConnection->expectQuerySequence($expectedQueries)
 			->pushQueryResponse($expectedData['User'])
 			->pushQueryResponse($expectedData['User_posts'])
+			->pushQueryResponse($expectedData['User_posts'])
+			->pushQueryResponse($expectedData['User_posts_author_posts'])
 			->pushQueryResponse($expectedData['User_posts_author_posts']);
 
 		$composer = new Composer();
@@ -976,6 +1001,7 @@ EOT;
 
 		$dbConnection->expectQuerySequence($expectedQueries)
 			->pushQueryResponse($expectedData['User'])
+			->pushQueryResponse($expectedData['User_friends'])
 			->pushQueryResponse($expectedData['User_friends']);
 
 		$data = $conductor->conduct();

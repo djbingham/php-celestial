@@ -2,16 +2,34 @@
 namespace Sloth\Module\Graph\QuerySet;
 
 use Sloth\Module\Graph\Definition;
+use Sloth\Module\Graph\QuerySet\Face\QueryLinkInterface;
+use Sloth\Module\Graph\QuerySet\Face\QueryLinkListInterface;
 
 class DataParser
 {
-	public function extractLinkListData(Definition\Table\JoinList $links, array $data)
+	public function extractLinkListData(QueryLinkListInterface $links, array $data)
 	{
 		$linkData = array();
+		/** @var QueryLinkInterface $link */
 		foreach ($links as $link) {
-			/** @var \Sloth\Module\Graph\Definition\Table\Join $link */
-			foreach ($this->extractLinkData($link, $data) as $fieldName => $value) {
-				$linkData[$link->getChildTable()->getAlias()][$fieldName] = $value;
+			$join = $link->getJoinDefinition();
+			foreach ($this->extractLinkData($join, $data) as $fieldAlias => $value) {
+				if ($join->type === Definition\Table\Join::MANY_TO_MANY) {
+					/** @var Definition\Table\Join\Constraint $constraint */
+					foreach ($join->getConstraints() as $constraint) {
+							/** @var Definition\Table\Join\SubJoin $subJoin */
+						foreach ($constraint->subJoins as $subJoin) {
+							$subJoinTableAlias = $subJoin->childTable->getAlias();
+							$subJoinFieldAlias = $subJoin->childField->getAlias();
+							if ($subJoinFieldAlias === $fieldAlias) {
+								$linkData[$subJoinTableAlias][$subJoinFieldAlias] = $value;
+							}
+						}
+					}
+
+				} else {
+					$linkData[$join->getChildTable()->getAlias()][$fieldAlias] = $value;
+				}
 			}
 		}
 		return $linkData;
@@ -20,23 +38,26 @@ class DataParser
 	public function extractLinkData(Definition\Table\Join $link, array $data)
 	{
 		$linkData = array();
-		foreach ($link->constraints as $constraint) {
-			/** @var \Sloth\Module\Graph\Definition\Table\Join\Constraint $constraint */
-			if ($constraint->subJoins instanceof Definition\Table\Join\SubJoinList && $constraint->subJoins->length() > 0) {
-				foreach ($constraint->subJoins as $subJoin) {
-					/** @var \Sloth\Module\Graph\Definition\Table\Join\SubJoin $subJoin */
-					$parentFieldAlias = $subJoin->parentField->getAlias();
-					$childFieldAlias = $subJoin->childField->getAlias();
-					$values = $this->getFieldValues($parentFieldAlias, $data);
-					if (!empty($values)) {
-						$linkData[$childFieldAlias] = $values;
+		$constraints = $link->constraints;
+		if ($constraints !== null) {
+			foreach ($link->constraints as $constraint) {
+				/** @var \Sloth\Module\Graph\Definition\Table\Join\Constraint $constraint */
+				if ($constraint->subJoins instanceof Definition\Table\Join\SubJoinList && $constraint->subJoins->length() > 0) {
+					foreach ($constraint->subJoins as $subJoin) {
+						/** @var \Sloth\Module\Graph\Definition\Table\Join\SubJoin $subJoin */
+						$parentFieldAlias = $subJoin->parentField->getAlias();
+						$childFieldAlias = $subJoin->childField->getAlias();
+						$values = $this->getFieldValues($parentFieldAlias, $data);
+						if (!empty($values)) {
+							$linkData[$childFieldAlias] = $values;
+						}
 					}
+				} else {
+					$parentFieldAlias = $constraint->parentField->getAlias();
+					$childFieldAlias = $constraint->childField->getAlias();
+					$values = $this->getFieldValues($parentFieldAlias, $data);
+					$linkData[$childFieldAlias] = $values;
 				}
-			} else {
-				$parentFieldAlias = $constraint->parentField->getAlias();
-				$childFieldAlias = $constraint->childField->getAlias();
-				$values = $this->getFieldValues($parentFieldAlias, $data);
-				$linkData[$childFieldAlias] = $values;
 			}
 		}
 		return $linkData;
@@ -127,17 +148,17 @@ class DataParser
 					$parentAlias = $subJoin->parentField->getAlias();
 					$childAlias = $subJoin->childField->getAlias();
 					if (array_key_exists($parentAlias, $parentRowData)) {
-						$value = $parentRowData[$parentAlias];
 						if ($subJoin->parentTable->getAlias() === $link->parentTable->getAlias()) {
-							$linkData[$childAlias] = $value;
+							$linkData[$childAlias] = $parentRowData[$parentAlias];
 						}
 					}
 				}
 			} else {
 				$parentAlias = $constraint->parentField->getAlias();
 				$childAlias = $constraint->childField->getAlias();
-				$value = $parentRowData[$parentAlias];
-				$linkData[$childAlias] = $value;
+				if (array_key_exists($parentAlias, $parentRowData)) {
+					$linkData[$childAlias] = $parentRowData[$parentAlias];
+				}
 			}
 		}
 		return $linkData;

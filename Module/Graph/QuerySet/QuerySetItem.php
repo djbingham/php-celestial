@@ -2,7 +2,7 @@
 namespace Sloth\Module\Graph\QuerySet;
 
 use Sloth\Module\Graph\Definition;
-use SlothMySql\QueryBuilder\Abstractory\MySqlQuery;
+use SlothMySql\Face\QueryInterface;
 
 class QuerySetItem
 {
@@ -12,7 +12,7 @@ class QuerySetItem
 	private $tableName;
 
 	/**
-	 * @var MySqlQuery
+	 * @var QueryInterface
 	 */
 	private $query;
 
@@ -48,12 +48,12 @@ class QuerySetItem
 		return $this;
 	}
 
-	public function getLinks()
+	public function getChildLinks()
 	{
 		return $this->links;
 	}
 
-	public function setLinks(Definition\Table\JoinList $links)
+	public function setChildLinks(Definition\Table\JoinList $links)
 	{
 		$this->links = $links;
 		return $this;
