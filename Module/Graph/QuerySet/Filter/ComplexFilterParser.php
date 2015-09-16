@@ -1,7 +1,9 @@
 <?php
-namespace Sloth\Module\Graph\QuerySet;
+namespace Sloth\Module\Graph\QuerySet\Filter;
 
 use Sloth\Module\Graph\Definition;
+use Sloth\Module\Graph\QuerySet\Face\FilterParserInterface;
+use Sloth\Module\Graph\QuerySet\Filter\Filter;
 
 class ComplexFilterParser implements FilterParserInterface
 {

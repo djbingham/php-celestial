@@ -5,7 +5,7 @@ require_once dirname(dirname(dirname(__DIR__))) . '/UnitTest.php';
 
 use Sloth\Module\Graph\QuerySet\DataParser;
 use Sloth\Module\Graph\QuerySet\GetBy\Composer;
-use Sloth\Module\Graph\QuerySet\FilterParser;
+use Sloth\Module\Graph\QuerySet\Filter\FilterParser;
 use Sloth\Module\Graph\QuerySet\GetBy\Conductor;
 use Sloth\Module\Graph\Definition;
 use Sloth\Module\Graph\Test\Mock\Connection;

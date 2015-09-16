@@ -44,15 +44,15 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $querySet);
 		$this->assertEquals(1, $querySet->length());
 
 		/** @var SingleQueryWrapperInterface $queryWrapper */
 		$queryWrapper = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $queryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $queryWrapper);
 		$this->assertSame($table, $queryWrapper->getTable());
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $queryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $queryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $queryWrapper->getChildLinks());
 		$this->assertEquals(0, $queryWrapper->getChildLinks()->length());
 
 		$query = $queryWrapper->getQuery();
@@ -101,14 +101,14 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $querySet);
 		$this->assertEquals(1, $querySet->length());
 
 		/** @var SingleQueryWrapperInterface $firstQueryWrapper */
 		$firstQueryWrapper = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $firstQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $firstQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $firstQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $firstQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $firstQueryWrapper->getChildLinks());
 
 		$firstQuery = $firstQueryWrapper->getQuery();
 		$this->assertSame($table, $firstQueryWrapper->getTable());
@@ -123,9 +123,9 @@ EOT;
 
 		/** @var SingleQueryWrapperInterface $secondQueryWrapper */
 		$secondQueryWrapper = $firstChildLink->getChildQueryWrapper();
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $secondQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $secondQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $secondQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $secondQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $secondQueryWrapper->getChildLinks());
 
 		$secondQuery = $secondQueryWrapper->getQuery();
 		$this->assertSame($addressTable, $secondQueryWrapper->getTable());
@@ -184,14 +184,14 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $querySet);
 		$this->assertEquals(1, $querySet->length());
 
 		/** @var SingleQueryWrapperInterface $firstQueryWrapper */
 		$firstQueryWrapper = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $firstQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $firstQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $firstQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $firstQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $firstQueryWrapper->getChildLinks());
 
 		$firstQuery = $firstQueryWrapper->getQuery();
 		$this->assertSame($table, $firstQueryWrapper->getTable());
@@ -206,9 +206,9 @@ EOT;
 
 		/** @var SingleQueryWrapperInterface $secondQueryWrapper */
 		$secondQueryWrapper = $firstChildLink->getChildQueryWrapper();
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $secondQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $secondQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $secondQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $secondQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $secondQueryWrapper->getChildLinks());
 
 		$secondQuery = $secondQueryWrapper->getQuery();
 		$this->assertSame($addressTable, $secondQueryWrapper->getTable());
@@ -351,14 +351,14 @@ EOT;
 
 		$firstQuerySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $firstQuerySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $firstQuerySet);
 		$this->assertEquals(1, $firstQuerySet->length());
 
 		/** @var SingleQueryWrapperInterface $firstQueryWrapper */
 		$firstQueryWrapper = $firstQuerySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $firstQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $firstQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $firstQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $firstQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $firstQueryWrapper->getChildLinks());
 
 		$firstQuery = $firstQueryWrapper->getQuery();
 		$this->assertSame($table, $firstQueryWrapper->getTable());
@@ -367,7 +367,7 @@ EOT;
 
 		/** @var QueryLinkInterface $firstChildLink */
 		$firstChildLink = $firstQueryWrapper->getChildLinks()->getByIndex(0);
-		$this->assertInstanceof('Sloth\Module\Graph\QuerySet\QueryLink', $firstChildLink);
+		$this->assertInstanceof('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLink', $firstChildLink);
 		$this->assertSame($table->links->getByName('posts'), $firstChildLink->getJoinDefinition());
 		$this->assertSame($firstQueryWrapper, $firstChildLink->getParentQueryWrapper());
 
@@ -378,14 +378,14 @@ EOT;
 
 		/** @var MultiQueryWrapperInterface $secondQuerySetFirstSubset */
 		$secondQuerySetFirstSubset = $secondQuerySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $secondQuerySetFirstSubset);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $secondQuerySetFirstSubset);
 		$this->assertEquals(1, $secondQuerySetFirstSubset->length());
 		$this->assertNull($secondQuerySetFirstSubset->getChildLinks());
 
 		/** @var SingleQueryWrapperInterface $secondQueryWrapper */
 		$secondQueryWrapper = $secondQuerySetFirstSubset->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $secondQueryWrapper);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $secondQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $secondQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $secondQueryWrapper->getChildLinks());
 		$this->assertSame($postTable, $secondQueryWrapper->getTable());
 
 		$secondQuery = $secondQueryWrapper->getQuery();
@@ -395,14 +395,14 @@ EOT;
 
 		/** @var MultiQueryWrapperInterface $secondQuerySetSecondSubset */
 		$secondQuerySetSecondSubset = $secondQuerySet->getByIndex(1);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $secondQuerySetSecondSubset);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $secondQuerySetSecondSubset);
 		$this->assertEquals(1, $secondQuerySetSecondSubset->length());
 		$this->assertNull($secondQuerySetSecondSubset->getChildLinks());
 
 		/** @var SingleQueryWrapperInterface $thirdQueryWrapper */
 		$thirdQueryWrapper = $secondQuerySetSecondSubset->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $thirdQueryWrapper);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $thirdQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $thirdQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $thirdQueryWrapper->getChildLinks());
 		$this->assertSame($postTable, $thirdQueryWrapper->getTable());
 
 		$thirdQuery = $thirdQueryWrapper->getQuery();
@@ -476,14 +476,14 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $querySet);
 		$this->assertEquals(1, $querySet->length());
 
 		/** @var SingleQueryWrapperInterface $userInsertQueryWrapper */
 		$userInsertQueryWrapper = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $userInsertQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $userInsertQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $userInsertQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $userInsertQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $userInsertQueryWrapper->getChildLinks());
 
 		$userInsertQuery = $userInsertQueryWrapper->getQuery();
 		$this->assertSame($table, $userInsertQueryWrapper->getTable());
@@ -502,9 +502,9 @@ EOT;
 
 		/** @var SingleQueryWrapperInterface $addressInsertQueryWrapper */
 		$addressInsertQueryWrapper = $linkToAddressInsert->getChildQueryWrapper();
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $addressInsertQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $addressInsertQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $addressInsertQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $addressInsertQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $addressInsertQueryWrapper->getChildLinks());
 
 		/** @var MultiQueryWrapperInterface $postInsertQuerySet */
 		$postInsertQuerySet = $linkToPostInsert->getChildQueryWrapper();
@@ -512,25 +512,25 @@ EOT;
 
 		/** @var MultiQueryWrapperInterface $firstPostInsertQuerySubSet */
 		$firstPostInsertQuerySubSet = $postInsertQuerySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $firstPostInsertQuerySubSet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $firstPostInsertQuerySubSet);
 		$this->assertEquals(1, $firstPostInsertQuerySubSet->length());
 
 		/** @var SingleQueryWrapperInterface $firstPostInsertQueryWrapper */
 		$firstPostInsertQueryWrapper = $firstPostInsertQuerySubSet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $firstPostInsertQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $firstPostInsertQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $firstPostInsertQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $firstPostInsertQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $firstPostInsertQueryWrapper->getChildLinks());
 
 		/** @var MultiQueryWrapperInterface $secondPostInsertQuerySubSet */
 		$secondPostInsertQuerySubSet = $postInsertQuerySet->getByIndex(1);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $secondPostInsertQuerySubSet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $secondPostInsertQuerySubSet);
 		$this->assertEquals(1, $secondPostInsertQuerySubSet->length());
 
 		/** @var SingleQueryWrapperInterface $secondPostInsertQueryWrapper */
 		$secondPostInsertQueryWrapper = $secondPostInsertQuerySubSet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $secondPostInsertQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $secondPostInsertQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $secondPostInsertQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $secondPostInsertQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $secondPostInsertQueryWrapper->getChildLinks());
 
 		$addressInsertQuery = $addressInsertQueryWrapper->getQuery();
 		$this->assertSame($addressTable, $addressInsertQueryWrapper->getTable());
@@ -608,14 +608,14 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $querySet);
 		$this->assertEquals(1, $querySet->length());
 
 		/** @var SingleQueryWrapperInterface $insertUserQueryWrapper */
 		$insertUserQueryWrapper = $querySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $insertUserQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $insertUserQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $insertUserQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $insertUserQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $insertUserQueryWrapper->getChildLinks());
 
 		$insertUserQuery = $insertUserQueryWrapper->getQuery();
 		$this->assertSame($table, $insertUserQueryWrapper->getTable());
@@ -633,15 +633,15 @@ EOT;
 
 		/** @var SingleQueryWrapperInterface $insertFirstFriendQueryWrapper */
 		$insertFirstFriendQueryWrapper = $insertFriendsQuerySetWrapper->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $insertFirstFriendQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $insertFirstFriendQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $insertFirstFriendQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $insertFirstFriendQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $insertFirstFriendQueryWrapper->getChildLinks());
 
 		/** @var SingleQueryWrapperInterface $insertSecondFriendQueryWrapper */
 		$insertSecondFriendQueryWrapper = $insertFriendsQuerySetWrapper->getByIndex(1);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $insertSecondFriendQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $insertSecondFriendQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $insertSecondFriendQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $insertSecondFriendQueryWrapper->getChildLinks());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $insertSecondFriendQueryWrapper->getChildLinks());
 
 		$secondQuery = $insertFirstFriendQueryWrapper->getQuery();
 		$this->assertSame($friendLink->intermediaryTables->getByIndex(0), $insertFirstFriendQueryWrapper->getTable());
@@ -731,15 +731,15 @@ EOT;
 
 		$querySet = $composer->compose();
 
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $querySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $querySet);
 		$this->assertEquals(1, $querySet->length());
 
 		/** @var SingleQueryWrapperInterface $insertUserQueryWrapper */
 		$insertUserQueryWrapper = $querySet->getByIndex(0);
 		$insertUserChildLinks = $insertUserQueryWrapper->getChildLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $insertUserQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $insertUserQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $insertUserQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $insertUserChildLinks);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $insertUserChildLinks);
 		$this->assertSame($table, $insertUserQueryWrapper->getTable());
 		$this->assertEquals(1, $insertUserChildLinks->length());
 
@@ -750,20 +750,20 @@ EOT;
 
 		/** @var MultiQueryWrapperInterface $insertPostsQuerySetWrapper */
 		$insertPostsQuerySetWrapper = $linkToInsertPostsQuerySet->getChildQueryWrapper();
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $insertPostsQuerySetWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $insertPostsQuerySetWrapper);
 		$this->assertEquals(2, $insertPostsQuerySetWrapper->length());
 
 		/** @var MultiQueryWrapperInterface $firstPostQuerySubset */
 		$firstPostQuerySubset = $insertPostsQuerySetWrapper->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $firstPostQuerySubset);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $firstPostQuerySubset);
 		$this->assertEquals(1, $firstPostQuerySubset->length());
 
 		/** @var SingleQueryWrapperInterface $insertFirstPostQueryWrapper */
 		$insertFirstPostQueryWrapper = $firstPostQuerySubset->getByIndex(0);
 		$firstPostChildLinks = $insertFirstPostQueryWrapper->getChildLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $insertFirstPostQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $insertFirstPostQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $insertFirstPostQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $firstPostChildLinks);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $firstPostChildLinks);
 		$this->assertSame($postTable, $insertFirstPostQueryWrapper->getTable());
 		$this->assertEquals(1, $firstPostChildLinks->length());
 
@@ -772,48 +772,48 @@ EOT;
 
 		/** @var MultiQueryWrapperInterface $insertFirstPostCommentsQuerySet */
 		$insertFirstPostCommentsQuerySet = $linkToInsertFirstPostComments->getChildQueryWrapper();
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $insertFirstPostCommentsQuerySet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $insertFirstPostCommentsQuerySet);
 
 		/** @var MultiQueryWrapperInterface $firstCommentOnFirstPostQuerySubSet */
 		$firstCommentOnFirstPostQuerySubSet = $insertFirstPostCommentsQuerySet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $firstCommentOnFirstPostQuerySubSet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $firstCommentOnFirstPostQuerySubSet);
 		$this->assertEquals(1, $firstCommentOnFirstPostQuerySubSet->length());
 
 		/** @var SingleQueryWrapperInterface $insertFirstCommentQueryWrapper */
 		$insertFirstCommentQueryWrapper = $firstCommentOnFirstPostQuerySubSet->getByIndex(0);
 		$firstCommentChildLinks = $insertFirstCommentQueryWrapper->getChildLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $insertFirstCommentQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $insertFirstCommentQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $insertFirstCommentQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $firstCommentChildLinks);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $firstCommentChildLinks);
 		$this->assertSame($commentTable, $insertFirstCommentQueryWrapper->getTable());
 		$this->assertEquals(0, $firstCommentChildLinks->length());
 
 		/** @var MultiQueryWrapperInterface $secondCommentOnFirstPostQuerySubSet */
 		$secondCommentOnFirstPostQuerySubSet = $insertFirstPostCommentsQuerySet->getByIndex(1);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $secondCommentOnFirstPostQuerySubSet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $secondCommentOnFirstPostQuerySubSet);
 		$this->assertEquals(1, $secondCommentOnFirstPostQuerySubSet->length());
 
 		/** @var SingleQueryWrapperInterface $insertSecondCommentQueryWrapper */
 		$insertSecondCommentQueryWrapper = $secondCommentOnFirstPostQuerySubSet->getByIndex(0);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $insertSecondCommentQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $insertSecondCommentQueryWrapper);
 		$secondCommentChildLinks = $insertSecondCommentQueryWrapper->getChildLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $insertSecondCommentQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $insertSecondCommentQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $insertSecondCommentQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $secondCommentChildLinks);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $secondCommentChildLinks);
 		$this->assertSame($commentTable, $insertSecondCommentQueryWrapper->getTable());
 		$this->assertEquals(0, $secondCommentChildLinks->length());
 
 		/** @var MultiQueryWrapperInterface $secondPostQuerySubSet */
 		$secondPostQuerySubSet = $insertPostsQuerySetWrapper->getByIndex(1);
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\MultiQueryWrapper', $secondPostQuerySubSet);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $secondPostQuerySubSet);
 		$this->assertEquals(1, $secondPostQuerySubSet->length());
 
 		/** @var SingleQueryWrapperInterface $insertSecondPostQueryWrapper */
 		$insertSecondPostQueryWrapper = $secondPostQuerySubSet->getByIndex(0);
 		$secondPostChildLinks = $insertSecondPostQueryWrapper->getChildLinks();
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\SingleQueryWrapper', $insertSecondPostQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $insertSecondPostQueryWrapper);
 		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $insertSecondPostQueryWrapper->getQuery());
-		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryLinkList', $secondPostChildLinks);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $secondPostChildLinks);
 		$this->assertSame($postTable, $insertSecondPostQueryWrapper->getTable());
 		$this->assertEquals(1, $secondPostChildLinks->length());
 

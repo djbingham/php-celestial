@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\Graph\QuerySet;
+namespace Sloth\Module\Graph\QuerySet\QueryWrapper;
 
 use Sloth\Module\Graph\Definition\Table;
 use Sloth\Module\Graph\QuerySet\Face\QueryLinkInterface;

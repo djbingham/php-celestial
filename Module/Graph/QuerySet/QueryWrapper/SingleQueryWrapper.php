@@ -1,6 +1,7 @@
 <?php
-namespace Sloth\Module\Graph\QuerySet;
+namespace Sloth\Module\Graph\QuerySet\QueryWrapper;
 
+use Sloth\Module\Graph\QuerySet\Base\AbstractQueryWrapper;
 use Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface;
 use SlothMySql;
 

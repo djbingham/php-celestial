@@ -4,6 +4,8 @@ namespace Sloth\Module\Graph\QuerySet;
 use Sloth\Module\Graph\QuerySet\Base\AbstractComposer;
 use Sloth\Module\Graph\QuerySet\Base\AbstractConductor;
 use Sloth\Module\Graph\Definition;
+use Sloth\Module\Graph\QuerySet\Face\FilterParserInterface;
+use Sloth\Module\Graph\QuerySet\Filter\FilterParser;
 use SlothMySql\DatabaseWrapper;
 
 class Orchestrator

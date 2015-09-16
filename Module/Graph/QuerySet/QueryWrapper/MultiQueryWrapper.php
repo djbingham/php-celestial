@@ -1,7 +1,8 @@
 <?php
-namespace Sloth\Module\Graph\QuerySet;
+namespace Sloth\Module\Graph\QuerySet\QueryWrapper;
 
 use Sloth\Helper\ObjectListTrait;
+use Sloth\Module\Graph\QuerySet\Base\AbstractQueryWrapper;
 use Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface;
 use Sloth\Module\Graph\QuerySet\Face\QueryWrapperInterface;
 

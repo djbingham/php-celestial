@@ -22,7 +22,7 @@ class QuerySetFactory
 	{
 		$orchestrator = new QuerySet\Orchestrator();
 		$orchestrator->setDatabase($this->database)
-			->setFilterParser(new QuerySet\FilterParser())
+			->setFilterParser(new QuerySet\Filter\FilterParser())
 			->setDataParser(new QuerySet\DataParser())
 			->setComposer(new QuerySet\GetBy\Composer())
 			->setConductor(new QuerySet\GetBy\Conductor());
@@ -33,7 +33,7 @@ class QuerySetFactory
 	{
 		$orchestrator = new QuerySet\Orchestrator();
 		$orchestrator->setDatabase($this->database)
-			->setFilterParser(new QuerySet\ComplexFilterParser())
+			->setFilterParser(new QuerySet\Filter\ComplexFilterParser())
 			->setDataParser(new QuerySet\DataParser())
 			->setComposer(new QuerySet\GetBy\Composer())
 			->setConductor(new QuerySet\GetBy\Conductor());

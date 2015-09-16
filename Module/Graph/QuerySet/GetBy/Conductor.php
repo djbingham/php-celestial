@@ -5,7 +5,7 @@ use Sloth\Module\Graph\QuerySet\Base;
 use Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface;
 use Sloth\Module\Graph\Definition;
 use Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface;
-use Sloth\Module\Graph\QuerySet\MultiQueryWrapper;
+use Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper;
 use SlothMySql\QueryBuilder\Query\Constraint;
 use SlothMySql\QueryBuilder\Query\Select;
 

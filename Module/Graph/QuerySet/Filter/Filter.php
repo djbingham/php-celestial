@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\Graph\QuerySet;
+namespace Sloth\Module\Graph\QuerySet\Filter;
 
 use Sloth\Module\Graph\Definition\Table\Field;
 

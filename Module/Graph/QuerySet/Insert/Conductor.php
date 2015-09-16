@@ -6,7 +6,7 @@ use Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface;
 use Sloth\Module\Graph\QuerySet\Face\QueryLinkInterface;
 use Sloth\Module\Graph\QuerySet\Face\QueryWrapperInterface;
 use Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface;
-use Sloth\Module\Graph\QuerySet\MultiQueryWrapper;
+use Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper;
 use Sloth\Module\Graph\Definition;
 use SlothMySql\QueryBuilder\Query\Insert;
 

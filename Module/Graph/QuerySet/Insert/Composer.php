@@ -2,10 +2,10 @@
 namespace Sloth\Module\Graph\QuerySet\Insert;
 
 use Sloth\Module\Graph\QuerySet\Face\QueryLinkInterface;
-use Sloth\Module\Graph\QuerySet\MultiQueryWrapper;
-use Sloth\Module\Graph\QuerySet\QueryLink;
-use Sloth\Module\Graph\QuerySet\QueryLinkList;
-use Sloth\Module\Graph\QuerySet\SingleQueryWrapper;
+use Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper;
+use Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLink;
+use Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList;
+use Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Graph\QuerySet\Base;
 use Sloth\Module\Graph\Definition;
