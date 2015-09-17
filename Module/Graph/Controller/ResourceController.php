@@ -218,21 +218,14 @@ abstract class ResourceController extends RestfulController
 		$resourceDefinition = $request->getResourceDefinition();
 		$resourceFactory = $request->getResourceFactory();
 		$uriExtension = $request->getView()->getNameExtension();
+		$requestUri = preg_replace(sprintf('/\.%s$/', $uriExtension), '', trim($request->getUri(), '/'));
 
 		if (empty($attributes)) {
 			throw new Exception\InvalidRequestException('POST request received with no parameters');
 		}
 
 		$resource = $resourceFactory->create($attributes);
-
-		// todo: remove this if block - only used for testing
-		if (empty($resource->getAttributes())) {
-			$resource->setAttribute($resourceDefinition->primaryAttribute, 1);
-		}
-
 		$resourceId = $resource->getAttribute($resourceDefinition->primaryAttribute);
-
-		$requestUri = preg_replace(sprintf('/\.%s$/', $uriExtension), '', trim($request->getUri(), '/'));
 
 		$redirectUrl = $this->app->createUrl(array($requestUri, $resourceId));
 		if ($uriExtension !== null) {
