@@ -26,11 +26,9 @@ class Conductor extends Base\AbstractConductor
 		$this->executedQuerySet = new MultiQueryWrapper();
 		while ($this->querySetToExecute->length() > 0) {
 			$queryWrapper = $this->querySetToExecute->shift();
-			$fetchedData = $this->executeQuerySetItem($queryWrapper);
+			$data = $this->executeQuerySetItem($queryWrapper);
+			$this->fetchedData[$queryWrapper->getTable()->getAlias()] = $data;
 			$this->executedQuerySet->push($queryWrapper);
-			if (empty($fetchedData)) {
-				break;
-			}
 		}
 		return $this->fetchedData;
 	}
@@ -40,7 +38,6 @@ class Conductor extends Base\AbstractConductor
 		/** @var Select $query */
 		$query = $queryWrapper->getQuery();
 		$data = $this->database->execute($query)->getData();
-
 		$newConstraint = $this->buildConstraintForReQuery($queryWrapper, $data);
 
 		if (!empty($newConstraint)) {
@@ -48,8 +45,6 @@ class Conductor extends Base\AbstractConductor
 			$newQuery->setConstraint($newConstraint);
 			$data = $this->database->execute($newQuery)->getData();
 		}
-
-		$this->fetchedData[$queryWrapper->getTable()->getAlias()] = $data;
 
 		$linkData = $this->dataParser->extractLinkListData($queryWrapper->getChildLinks(), $data);
 		$this->applyLinkDataToQueries($linkData);
