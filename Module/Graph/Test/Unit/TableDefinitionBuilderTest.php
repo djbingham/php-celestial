@@ -3,15 +3,7 @@ namespace Sloth\Module\Graph\Test;
 
 require_once dirname(__DIR__) . '/UnitTest.php';
 
-use Sloth\Module\Graph\DefinitionBuilder\TableDefinitionBuilder;
-use Sloth\Module\Graph\TableManifestValidator;
 use DemoGraph\Test\UnitTest;
-use Sloth\Module\Graph\DefinitionBuilder\TableFieldBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\TableFieldListBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\LinkListBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\TableBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\ValidatorListBuilder;
-use Sloth\Module\Graph\DefinitionBuilder\ViewListBuilder;
 
 class TableDefinitionBuilderTest extends UnitTest
 {
@@ -26,6 +18,7 @@ class TableDefinitionBuilderTest extends UnitTest
 		$this->assertBuiltUserTableJoinsToFriendsTable($resource);
 		$this->assertBuiltUserTableJoinsToPostsTable($resource);
         $this->assertBuiltUserTableJoinsToAddressSubTable($resource);
+		$this->assertBuildPostsTableJoinsToCommentsTable($resource->links->getByName('posts')->getChildTable());
 	}
 
 	public function testConnectedTablesAreLoadedOnDemand()

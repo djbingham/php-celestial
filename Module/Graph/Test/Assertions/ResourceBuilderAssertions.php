@@ -186,7 +186,7 @@ trait ResourceBuilderAssertions
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\FieldList', $table->fields);
 		$this->assertEquals(3, $table->fields->length());
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\JoinList', $table->links);
-		$this->assertEquals(1, $table->links->length());
+		$this->assertEquals(2, $table->links->length());
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\ValidatorList', $table->validators);
 		$this->assertEquals(0, $table->validators->length());
 		$this->assertInstanceOf('Sloth\Module\Render\ViewList', $table->views);
@@ -270,5 +270,40 @@ trait ResourceBuilderAssertions
 		$this->assertEquals('User_posts_author.id', $joinToAuthor->childField->alias);
 		$this->assertInstanceOf('Sloth\Module\Graph\Definition\ValidatorList', $joinToAuthor->childField->validators);
 		$this->assertEquals(0, $joinToAuthor->childField->validators->length());
+	}
+
+	public function assertBuildPostsTableJoinsToCommentsTable(Definition\Table $table)
+	{
+		$linkToComments = $table->links->getByName('comments');
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Join', $linkToComments);
+		$this->assertEquals('comments', $linkToComments->name);
+		$this->assertEquals(Definition\Table\Join::ONE_TO_MANY, $linkToComments->type);
+		$this->assertEquals(Definition\Table\Join::ACTION_INSERT, $linkToComments->onInsert);
+		$this->assertEquals(Definition\Table\Join::ACTION_IGNORE, $linkToComments->onUpdate);
+		$this->assertEquals(Definition\Table\Join::ACTION_IGNORE, $linkToComments->onDelete);
+		$this->assertSame($table, $linkToComments->parentTable);
+		$this->assertEquals('Comment', $linkToComments->childTableName);
+		$this->assertNull($linkToComments->intermediaryTables);
+
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Join\ConstraintList', $linkToComments->getConstraints());
+		$this->assertEquals(1, $linkToComments->getConstraints()->length());
+
+		$joinToComments = $linkToComments->getConstraints()->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Join\Constraint', $joinToComments);
+		$this->assertSame($linkToComments, $joinToComments->link);
+		$this->assertNull($joinToComments->subJoins);
+
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToComments->parentField);
+		$this->assertSame($table->fields->getByName('id'), $joinToComments->parentField);
+
+		$this->assertEquals('postId', $joinToComments->childField->name);
+		$this->assertEquals('integer(11)', $joinToComments->childField->type);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table\Field', $joinToComments->childField);
+		$this->assertEquals('postId', $joinToComments->childField->name);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\Table', $joinToComments->childField->table);
+		$this->assertEquals('Comment', $joinToComments->childField->table->name);
+		$this->assertEquals($linkToComments->getChildTable(), $joinToComments->childField->table);
+		$this->assertInstanceOf('Sloth\Module\Graph\Definition\ValidatorList', $joinToComments->childField->validators);
+		$this->assertEquals(0, $joinToComments->childField->validators->length());
 	}
 }

@@ -32,6 +32,7 @@ class IntegrationTest extends UnitTest
 		$this->assertBuiltTableMatchesUserManifest($table);
 		$this->assertBuiltUserTableJoinsToFriendsTable($table);
 		$this->assertBuiltUserTableJoinsToPostsTable($table);
+		$this->assertBuildPostsTableJoinsToCommentsTable($table->links->getByName('posts')->getChildTable());
 	}
 
 	public function testConnectedTablesAreLoadedOnDemand()
