@@ -959,6 +959,12 @@ INNER JOIN `User` AS `User_friends` ON (`User_friendLink`.`friendId2` = `User_fr
 WHERE `User_friendLink`.`friendId1` IN (1,2)
 AND `User_friendLink`.`username1` IN ("David","Flic")
 EOT;
+		$expectedQueries[] = <<<EOT
+SELECT `User_friends`.`id` AS `User_friends.id`,`User_friends`.`forename` AS `User_friends.forename`,`User_friends`.`surname` AS `User_friends.surname`,`User_friendLink`.`friendId1` AS `User_friendLink.friendId1`
+FROM `UserFriend` AS `User_friendLink`
+INNER JOIN `User` AS `User_friends` ON (`User_friendLink`.`friendId2` = `User_friends`.`id`)
+WHERE `User_friendLink`.`friendId1` IN (1,2)
+EOT;
 		$expectedData['User_friends'] = array(
 			array(
 				'User_friendLink.friendId1' => 1,
