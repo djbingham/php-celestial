@@ -62,8 +62,8 @@ EOT;
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
 
-		$data = $conductor->conduct();
-		$this->assertEquals($expectedData, $data);
+		$output = $conductor->conduct();
+		$this->assertEquals($expectedData, $output);
 
 		$dbConnection->assertNotExpectingQueries();
 	}
@@ -426,128 +426,6 @@ EOT;
 		$dbConnection->pushInsertId(1);
 		$dbConnection->pushInsertId(null);
 		$dbConnection->pushInsertId(null);
-
-		$composer = new Composer();
-		$composer->setDatabase($database)
-			->setTable($table)
-			->setData($data);
-
-		$querySet = $composer->compose();
-
-		// todo: Mock the data parser
-		$dataParser = new DataParser();
-
-		$conductor = new Conductor();
-		$conductor->setDatabase($database)
-			->setDataParser($dataParser)
-			->setQuerySet($querySet);
-
-		$data = $conductor->conduct();
-		$this->assertEquals($expectedData, $data);
-
-		$dbConnection->assertNotExpectingQueries();
-	}
-
-	public function testQuerySetConductedForTableWithChainedOneToManyLinks()
-	{
-		$skipTestMessage = <<<EOT
-This does not work as the ID from the first insert cannot be carried through two links.
-This type of usage is expected to be extremely rare, so not spending time to make it work unless/until it comes up.
-EOT;
-		$this->markTestSkipped($skipTestMessage);
-
-		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
-		$dbConnection = new Connection();
-		$database = $this->getDatabaseWrapper($dbConnection);
-
-		$table = $tableDefinitionBuilder->buildFromName('User');
-		$table->links->removeByPropertyValue('name', 'address');
-		$table->links->removeByPropertyValue('name', 'friends');
-
-		$postTable = $table->links->getByName('posts')->getChildTable();
-		$postTable->links->removeByPropertyValue('name', 'author');
-		$commentTable = $postTable->links->getByName('comments')->getChildTable();
-		$commentTable->links->removeByPropertyValue('name', 'author');
-		$commentTable->links->removeByPropertyValue('name', 'post');
-		$commentTable->links->removeByPropertyValue('name', 'replies');
-
-		$data = array(
-			'forename' => 'David',
-			'surname' => 'Bingham',
-			'posts' => array(
-				array(
-					'content' => 'First post',
-					'comments' => array(
-						array(
-							'content' => 'First reply to first post'
-						),
-						array(
-							'content' => 'Second reply to first post'
-						)
-					)
-				),
-				array(
-					'content' => 'Second post'
-				)
-			)
-		);
-
-		$expectedQueries = array();
-		$expectedQueries[] = <<<EOT
-INSERT INTO `User`
-(`forename`,`surname`)
-VALUES
-("David","Bingham")
-EOT;
-		$expectedQueries[] = <<<EOT
-INSERT INTO `Post`
-(`content`,`authorId`)
-VALUES
-("First post",11)
-EOT;
-		$expectedQueries[] = <<<EOT
-INSERT INTO `Comment`
-(`content`,`authorId`,`postId`)
-VALUES
-("First reply to first post",11,21)
-EOT;
-		$expectedQueries[] = <<<EOT
-INSERT INTO `Comment`
-(`content`,`authorId`,`postId`)
-VALUES
-("Second reply to first post",11,21)
-EOT;
-		$expectedQueries[] = <<<EOT
-INSERT INTO `Post`
-(`content`,`authorId`)
-VALUES
-("Second post",11)
-EOT;
-		$expectedData = array(
-			'User' => array(
-				array(
-					'id' => 1,
-					'forename' => 'David',
-					'surname' => 'Bingham'
-				)
-			),
-			'UserAddress' => array(
-				array(
-					'postcode' => 'AB34 5FG'
-				)
-			)
-		);
-		$dbConnection->expectQuerySequence($expectedQueries);
-		$dbConnection->pushQueryResponse(null);
-		$dbConnection->pushQueryResponse(null);
-		$dbConnection->pushQueryResponse(null);
-		$dbConnection->pushQueryResponse(null);
-		$dbConnection->pushQueryResponse(null);
-		$dbConnection->pushInsertId(11);
-		$dbConnection->pushInsertId(21);
-		$dbConnection->pushInsertId(31);
-		$dbConnection->pushInsertId(32);
-		$dbConnection->pushInsertId(22);
 
 		$composer = new Composer();
 		$composer->setDatabase($database)
