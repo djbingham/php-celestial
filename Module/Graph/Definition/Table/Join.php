@@ -105,6 +105,30 @@ class Join
 		return $this->childTable;
 	}
 
+	public function getLinkedFields()
+	{
+		$linkedFields = array();
+		/** @var Constraint $constraint */
+		foreach ($this->getConstraints() as $constraint) {
+			/** @var SubJoin $subJoin */
+			if ($this->type === Join::MANY_TO_MANY) {
+				foreach ($constraint->subJoins as $subJoin) {
+					if ($subJoin->parentTable === $this->parentTable) {
+						$linkedFields['parent'] = $subJoin->parentField;
+						$linkedFields['parentLink'] = $subJoin->childField;
+					} elseif ($subJoin->childTable === $this->childTable) {
+						$linkedFields['child'] = $subJoin->childField;
+						$linkedFields['childLink'] = $subJoin->parentField;
+					}
+				}
+			} else {
+				$linkedFields['parent'] = $constraint->parentField;
+				$linkedFields['child'] = $constraint->childField;
+			}
+		}
+		return $linkedFields;
+	}
+
 	private function load()
 	{
 		$childTableAlias = $this->buildUniqueTableAlias($this->name, $this->parentTable->getAlias());

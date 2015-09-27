@@ -21,7 +21,7 @@ class Resource
 	public $attributes;
 
 	/**
-	 * @var mixed
+	 * @var string
 	 */
 	public $primaryAttribute;
 

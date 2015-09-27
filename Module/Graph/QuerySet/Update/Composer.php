@@ -185,8 +185,11 @@ class Composer extends Base\AbstractComposer
 	{
 		$tableRow = array();
 		foreach ($data as $fieldName => $value) {
-			if ($tableDefinition->fields->indexOfName($fieldName) !== -1) {
-				$tableRow[$fieldName] = $value;
+			$fieldIndex = $tableDefinition->fields->indexOfName($fieldName);
+			if ($fieldIndex !== -1) {
+				if (!$tableDefinition->fields->getByIndex($fieldIndex)->autoIncrement) {
+					$tableRow[$fieldName] = $value;
+				}
 			}
 		}
 		return $tableRow;

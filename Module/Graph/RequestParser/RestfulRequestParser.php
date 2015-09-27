@@ -78,6 +78,14 @@ abstract class RestfulRequestParser implements RequestParserInterface
 			$requestProperties['resourceId'] = $furtherRequestProperties['resourceId'];
 			$requestProperties['unresolvedRoute'] = $furtherRequestProperties['unresolvedRoute'];
 
+			if (!array_key_exists($requestProperties['viewName'], $requestProperties['manifest']['views'])) {
+				$requestProperties['manifest']['views'][$requestProperties['viewName']] = array(
+					'name' => $requestProperties['viewName'],
+					'path' => null,
+					'engine' => null
+				);
+			}
+
 			$resourceDefinitionFactory = $this->module->resourceDefinitionBuilder();
 			$resourceDefinition = $resourceDefinitionFactory->buildFromManifest($requestProperties['manifest']);
 			$requestProperties['resourceDefinition'] = $resourceDefinition;

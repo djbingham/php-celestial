@@ -22,7 +22,11 @@ abstract class ResourceController extends RestfulController
 		if ($parsedRequest->getUnresolvedRoute() === 'index') {
 			$parsedRequest->setMethod('index');
 		} else {
-			$function = $parsedRequest->getView()->getFunctionName();
+			if ($parsedRequest->getView() !== null) {
+				$function = $parsedRequest->getView()->getFunctionName();
+			} else {
+				$function = $parsedRequest->getViewName();
+			}
 			if (in_array($function, array('put', 'delete')) && $parsedRequest->getMethod() === 'post') {
 				$parsedRequest->setMethod($function);
 			}
@@ -255,7 +259,10 @@ abstract class ResourceController extends RestfulController
 			$primaryAttributeName => $attributes[$primaryAttributeName]
 		);
 
-		$resourceFactory->update($filters, $attributes);
+		$resource = $resourceFactory->getBy($resourceDefinition->attributes, $filters)->current();
+		$updateFilters = $this->getUpdateFiltersFromResource($resource->getAttributes(), $resourceDefinition);
+
+		$resourceFactory->update($updateFilters, $attributes);
 
 		$requestUri = preg_replace(sprintf('/\.%s$/', $uriExtension), '', trim($request->getUri(), '/'));
 		$requestUri = preg_replace(sprintf('/\/%s/', $request->getView()->getFunctionName()), '', $requestUri);
@@ -264,7 +271,7 @@ abstract class ResourceController extends RestfulController
 		if ($uriExtension !== null) {
 			$redirectUrl .= '.' . $uriExtension;
 		}
-
+		
 		$this->app->redirect($redirectUrl);
 	}
 
@@ -335,5 +342,33 @@ abstract class ResourceController extends RestfulController
 			$redirectUri .= '/' . $updatedResourceId;
 		}
 		return $redirectUri;
+	}
+
+	protected function getUpdateFiltersFromResource(array $attributes, Graph\Definition\Resource $resourceDefinition)
+	{
+		$primaryTableField = $resourceDefinition->table->fields->getByName($resourceDefinition->primaryAttribute);
+		$filters = array(
+			$primaryTableField->name => $attributes[$primaryTableField->name]
+		);
+		$filters = array_merge($filters, $this->getLinkDataFromTableDefinitionTree($attributes, $resourceDefinition->table));
+		return $filters;
+	}
+
+	protected function getLinkDataFromTableDefinitionTree(array $data, Graph\Definition\Table $tableDefinition)
+	{
+		$linkData = array();
+		/** @var Graph\Definition\Table\Join $join */
+		foreach ($tableDefinition->links as $join) {
+			$linkedFields = $join->getLinkedFields();
+			$childField = $linkedFields['child'];
+			if (in_array($join->type, array(Graph\Definition\Table\Join::ONE_TO_MANY, Graph\Definition\Table\Join::MANY_TO_MANY))) {
+				foreach ($data[$join->name] as $rowIndex => $rowData) {
+					$linkData[$join->name][$rowIndex][$childField->name] = $rowData[$childField->name];
+				}
+			} else {
+				$linkData[$join->name][$childField->name] = $data[$join->name][$childField->name];
+			}
+		}
+		return $linkData;
 	}
 }
