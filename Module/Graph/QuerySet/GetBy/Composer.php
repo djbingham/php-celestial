@@ -126,7 +126,7 @@ class Composer extends Base\AbstractComposer
 					$firstJoinConstraint->andOn($constraint);
 				}
 
-				$joins[] = $this->database->query()->join()->inner()
+				$joins[] = $this->database->query()->join()->left()
 					->table($this->getQueryTable($childTable->name, $childTable->getAlias()))
 					->on($firstJoinConstraint);
 
