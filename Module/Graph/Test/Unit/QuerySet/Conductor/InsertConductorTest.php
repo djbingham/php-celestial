@@ -1,16 +1,16 @@
 <?php
-namespace Sloth\Module\Graph\Test\Unit\QuerySet\Insert;
+namespace Sloth\Module\Graph\Test\Unit\QuerySet\Conductor;
 
 require_once dirname(dirname(dirname(__DIR__))) . '/UnitTest.php';
 
 use Sloth\Module\Graph\QuerySet\DataParser;
-use Sloth\Module\Graph\QuerySet\Insert\Composer;
-use Sloth\Module\Graph\QuerySet\Insert\Conductor;
+use Sloth\Module\Graph\QuerySet\Composer\InsertComposer;
+use Sloth\Module\Graph\QuerySet\Conductor\InsertConductor;
 use Sloth\Module\Graph\Definition;
 use Sloth\Module\Graph\Test\Mock\Connection;
 use DemoGraph\Test\UnitTest;
 
-class ConductorTest extends UnitTest
+class InsertConductorTest extends UnitTest
 {
 	public function testQuerySetConductedForSingleTable()
 	{
@@ -47,7 +47,7 @@ EOT;
 		$dbConnection->pushQueryResponse(null);
 		$dbConnection->pushInsertId(11);
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -57,7 +57,7 @@ EOT;
 		// todo: Mock the data parser
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new InsertConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
@@ -122,7 +122,7 @@ EOT;
 		$dbConnection->pushQueryResponse(null);
 		$dbConnection->pushInsertId(11);
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -132,7 +132,7 @@ EOT;
 		// todo: Mock the data parser
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new InsertConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
@@ -217,7 +217,7 @@ EOT;
 		$dbConnection->pushInsertId(17);
 		$dbConnection->pushInsertId(18);
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -227,7 +227,7 @@ EOT;
 		// todo: Mock the data parser
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new InsertConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
@@ -328,7 +328,7 @@ EOT;
 		$dbConnection->pushInsertId(17);
 		$dbConnection->pushInsertId(18);
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -338,7 +338,7 @@ EOT;
 		// todo: Mock the data parser
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new InsertConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
@@ -427,7 +427,7 @@ EOT;
 		$dbConnection->pushInsertId(null);
 		$dbConnection->pushInsertId(null);
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -437,7 +437,7 @@ EOT;
 		// todo: Mock the data parser
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new InsertConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);

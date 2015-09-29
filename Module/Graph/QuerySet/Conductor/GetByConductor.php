@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\Graph\QuerySet\GetBy;
+namespace Sloth\Module\Graph\QuerySet\Conductor;
 
 use Sloth\Module\Graph\QuerySet\Base;
 use Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface;
@@ -9,7 +9,7 @@ use Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper;
 use SlothMySql\QueryBuilder\Query\Constraint;
 use SlothMySql\QueryBuilder\Query\Select;
 
-class Conductor extends Base\AbstractConductor
+class GetByConductor extends Base\AbstractConductor
 {
 	/**
 	 * @var MultiQueryWrapperInterface

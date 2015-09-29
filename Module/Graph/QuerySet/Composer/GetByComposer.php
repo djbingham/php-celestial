@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\Graph\QuerySet\GetBy;
+namespace Sloth\Module\Graph\QuerySet\Composer;
 
 use Sloth\Module\Graph\Exception\InvalidTableException;
 use Sloth\Module\Graph\QuerySet\Base;
@@ -12,7 +12,7 @@ use Sloth\Module\Graph\Definition;
 use SlothMySql\DatabaseWrapper;
 use SlothMySql\Face\Value\TableInterface;
 
-class Composer extends Base\AbstractComposer
+class GetByComposer extends Base\AbstractComposer
 {
 	/**
 	 * @var array

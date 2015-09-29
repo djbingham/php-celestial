@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\Graph\QuerySet\Insert;
+namespace Sloth\Module\Graph\QuerySet\Composer;
 
 use Sloth\Module\Graph\QuerySet\Face\QueryLinkInterface;
 use Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper;
@@ -11,7 +11,7 @@ use Sloth\Module\Graph\QuerySet\Base;
 use Sloth\Module\Graph\Definition;
 use SlothMySql\Face\Value\TableInterface;
 
-class Composer extends Base\AbstractComposer
+class InsertComposer extends Base\AbstractComposer
 {
 	public function compose()
 	{

@@ -1,18 +1,17 @@
 <?php
-namespace Sloth\Module\Graph\Test\Unit\QuerySet\Insert;
+namespace Sloth\Module\Graph\Test\Unit\QuerySet\Composer;
 
 require_once dirname(dirname(dirname(__DIR__))) . '/UnitTest.php';
 
 use Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface;
 use Sloth\Module\Graph\QuerySet\Face\QueryLinkInterface;
-use Sloth\Module\Graph\QuerySet\Face\QueryWrapperInterface;
 use Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface;
-use Sloth\Module\Graph\QuerySet\Insert\Composer;
+use Sloth\Module\Graph\QuerySet\Composer\InsertComposer;
 use Sloth\Module\Graph\Definition;
 use Sloth\Module\Graph\Test\Mock\Connection;
 use DemoGraph\Test\UnitTest;
 
-class ComposerTest extends UnitTest
+class InsertComposerTest extends UnitTest
 {
 	public function testQuerySetComposedFromSingleTable()
 	{
@@ -37,7 +36,7 @@ VALUES
 ("David","Bingham")
 EOT;
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -94,7 +93,7 @@ VALUES
 ("AB34 5FG")
 EOT;
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -161,7 +160,7 @@ VALUES
 ("David","Bingham")
 EOT;
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -237,7 +236,7 @@ VALUES
 ("AB34 5FG")
 EOT;
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -301,7 +300,7 @@ EOT;
 			)
 		);
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -345,7 +344,7 @@ EOT;
 			)
 		);
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -404,7 +403,7 @@ VALUES
 ("Second post")
 EOT;
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -529,7 +528,7 @@ VALUES
 ("Second post")
 EOT;
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -661,7 +660,7 @@ VALUES
 (3)
 EOT;
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -745,7 +744,7 @@ VALUES
 ("David","Bingham")
 EOT;
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);
@@ -846,7 +845,7 @@ VALUES
 ("Second post")
 EOT;
 
-		$composer = new Composer();
+		$composer = new InsertComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setData($data);

@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\Graph\QuerySet\Insert;
+namespace Sloth\Module\Graph\QuerySet\Conductor;
 
 use Sloth\Module\Graph\QuerySet\Base;
 use Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface;
@@ -10,7 +10,7 @@ use Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper;
 use Sloth\Module\Graph\Definition;
 use SlothMySql\QueryBuilder\Query\Insert;
 
-class Conductor extends Base\AbstractConductor
+class InsertConductor extends Base\AbstractConductor
 {
 	/**
 	 * @var MultiQueryWrapperInterface

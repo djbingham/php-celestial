@@ -1,16 +1,16 @@
 <?php
-namespace Sloth\Module\Graph\Test\Unit\QuerySet\Update;
+namespace Sloth\Module\Graph\Test\Unit\QuerySet\Conductor;
 
 require_once dirname(dirname(dirname(__DIR__))) . '/UnitTest.php';
 
 use Sloth\Module\Graph\QuerySet\DataParser;
-use Sloth\Module\Graph\QuerySet\Update\Composer;
-use Sloth\Module\Graph\QuerySet\Update\Conductor;
+use Sloth\Module\Graph\QuerySet\Composer\UpdateComposer;
+use Sloth\Module\Graph\QuerySet\Conductor\UpdateConductor;
 use Sloth\Module\Graph\Definition;
 use Sloth\Module\Graph\Test\Mock\Connection;
 use DemoGraph\Test\UnitTest;
 
-class ConductorTest extends UnitTest
+class UpdateConductorTest extends UnitTest
 {
 	public function testQuerySetComposedFromSingleTable()
 	{
@@ -49,7 +49,7 @@ EOT;
 		$dbConnection->expectQuery($expectedQuery);
 		$dbConnection->pushQueryResponse(null);
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -60,7 +60,7 @@ EOT;
 		// todo: Mock the data parser
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new UpdateConductor();
 		$conductor->setDatabase($database)
 			->setQuerySet($querySet)
 			->setDataParser($dataParser);
@@ -129,7 +129,7 @@ EOT;
 		$dbConnection->pushQueryResponse(null);
 		$dbConnection->pushInsertId(11);
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -140,7 +140,7 @@ EOT;
 		// todo: Mock the data parser
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new UpdateConductor();
 		$conductor->setDatabase($database)
 			->setQuerySet($querySet)
 			->setDataParser($dataParser);
@@ -218,7 +218,7 @@ EOT;
 		$dbConnection->pushQueryResponse(null);
 		$dbConnection->pushInsertId(11);
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -229,7 +229,7 @@ EOT;
 		// todo: Mock the data parser
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new UpdateConductor();
 		$conductor->setDatabase($database)
 			->setQuerySet($querySet)
 			->setDataParser($dataParser);
@@ -326,7 +326,7 @@ EOT;
 		$dbConnection->pushQueryResponse(null);
 		$dbConnection->pushQueryResponse(null);
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -337,7 +337,7 @@ EOT;
 		// todo: Mock the data parser
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new UpdateConductor();
 		$conductor->setDatabase($database)
 			->setQuerySet($querySet)
 			->setDataParser($dataParser);
@@ -447,7 +447,7 @@ EOT;
 		$dbConnection->pushQueryResponse(null);
 		$dbConnection->pushQueryResponse(null);
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -458,7 +458,7 @@ EOT;
 		// todo: Mock the data parser
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new UpdateConductor();
 		$conductor->setDatabase($database)
 			->setQuerySet($querySet)
 			->setDataParser($dataParser);
@@ -592,7 +592,7 @@ EOT;
 		$dbConnection->pushQueryResponse(null);
 		$dbConnection->pushQueryResponse(null);
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -603,7 +603,7 @@ EOT;
 		// todo: Mock the data parser
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new UpdateConductor();
 		$conductor->setDatabase($database)
 			->setQuerySet($querySet)
 			->setDataParser($dataParser);
@@ -703,7 +703,7 @@ EOT;
 		$dbConnection->pushInsertId(null);
 		$dbConnection->pushInsertId(null);
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -714,7 +714,7 @@ EOT;
 		// todo: Mock the data parser
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new UpdateConductor();
 		$conductor->setDatabase($database)
 			->setQuerySet($querySet)
 			->setDataParser($dataParser);

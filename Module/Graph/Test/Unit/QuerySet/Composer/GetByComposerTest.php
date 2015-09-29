@@ -1,17 +1,17 @@
 <?php
-namespace Sloth\Module\Graph\Test\Unit\QuerySet\GetBy;
+namespace Sloth\Module\Graph\Test\Unit\QuerySet\Composer;
 
 require_once dirname(dirname(dirname(__DIR__))) . '/UnitTest.php';
 
 use Sloth\Module\Graph\QuerySet\Face\QueryLinkInterface;
 use Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface;
-use Sloth\Module\Graph\QuerySet\GetBy\Composer;
+use Sloth\Module\Graph\QuerySet\Composer\GetByComposer;
 use Sloth\Module\Graph\QuerySet\Filter\FilterParser;
 use Sloth\Module\Graph\Definition;
 use Sloth\Module\Graph\Test\Mock\Connection;
 use DemoGraph\Test\UnitTest;
 
-class ComposerTest extends UnitTest
+class GetByComposerTest extends UnitTest
 {
 	public function testQueryComposedFromTableWithSingleTable()
 	{
@@ -29,7 +29,7 @@ SELECT `User`.`id` AS `User.id`,`User`.`forename` AS `User.forename`,`User`.`sur
 FROM `User`
 EOT;
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -74,7 +74,7 @@ FROM `User`
 WHERE `User`.`forename` = "David"
 EOT;
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters);
@@ -120,7 +120,7 @@ FROM `User`
 WHERE `User`.`forename` IN ("David","Flic")
 EOT;
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters);
@@ -187,7 +187,7 @@ WHERE `User`.`forename` = "David"
 AND `User_address_landlord`.`forename` = "Mike"
 EOT;
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters);
@@ -238,7 +238,7 @@ LEFT JOIN `UserAddress` AS `User_address` ON (`User`.`id` = `User_address`.`user
 AND `User`.`id` = `User_address`.`landlordId`)
 EOT;
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -283,7 +283,7 @@ SELECT `User_posts`.`id` AS `User_posts.id`,`User_posts`.`authorId` AS `User_pos
 FROM `Post` AS `User_posts`
 EOT;
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -356,7 +356,7 @@ SELECT `User_posts_author_posts`.`id` AS `User_posts_author_posts.id`,`User_post
 FROM `Post` AS `User_posts_author_posts`
 EOT;
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -433,7 +433,7 @@ FROM `UserFriend` AS `User_friendLink`
 INNER JOIN `User` AS `User_friends` ON (`User_friendLink`.`friendId2` = `User_friends`.`id`)
 EOT;
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -508,7 +508,7 @@ FROM `UserFriend` AS `User_friends_friendLink`
 INNER JOIN `User` AS `User_friends_friends` ON (`User_friends_friendLink`.`friendId2` = `User_friends_friends`.`id`)
 EOT;
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -620,7 +620,7 @@ INNER JOIN `User` AS `User_friends_friends` ON (`User_friends_friendLink`.`frien
 WHERE `User_friends_friends`.`forename` = "Mike"
 EOT;
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters);
@@ -723,7 +723,7 @@ FROM `UserFriend` AS `User_friendLink`
 INNER JOIN `User` AS `User_friends` ON (`User_friendLink`.`friendId2` = `User_friends`.`id`)
 EOT;
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -805,7 +805,7 @@ INNER JOIN `User` AS `User_friends` ON (`User_friendLink`.`friendId2` = `User_fr
 AND `User_friendLink`.`username2` = `User_friends`.`username`)
 EOT;
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 

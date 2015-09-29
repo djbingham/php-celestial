@@ -1,10 +1,10 @@
 <?php
-namespace Sloth\Module\Graph\QuerySet\Delete;
+namespace Sloth\Module\Graph\QuerySet\Composer;
 
 use Sloth\Module\Graph\QuerySet\Base;
 use Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper;
 
-class Composer extends Base\AbstractComposer
+class DeleteComposer extends Base\AbstractComposer
 {
 	public function compose()
 	{

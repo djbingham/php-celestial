@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\Graph\QuerySet\Update;
+namespace Sloth\Module\Graph\QuerySet\Composer;
 
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Graph\QuerySet\Base;
@@ -11,7 +11,7 @@ use Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList;
 use Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper;
 use SlothMySql\Face\Value\TableInterface;
 
-class Composer extends Base\AbstractComposer
+class UpdateComposer extends Base\AbstractComposer
 {
 	public function compose()
 	{

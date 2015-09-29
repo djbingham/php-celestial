@@ -1,17 +1,17 @@
 <?php
-namespace Sloth\Module\Graph\Test\Unit\QuerySet\GetBy;
+namespace Sloth\Module\Graph\Test\Unit\QuerySet\Conductor;
 
 require_once dirname(dirname(dirname(__DIR__))) . '/UnitTest.php';
 
 use Sloth\Module\Graph\QuerySet\DataParser;
-use Sloth\Module\Graph\QuerySet\GetBy\Composer;
+use Sloth\Module\Graph\QuerySet\Composer\GetByComposer;
 use Sloth\Module\Graph\QuerySet\Filter\FilterParser;
-use Sloth\Module\Graph\QuerySet\GetBy\Conductor;
+use Sloth\Module\Graph\QuerySet\Conductor\GetByConductor;
 use Sloth\Module\Graph\Definition;
 use Sloth\Module\Graph\Test\Mock\Connection;
 use DemoGraph\Test\UnitTest;
 
-class ConductorTest extends UnitTest
+class GetByConductorTest extends UnitTest
 {
 	public function testQueryConductedFromTableWithSingleTable()
 	{
@@ -46,7 +46,7 @@ EOT;
 		$dbConnection->pushQueryResponse($expectedData['User']);
 
 		// todo: Properly mock the query set, rather than relying on Composer to build one
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -55,7 +55,7 @@ EOT;
 		// todo: Mock the data parser
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new GetByConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
@@ -101,7 +101,7 @@ EOT;
 		$dbConnection->expectQuery($expectedQuery);
 		$dbConnection->pushQueryResponse($expectedData['User']);
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters);
@@ -110,7 +110,7 @@ EOT;
 
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new GetByConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
@@ -190,7 +190,7 @@ EOT;
 		$dbConnection->expectQuery($expectedQuery);
 		$dbConnection->pushQueryResponse($expectedData['User']);
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters);
@@ -199,7 +199,7 @@ EOT;
 
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new GetByConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
@@ -277,7 +277,7 @@ EOT;
 			->pushQueryResponse($expectedData['User_posts'])
 			->pushQueryResponse($expectedData['User_posts']);
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -285,7 +285,7 @@ EOT;
 
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new GetByConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
@@ -408,7 +408,7 @@ EOT;
 			->pushQueryResponse($expectedData['User_posts_author_posts'])
 			->pushQueryResponse($expectedData['User_posts_author_posts']);
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -416,7 +416,7 @@ EOT;
 
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new GetByConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
@@ -526,7 +526,7 @@ EOT;
 			)
 		);
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -534,7 +534,7 @@ EOT;
 
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new GetByConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
@@ -705,7 +705,7 @@ EOT;
 			)
 		);
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -713,7 +713,7 @@ EOT;
 
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new GetByConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
@@ -877,7 +877,7 @@ EOT;
 			)
 		);
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters);
@@ -886,7 +886,7 @@ EOT;
 
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new GetByConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
@@ -992,7 +992,7 @@ EOT;
 			)
 		);
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -1000,7 +1000,7 @@ EOT;
 
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new GetByConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);
@@ -1132,7 +1132,7 @@ EOT;
 			)
 		);
 
-		$composer = new Composer();
+		$composer = new GetByComposer();
 		$composer->setDatabase($database)
 			->setTable($table);
 
@@ -1140,7 +1140,7 @@ EOT;
 
 		$dataParser = new DataParser();
 
-		$conductor = new Conductor();
+		$conductor = new GetByConductor();
 		$conductor->setDatabase($database)
 			->setDataParser($dataParser)
 			->setQuerySet($querySet);

@@ -1,17 +1,17 @@
 <?php
-namespace Sloth\Module\Graph\Test\Unit\QuerySet\Update;
+namespace Sloth\Module\Graph\Test\Unit\QuerySet\Composer;
 
 require_once dirname(dirname(dirname(__DIR__))) . '/UnitTest.php';
 
 use Sloth\Module\Graph\QuerySet\Face\MultiQueryWrapperInterface;
 use Sloth\Module\Graph\QuerySet\Face\QueryLinkInterface;
 use Sloth\Module\Graph\QuerySet\Face\SingleQueryWrapperInterface;
-use Sloth\Module\Graph\QuerySet\Update\Composer;
+use Sloth\Module\Graph\QuerySet\Composer\UpdateComposer;
 use Sloth\Module\Graph\Definition;
 use Sloth\Module\Graph\Test\Mock\Connection;
 use DemoGraph\Test\UnitTest;
 
-class ComposerTest extends UnitTest
+class UpdateComposerTest extends UnitTest
 {
 	public function testQuerySetComposedFromSingleTable()
 	{
@@ -40,7 +40,7 @@ SET `User`.`forename` = "David",
 WHERE `User`.`id` = 1
 EOT;
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -81,7 +81,7 @@ EOT;
 			'surname' => 'Bingham',
 		);
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -135,7 +135,7 @@ SET `UserAddress`.`postcode` = "AB34 5FG"
 WHERE `UserAddress`.`userId` = 12
 EOT;
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -225,7 +225,7 @@ SET `UserAddress`.`postcode` = "AB34 5FG"
 WHERE `UserAddress`.`userId` = 12
 EOT;
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -297,7 +297,7 @@ EOT;
 			)
 		);
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -352,7 +352,7 @@ EOT;
 			)
 		);
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -395,7 +395,7 @@ EOT;
 			)
 		);
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -468,7 +468,7 @@ SET `Post`.`content` = "Second updated post"
 WHERE `Post`.`id` = 13
 EOT;
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -609,7 +609,7 @@ SET `Post`.`content` = "Second updated post"
 WHERE `Post`.`id` = 13
 EOT;
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -782,7 +782,7 @@ SET `Post`.`content` = "Second post"
 WHERE `Post`.`id` = 12
 EOT;
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
@@ -956,7 +956,7 @@ VALUES
 (1,3)
 EOT;
 
-		$composer = new Composer();
+		$composer = new UpdateComposer();
 		$composer->setDatabase($database)
 			->setTable($table)
 			->setFilters($filters)
