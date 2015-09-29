@@ -2,19 +2,19 @@
 /**
  * @var Sloth\App $app
  * @var string $resourceName
- * @var Sloth\Module\Graph\Definition\Resource $resourceDefinition
+ * @var Sloth\Module\Resource\Definition\Resource $resourceDefinition
  */
 ?>
-<form action="<?= $app->createUrl(array('graph', lcfirst($resourceName) . '.php')) ?>" method="get">
+<form action="<?= $app->createUrl(array('resource', lcfirst($resourceName) . '.php')) ?>" method="get">
 	<h2>Resource Definition (<?= ucfirst($resourceName) ?>)</h2>
 	<p>
-		<a href="<?= $app->createUrl(array('graph', 'index')) ?>">Index</a>
+		<a href="<?= $app->createUrl(array('resource', 'index')) ?>">Index</a>
 		&nbsp;|&nbsp;
-		<a href="<?= $app->createUrl(array('graph', $resourceName, 'list')) ?>"><?= ucfirst($resourceName) ?> List</a>
+		<a href="<?= $app->createUrl(array('resource', $resourceName, 'list')) ?>"><?= ucfirst($resourceName) ?> List</a>
 		&nbsp;|&nbsp;
-		<a href="<?= $app->createUrl(array('graph', $resourceName, 'filter')) ?>">Filter</a>
+		<a href="<?= $app->createUrl(array('resource', $resourceName, 'filter')) ?>">Filter</a>
 		&nbsp;|&nbsp;
-		<a href="<?= $app->createUrl(array('graph', $resourceName, 'search')) ?>">Search</a>
+		<a href="<?= $app->createUrl(array('resource', $resourceName, 'search')) ?>">Search</a>
 	</p>
 	<?= renderAttributes($resourceDefinition->attributes) ?>
 </form>

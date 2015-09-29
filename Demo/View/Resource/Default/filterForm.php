@@ -2,18 +2,18 @@
 /**
  * @var Sloth\App $app
  * @var string $resourceName
- * @var Sloth\Module\Graph\Definition\Resource $resourceDefinition
+ * @var Sloth\Module\Resource\Definition\Resource $resourceDefinition
  */
 ?>
 <h2>Search Resources (<?= $resourceName ?>)</h2>
 <p>
-	<a href="<?= $app->createUrl(array('graph', $resourceName, 'definition')) ?>">Definition</a>
+	<a href="<?= $app->createUrl(array('resource', $resourceName, 'definition')) ?>">Definition</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('graph', $resourceName, 'list')) ?>"><?= ucfirst($resourceName) ?> List</a>
+	<a href="<?= $app->createUrl(array('resource', $resourceName, 'list')) ?>"><?= ucfirst($resourceName) ?> List</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('graph', $resourceName, 'search')) ?>"><?= ucfirst($resourceName) ?> Search</a>
+	<a href="<?= $app->createUrl(array('resource', $resourceName, 'search')) ?>"><?= ucfirst($resourceName) ?> Search</a>
 </p>
-<form action="<?= $app->createUrl(array('graph', lcfirst($resourceName))) ?>" method="get">
+<form action="<?= $app->createUrl(array('resource', lcfirst($resourceName))) ?>" method="get">
 	<?= renderAttributeListInputs($resourceDefinition->attributes) ?>
 	<button type="submit">Search</button>
 </form>

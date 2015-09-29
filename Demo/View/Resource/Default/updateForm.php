@@ -1,21 +1,21 @@
 <?php
-use \Sloth\Module\Graph\Definition\Table;
+use \Sloth\Module\Resource\Definition\Table;
 
 /**
  * @var Sloth\App $app
- * @var Sloth\Module\Graph\Definition\Resource $resourceDefinition
- * @var Sloth\Module\Graph\Resource $resource
+ * @var Sloth\Module\Resource\Definition\Resource $resourceDefinition
+ * @var Sloth\Module\Resource\Resource $resource
  */
 ?>
 <h2>Update Resource (<?= $resourceDefinition->name ?>)</h2>
 <p>
-	<a href="<?= $app->createUrl(array('graph', $resourceDefinition->name, 'definition')) ?>">Definition</a>
+	<a href="<?= $app->createUrl(array('resource', $resourceDefinition->name, 'definition')) ?>">Definition</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('graph', $resourceDefinition->name, 'list')) ?>"><?= ucfirst($resourceDefinition->name) ?> List</a>
+	<a href="<?= $app->createUrl(array('resource', $resourceDefinition->name, 'list')) ?>"><?= ucfirst($resourceDefinition->name) ?> List</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('graph', $resourceDefinition->name, 'search')) ?>"><?= ucfirst($resourceDefinition->name) ?> Search</a>
+	<a href="<?= $app->createUrl(array('resource', $resourceDefinition->name, 'search')) ?>"><?= ucfirst($resourceDefinition->name) ?> Search</a>
 </p>
-<form action="<?= $app->createUrl(array('graph', lcfirst($resourceDefinition->name), $resource->getAttribute($resourceDefinition->primaryAttribute), 'put')) ?>" method="post">
+<form action="<?= $app->createUrl(array('resource', lcfirst($resourceDefinition->name), $resource->getAttribute($resourceDefinition->primaryAttribute), 'put')) ?>" method="post">
 	<?= renderAttributeListInputs($resourceDefinition->attributes, $resourceDefinition->table, $resource->getAttributes()) ?>
 	<button type="submit">Update</button>
 </form>
@@ -29,7 +29,7 @@ function renderAttributeListInputs(array $attributes, Table $tableDefinition, ar
 			$html .= renderAttributeInput($attributeName, $data, $ancestors);
 		} elseif (is_array($include)) {
 			$childLink = $tableDefinition->links->getByName($attributeName);
-			if (!in_array($childLink->onUpdate, array(Sloth\Module\Graph\Definition\Table\Join::ACTION_IGNORE, Sloth\Module\Graph\Definition\Table\Join::ACTION_REJECT))) {
+			if (!in_array($childLink->onUpdate, array(Sloth\Module\Resource\Definition\Table\Join::ACTION_IGNORE, Sloth\Module\Resource\Definition\Table\Join::ACTION_REJECT))) {
 				$subListAncestors = $ancestors;
 				array_push($subListAncestors, $attributeName);
 				$html .= renderAttributeSubListInputs($include, $childLink, $data[$attributeName], $subListAncestors);

@@ -1,20 +1,20 @@
 <?php
-use Sloth\Module\Graph\Definition\Table;
+use Sloth\Module\Resource\Definition\Table;
 /**
  * @var Sloth\App $app
  * @var string $resourceName
- * @var Sloth\Module\Graph\Definition\Resource $resourceDefinition
+ * @var Sloth\Module\Resource\Definition\Resource $resourceDefinition
  */
 ?>
 <h2>Create Resources (<?= $resourceName ?>)</h2>
 <p>
-	<a href="<?= $app->createUrl(array('graph', $resourceName, 'definition')) ?>">Definition</a>
+	<a href="<?= $app->createUrl(array('resource', $resourceName, 'definition')) ?>">Definition</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('graph', $resourceName, 'list')) ?>"><?= ucfirst($resourceName) ?> List</a>
+	<a href="<?= $app->createUrl(array('resource', $resourceName, 'list')) ?>"><?= ucfirst($resourceName) ?> List</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('graph', $resourceName, 'search')) ?>"><?= ucfirst($resourceName) ?> Search</a>
+	<a href="<?= $app->createUrl(array('resource', $resourceName, 'search')) ?>"><?= ucfirst($resourceName) ?> Search</a>
 </p>
-<form action="<?= $app->createUrl(array('graph', lcfirst($resourceName))) ?>" method="post">
+<form action="<?= $app->createUrl(array('resource', lcfirst($resourceName))) ?>" method="post">
 	<?= renderAttributeListInputs($resourceDefinition->attributes, $resourceDefinition->table) ?>
 	<button type="submit">Create</button>
 </form>

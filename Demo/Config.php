@@ -2,7 +2,6 @@
 namespace Sloth\Demo;
 
 use Sloth\Base\Config as BaseConfig;
-use Sloth\Module\ModuleLoader;
 use SlothDefault;
 
 class Config extends BaseConfig
@@ -61,8 +60,7 @@ class Config extends BaseConfig
     public function modules()
     {
         return new BaseConfig\Modules(array(
-            'resource' => 'SlothDemo\\Module\\Resource\\Loader',
-			'graph' => 'Sloth\\Module\\Graph\\Factory'
+			'resource' => 'Sloth\\Module\\Resource\\Factory'
         ));
     }
 

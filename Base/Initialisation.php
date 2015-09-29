@@ -55,12 +55,12 @@ abstract class Initialisation
 	{
 		if (!isset($this->moduleLoader)) {
 			$this->moduleLoader = new Module\ModuleLoader();
-			$this->moduleLoader->register('graph', new Module\Graph\Factory(array(
+			$this->moduleLoader->register('resource', new Module\Resource\Factory(array(
 				'app' => $this->getApp(),
 				'tableDirectory' => $this->getTableManifestDirectory(),
 				'resourceDirectory' => $this->getResourceManifestDirectory(),
-				'tableValidator' => new Module\Graph\TableManifestValidator(),
-				'resourceValidator' => new Module\Graph\ResourceManifestValidator()
+				'tableValidator' => new Module\Resource\TableManifestValidator(),
+				'resourceValidator' => new Module\Resource\ResourceManifestValidator()
 			)));
 			$this->moduleLoader->register('render', new Module\Render\Factory(array(
 				'app' => $this->getApp(),
@@ -91,13 +91,13 @@ abstract class Initialisation
 
 	protected function getResourceManifestDirectory()
 	{
-		$directoryParts = array($this->getApp()->rootDirectory(), 'resource', 'graph', 'resourceManifest');
+		$directoryParts = array($this->getApp()->rootDirectory(), 'resource', 'resourceManifest');
 		return implode(DIRECTORY_SEPARATOR, $directoryParts);
 	}
 
 	protected function getTableManifestDirectory()
 	{
-		$directoryParts = array($this->getApp()->rootDirectory(), 'resource', 'graph', 'tableManifest');
+		$directoryParts = array($this->getApp()->rootDirectory(), 'resource', 'tableManifest');
 		return implode(DIRECTORY_SEPARATOR, $directoryParts);
 	}
 }

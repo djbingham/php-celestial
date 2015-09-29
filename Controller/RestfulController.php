@@ -3,7 +3,7 @@ namespace Sloth\Controller;
 
 use Sloth\Base\Controller;
 use Sloth\Exception;
-use Sloth\Module\Graph\RequestParser\RestfulParsedRequest;
+use Sloth\Module\Resource\RequestParser\RestfulParsedRequest;
 use Sloth\Request;
 
 abstract class RestfulController extends Controller

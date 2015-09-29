@@ -2,24 +2,24 @@
 /**
  * @var Sloth\App $app
  * @var string $resourceName
- * @var Sloth\Module\Graph\ResourceList $resources
+ * @var Sloth\Module\Resource\ResourceList $resources
  */
 ?>
 <h2>Resource List</h2>
 <p>
-	<a href="<?= $app->createUrl(array('graph', $resourceName, 'definition')) ?>">Definition</a>
+	<a href="<?= $app->createUrl(array('resource', $resourceName, 'definition')) ?>">Definition</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('graph', $resourceName, 'filter')) ?>">Filter</a>
+	<a href="<?= $app->createUrl(array('resource', $resourceName, 'filter')) ?>">Filter</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('graph', $resourceName, 'search')) ?>">Search</a>
+	<a href="<?= $app->createUrl(array('resource', $resourceName, 'search')) ?>">Search</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('graph', $resourceName, 'create')) ?>">Create</a>
+	<a href="<?= $app->createUrl(array('resource', $resourceName, 'create')) ?>">Create</a>
 </p>
 <dl>
 	<?php foreach ($resources as $index => $resource): ?>
 
 		<dt>
-			<a href="<?= $app->createUrl(array('graph', $resourceName, $resource->getAttribute('id'))) ?>">
+			<a href="<?= $app->createUrl(array('resource', $resourceName, $resource->getAttribute('id'))) ?>">
 				Resource #<?= $index ?>
 			</a>
 		</dt>
