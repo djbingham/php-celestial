@@ -45,7 +45,9 @@ class Conductor extends Base\AbstractConductor
 			/** @var QueryLinkInterface $childLink */
 			foreach ($childLinks as $childLink) {
 				$childQueryWrapper = $childLink->getChildQueryWrapper();
-				$this->executeQueryWithLinks($childQueryWrapper);
+				if ($childQueryWrapper !== null) {
+					$this->executeQueryWithLinks($childQueryWrapper);
+				}
 			}
 		}
 	}
@@ -92,7 +94,9 @@ class Conductor extends Base\AbstractConductor
 		/** @var QueryLinkInterface $link */
 		foreach ($parentQueryWrapper->getChildLinks() as $link) {
 			$targetQueryWrapper = $link->getChildQueryWrapper();
-			$this->applyLinkDataToQueryWrapper($linkData, $targetQueryWrapper);
+			if ($targetQueryWrapper !== null) {
+				$this->applyLinkDataToQueryWrapper($linkData, $targetQueryWrapper);
+			}
 		}
 		return $this;
 	}

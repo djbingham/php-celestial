@@ -112,20 +112,18 @@ class Composer extends Base\AbstractComposer
 
 			if (array_key_exists($joinDefinition->name, $data)) {
 				$childTableData = $data[$joinDefinition->name];
-			} else {
-				$childTableData = array();
-			}
 
-			if (in_array($joinDefinition->type, array(Definition\Table\Join::ONE_TO_MANY, Definition\Table\Join::MANY_TO_MANY))) {
-				$childQuerySet = new MultiQueryWrapper();
-				foreach ($childTableData as $childDataRow) {
-					$rowQuerySet = $this->buildQueriesForTableAndDescendants($childTable, $childDataRow, $link);
-					$childQuerySet->push($rowQuerySet);
+				if (in_array($joinDefinition->type, array(Definition\Table\Join::ONE_TO_MANY, Definition\Table\Join::MANY_TO_MANY))) {
+					$childQuerySet = new MultiQueryWrapper();
+					foreach ($childTableData as $childDataRow) {
+						$rowQuerySet = $this->buildQueriesForTableAndDescendants($childTable, $childDataRow, $link);
+						$childQuerySet->push($rowQuerySet);
+					}
+					$link->setChildQueryWrapper($childQuerySet);
+				} else {
+					$childQuerySet = $this->buildQueriesForTableAndDescendants($childTable, $childTableData, $link);
+					$link->setChildQueryWrapper($childQuerySet->getByIndex(0));
 				}
-				$link->setChildQueryWrapper($childQuerySet);
-			} else {
-				$childQuerySet = $this->buildQueriesForTableAndDescendants($childTable, $childTableData, $link);
-				$link->setChildQueryWrapper($childQuerySet->getByIndex(0));
 			}
 		}
 
@@ -141,51 +139,50 @@ class Composer extends Base\AbstractComposer
 			$joinDefinition = $link->getJoinDefinition();
 			if (array_key_exists($joinDefinition->name, $data)) {
 				$childTableData = $data[$joinDefinition->name];
-			} else {
-				$childTableData = array();
-			}
 
-			$querySubSet = new MultiQueryWrapper();
-			foreach ($childTableData as $childDataRow) {
-				$linkData = array();
-				$linkTable = null;
+				$querySubSet = new MultiQueryWrapper();
+				foreach ($childTableData as $childDataRow) {
+					$linkData = array();
+					$linkTable = null;
 
-				/** @var Definition\Table\Join\Constraint $constraint */
-				foreach ($join->getConstraints() as $constraint) {
-					/** @var Definition\Table\Join\SubJoin $subJoin */
-					foreach ($constraint->subJoins as $subJoin) {
-						if ($subJoin->parentTable === $tableDefinition) {
-							$linkTable = $subJoin->childTable;
-						} elseif ($subJoin->childTable === $join->getChildTable()) {
-							$linkData[$subJoin->parentField->name] = $childDataRow[$subJoin->childField->name];
-						} else {
-							throw new InvalidRequestException(
-								sprintf(
-									'Invalid join `%s` (subjoin `%s` to `%s` references neither parent or child table)',
-									$join->getChildTable()->getAlias(),
-									$subJoin->parentTable->getAlias(),
-									$subJoin->childTable->getAlias()
-								)
-							);
+					/** @var Definition\Table\Join\Constraint $constraint */
+					foreach ($join->getConstraints() as $constraint) {
+						/** @var Definition\Table\Join\SubJoin $subJoin */
+						foreach ($constraint->subJoins as $subJoin) {
+							if ($subJoin->parentTable === $tableDefinition) {
+								$linkTable = $subJoin->childTable;
+							} elseif ($subJoin->childTable === $join->getChildTable()) {
+								$linkData[$subJoin->parentField->name] = $childDataRow[$subJoin->childField->name];
+							} else {
+								throw new InvalidRequestException(
+									sprintf(
+										'Invalid join `%s` (subjoin `%s` to `%s` references neither parent or child table)',
+										$join->getChildTable()->getAlias(),
+										$subJoin->parentTable->getAlias(),
+										$subJoin->childTable->getAlias()
+									)
+								);
+							}
 						}
 					}
-				}
 
-				if ($linkTable === null) {
-					throw new InvalidRequestException(
-						sprintf(
-							'Invalid join `%s` (no subjoin references the parent table `%s`)',
-							$join->getChildTable()->getAlias()
-						)
-					);
-				}
+					if ($linkTable === null) {
+						throw new InvalidRequestException(
+							sprintf(
+								'Invalid join `%s` (no subjoin references the parent table `%s`)',
+								$join->getChildTable()->getAlias()
+							)
+						);
+					}
 
-				// Now we have join data to insert
-				$childQueryWrapper = $this->buildQueryForLinkTable($linkTable, $linkData, $link);
-				$querySubSet->push($childQueryWrapper);
+					// Now we have join data to insert
+					$childQueryWrapper = $this->buildQueryForLinkTable($linkTable, $linkData, $link);
+					$querySubSet->push($childQueryWrapper);
+				}
+				$link->setChildQueryWrapper($querySubSet);
 			}
-			$link->setChildQueryWrapper($querySubSet);
 		}
+
 
 		return $querySet;
 	}

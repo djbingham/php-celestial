@@ -133,6 +133,66 @@ EOT;
 		$this->assertEquals(0, $secondQueryWrapper->getChildLinks()->length());
 	}
 
+	public function testQueryNotBuiltForOneToOneChildTableWithNoData()
+	{
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
+		$dbConnection = new Connection();
+		$database = $this->getDatabaseWrapper($dbConnection);
+
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'friends');
+		$table->links->removeByPropertyValue('name', 'posts');
+
+		$addressTable = $table->links->getByName('address')->getChildTable();
+		$addressTable->links->removeByPropertyValue('name', 'landlord');
+
+		// Don't include address table in data.
+		$data = array(
+			'forename' => 'David',
+			'surname' => 'Bingham'
+		);
+
+		// Expect no insert query for address table, even though it is part of the resource, since it has no data
+		$expectedQueries = array();
+		$expectedQueries[] = <<<EOT
+INSERT INTO `User`
+(`forename`,`surname`)
+VALUES
+("David","Bingham")
+EOT;
+
+		$composer = new Composer();
+		$composer->setDatabase($database)
+			->setTable($table)
+			->setData($data);
+
+		$querySet = $composer->compose();
+
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $querySet);
+		$this->assertEquals(1, $querySet->length());
+
+		/** @var SingleQueryWrapperInterface $firstQueryWrapper */
+		$firstQueryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $firstQueryWrapper);
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $firstQueryWrapper->getQuery());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $firstQueryWrapper->getChildLinks());
+
+		$firstQuery = $firstQueryWrapper->getQuery();
+		$this->assertSame($table, $firstQueryWrapper->getTable());
+		$this->assertEquals($expectedQueries[0], (string)$firstQuery);
+		$this->assertEquals(1, $firstQueryWrapper->getChildLinks()->length());
+
+		/** @var QueryLinkInterface $firstChildLink */
+		$firstChildLink = $firstQueryWrapper->getChildLinks()->getByIndex(0);
+		$this->assertInstanceof('Sloth\Module\Graph\QuerySet\Face\QueryLinkInterface', $firstChildLink);
+		$this->assertSame($table->links->getByName('address'), $firstChildLink->getJoinDefinition());
+		$this->assertSame($firstQueryWrapper, $firstChildLink->getParentQueryWrapper());
+
+		/** @var SingleQueryWrapperInterface $secondQueryWrapper */
+		$secondQueryWrapper = $firstChildLink->getChildQueryWrapper();
+		$this->assertNull($secondQueryWrapper);
+	}
+
 	public function testQuerySetComposedFromTablesWithIgnoredLinks()
 	{
 		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
@@ -652,6 +712,68 @@ EOT;
 		$this->assertSame($friendLink->intermediaryTables->getByIndex(0), $insertSecondFriendQueryWrapper->getTable());
 		$this->assertEquals($expectedQueries[2], (string)$thirdQuery);
 		$this->assertEquals(0, $insertSecondFriendQueryWrapper->getChildLinks()->length());
+	}
+
+	public function testQueryNotBuildForManyToManyLinkTableWithNoData()
+	{
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
+		$dbConnection = new Connection();
+		$database = $this->getDatabaseWrapper($dbConnection);
+
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'address');
+		$table->links->removeByPropertyValue('name', 'posts');
+
+		$friendLink = $table->links->getByName('friends');
+		$friendTable = $friendLink->getChildTable();
+		$friendTable->links->removeByPropertyValue('name', 'posts');
+		$friendTable->links->removeByPropertyValue('name', 'address');
+		$friendTable->links->removeByPropertyValue('name', 'friends');
+
+		// Don't include any data for friends
+		$data = array(
+			'forename' => 'David',
+			'surname' => 'Bingham'
+		);
+
+		// Expect no insert queries for friend table, even though it is part of resource, since it has no data
+		$expectedQueries = array();
+		$expectedQueries[] = <<<EOT
+INSERT INTO `User`
+(`forename`,`surname`)
+VALUES
+("David","Bingham")
+EOT;
+
+		$composer = new Composer();
+		$composer->setDatabase($database)
+			->setTable($table)
+			->setData($data);
+
+		$querySet = $composer->compose();
+
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\MultiQueryWrapper', $querySet);
+		$this->assertEquals(1, $querySet->length());
+
+		/** @var SingleQueryWrapperInterface $insertUserQueryWrapper */
+		$insertUserQueryWrapper = $querySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\SingleQueryWrapper', $insertUserQueryWrapper);
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Insert', $insertUserQueryWrapper->getQuery());
+		$this->assertInstanceOf('Sloth\Module\Graph\QuerySet\QueryWrapper\QueryLinkList', $insertUserQueryWrapper->getChildLinks());
+
+		$insertUserQuery = $insertUserQueryWrapper->getQuery();
+		$this->assertSame($table, $insertUserQueryWrapper->getTable());
+		$this->assertEquals($expectedQueries[0], (string)$insertUserQuery);
+		$this->assertEquals(1, $insertUserQueryWrapper->getChildLinks()->length());
+
+		/** @var QueryLinkInterface $linkToInsertFriendsQuerySet */
+		$linkToInsertFriendsQuerySet = $insertUserQueryWrapper->getChildLinks()->getByIndex(0);
+		$this->assertInstanceof('Sloth\Module\Graph\QuerySet\Face\QueryLinkInterface', $linkToInsertFriendsQuerySet);
+		$this->assertSame($table->links->getByName('friends'), $linkToInsertFriendsQuerySet->getJoinDefinition());
+
+		/** @var MultiQueryWrapperInterface $insertFriendsQuerySetWrapper */
+		$insertFriendsQuerySetWrapper = $linkToInsertFriendsQuerySet->getChildQueryWrapper();
+		$this->assertNull($insertFriendsQuerySetWrapper);
 	}
 
 	public function testQuerySetComposedFromTableWithChainedOneToManyLinks()
