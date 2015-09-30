@@ -80,7 +80,9 @@ class ModuleCore
 	{
 		$validatorListBuilder = new ValidatorListBuilder();
 		$attributeListBuilder = null;
-		$viewListBuilder = new ViewListBuilder();
+		$viewListBuilder = new ViewListBuilder(array(
+			'module' => $this
+		));
 		$tableFieldBuilder = new TableFieldBuilder($validatorListBuilder);
 
 		$tableBuilder = new TableDefinitionBuilder($this->tableManifestValidator, $this->tableManifestDirectory);

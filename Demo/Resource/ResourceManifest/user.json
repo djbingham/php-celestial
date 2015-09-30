@@ -75,6 +75,48 @@
 		"update": {
 			"engine": "php",
 			"path": "resource/default/updateForm.php"
+		},
+		"dataProviderDemo": {
+			"engine": "mustache",
+			"path": "resource/user/dataProviderDemo.html",
+			"providers": {
+				"users": {
+					"engine": "resource",
+					"options": {
+						"resourceName": "User",
+						"filters": [
+							{
+								"subject": "id",
+								"comparator": ">",
+								"value": "0"
+							}
+						]
+					}
+				},
+				"counties": {
+					"engine": "static",
+					"options": {
+						"data": [
+							{
+								"id": 1,
+								"name": "North Yorkshire"
+							},
+							{
+								"id": 2,
+								"name": "West Yorkshire"
+							},
+							{
+								"id": 3,
+								"name": "East Riding of Yorkshire"
+							},
+							{
+								"id": 4,
+								"name": "South Yorkshire"
+							}
+						]
+					}
+				}
+			}
 		}
 	}
 }

@@ -2,6 +2,7 @@
 namespace Sloth\Module\Render;
 
 use Sloth\App;
+use Sloth\Module\Render\Face\DataProviderInterface;
 use Sloth\Module\Render\Face\RenderEngineInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Render\Face\ViewInterface;
@@ -34,6 +35,9 @@ class Renderer implements RendererInterface
 		if (!array_key_exists('app', $params)) {
 			$params['app'] = $this->app;
 		}
+		if (!array_key_exists('data', $params)) {
+			$params['data'] = $this->getData($view);
+		}
 		return $engine->render($viewPath, $params);
 	}
 
@@ -51,5 +55,20 @@ class Renderer implements RendererInterface
 		$viewPath = str_replace('/', DIRECTORY_SEPARATOR, $view->getPath());
 		$viewPathParts = array($this->viewDirectory, $viewPath);
 		return implode(DIRECTORY_SEPARATOR, $viewPathParts);
+	}
+
+	protected function getData($view)
+	{
+		$data = array();
+		/** @var DataProviderInterface $dataProvider */
+		foreach ($this->getDataProviders($view) as $dataProvider) {
+			$data[$dataProvider->getName()] = $dataProvider->getData();
+		}
+		return $data;
+	}
+
+	protected function getDataProviders(ViewInterface $view)
+	{
+		return $view->getDataProviders();
 	}
 }

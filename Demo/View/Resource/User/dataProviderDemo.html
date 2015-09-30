@@ -1,0 +1,13 @@
+<h3>Existing Users</h3>
+<ul>
+	{{#data.users}}
+	<li>{{forename}} {{surname}}</li>
+	{{/data.users}}
+</ul>
+
+<h3>Demo static data (suggested counties for address)</h3>
+<select name="suggestedCounties">
+	{{#data.counties}}
+	<option value="{{id}}">{{name}}</option>
+	{{/data.counties}}
+</select>

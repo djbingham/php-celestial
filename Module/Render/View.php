@@ -1,13 +1,31 @@
 <?php
 namespace Sloth\Module\Render;
 
+use Module\Render\Face\DataProviderListInterface;
+use Sloth\Module\Render\Face\RenderEngineInterface;
 use Sloth\Module\Render\Face\ViewInterface;
 
 class View implements ViewInterface
 {
+	/**
+	 * @var string
+	 */
 	public $name;
+
+	/**
+	 * @var string
+	 */
 	public $path;
+
+	/**
+	 * @var RenderEngineInterface
+	 */
 	public $engine;
+
+	/**
+	 * @var DataProviderListInterface
+	 */
+	public $dataProviders;
 
 	public function getName()
 	{
@@ -22,6 +40,11 @@ class View implements ViewInterface
 	public function getEngineName()
 	{
 		return $this->engine;
+	}
+
+	public function getDataProviders()
+	{
+		return $this->dataProviders;
 	}
 
 	public function getFunctionName()
