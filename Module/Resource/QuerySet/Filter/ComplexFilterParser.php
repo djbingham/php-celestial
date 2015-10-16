@@ -11,16 +11,16 @@ class ComplexFilterParser implements FilterParserInterface
 	{
 		$parsedFilters = array();
 		foreach ($filters as $filterParams) {
-			$thisParsedFilters = &$parsedFilters;
-
 			$subjectPath = explode('.', $filterParams['subject']);
 			$table = $tableDefinition;
+			$thisParsedFilters = &$parsedFilters;
+
 			while (count($subjectPath) > 1) {
 				$linkName = array_shift($subjectPath);
-				if (!array_key_exists($linkName, $parsedFilters)) {
-					$parsedFilters[$linkName] = array();
+				if (!array_key_exists($linkName, $thisParsedFilters)) {
+					$thisParsedFilters[$linkName] = array();
 				}
-				$thisParsedFilters = &$parsedFilters[$linkName];
+				$thisParsedFilters = &$thisParsedFilters[$linkName];
 				$table = $table->links->getByName($linkName)->getChildTable();
 			}
 

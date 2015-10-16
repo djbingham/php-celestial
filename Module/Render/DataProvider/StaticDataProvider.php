@@ -1,5 +1,5 @@
 <?php
-namespace Module\Render\DataProvider;
+namespace Sloth\Module\Render\DataProvider;
 
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Module\Render\Face\DataProviderInterface;

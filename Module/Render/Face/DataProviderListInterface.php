@@ -1,8 +1,7 @@
 <?php
-namespace Module\Render\Face;
+namespace Sloth\Module\Render\Face;
 
 use Helper\Face\ObjectListInterface;
-use Sloth\Module\Render\Face\DataProviderInterface;
 
 interface DataProviderListInterface extends ObjectListInterface
 {

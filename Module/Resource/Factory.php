@@ -32,6 +32,11 @@ class Factory implements ModuleFactoryInterface
 	 */
 	private $resourceValidator;
 
+	/**
+	 * @var string
+	 */
+	private $resourceNamespace;
+
 	public function __construct(array $dependencies)
 	{
 		$this->validateDependencies($dependencies);
@@ -40,6 +45,7 @@ class Factory implements ModuleFactoryInterface
 		$this->resourceDirectory = $dependencies['resourceDirectory'];
 		$this->tableValidator = $dependencies['tableValidator'];
 		$this->resourceValidator = $dependencies['resourceValidator'];
+		$this->resourceNamespace = $dependencies['resourceNamespace'];
 	}
 
 	public function initialise()
@@ -48,19 +54,29 @@ class Factory implements ModuleFactoryInterface
 		$module->setTableManifestDirectory($this->tableDirectory)
 			->setResourceManifestDirectory($this->resourceDirectory)
 			->setTableManifestValidator($this->tableValidator)
-			->setResourceManifestValidator($this->resourceValidator);
+			->setResourceManifestValidator($this->resourceValidator)
+			->setResourceNamespace($this->resourceNamespace);
 		return $module;
 	}
 
 	private function validateDependencies(array $dependencies)
 	{
-		$required = array('app', 'tableDirectory', 'resourceDirectory', 'tableValidator', 'resourceValidator');
+		$required = array(
+			'app',
+			'tableDirectory',
+			'resourceDirectory',
+			'tableValidator',
+			'resourceValidator',
+			'resourceNamespace'
+		);
+
 		$missing = array_diff($required, array_keys($dependencies));
 		if (!empty($missing)) {
 			throw new InvalidArgumentException(
 				'Missing required dependencies for Render module: ' . implode(', ', $missing)
 			);
 		}
+
 		if (!($dependencies['app'] instanceof App)) {
 			throw new InvalidArgumentException('Invalid app given in dependencies for Render module');
 		}

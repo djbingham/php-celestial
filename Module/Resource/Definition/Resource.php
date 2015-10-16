@@ -26,11 +26,6 @@ class Resource
 	public $primaryAttribute;
 
 	/**
-	 * @var \Sloth\Module\Render\ViewList
-	 */
-	public $views;
-
-	/**
 	 * @var Definition\ValidatorList
 	 */
 	public $validators;

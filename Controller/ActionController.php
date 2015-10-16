@@ -3,13 +3,14 @@ namespace Sloth\Controller;
 
 use Sloth\Base\Controller;
 use Sloth\Exception\InvalidRequestException;
+use Sloth\Face\RequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Render\View;
 use Sloth\Request;
 
 class ActionController extends Controller
 {
-	public function execute(Request $request, $controllerRoute)
+	public function execute(RequestInterface $request, $controllerRoute)
 	{
 		$escapedControllerRoute = str_replace('/', '\/', $controllerRoute);
 		$controllerRouteRegex = sprintf('/^%s/', $escapedControllerRoute);

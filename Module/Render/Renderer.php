@@ -3,8 +3,8 @@ namespace Sloth\Module\Render;
 
 use Sloth\App;
 use Sloth\Module\Render\Face\DataProviderInterface;
-use Sloth\Module\Render\Face\RenderEngineInterface;
 use Sloth\Module\Render\Face\RendererInterface;
+use Sloth\Module\Render\Face\ViewFactoryInterface;
 use Sloth\Module\Render\Face\ViewInterface;
 
 class Renderer implements RendererInterface
@@ -15,60 +15,63 @@ class Renderer implements RendererInterface
 	protected $app;
 
 	/**
-	 * @var array
+	 * @var ViewFactoryInterface
 	 */
-	protected $resourceManifest;
+	protected $viewFactory;
 
-	protected $viewDirectory;
-
-	public function __construct(App $app, array $engines, $viewDirectory)
+	public function setApp(App $app)
 	{
 		$this->app = $app;
-		$this->engines = $engines;
-		$this->viewDirectory = $viewDirectory;
+		return $this;
+	}
+
+	public function getApp()
+	{
+		return $this->app;
+	}
+
+	public function setViewFactory(ViewFactoryInterface $viewFactory)
+	{
+		$this->viewFactory = $viewFactory;
+		return $this;
+	}
+
+	public function getViewFactory()
+	{
+		return $this->viewFactory;
+	}
+
+	public function viewExists($viewName)
+	{
+		return $this->viewFactory->viewExists($viewName);
+	}
+
+	public function getView($viewName)
+	{
+		return $this->viewFactory->getByName($viewName);
 	}
 
 	public function render(ViewInterface $view, array $params = array())
 	{
-		$viewPath = $this->getAbsoluteViewPath($view);
-		$engine = $this->getEngine($view->getEngineName());
+		$engine = $view->getEngine();
+
 		if (!array_key_exists('app', $params)) {
 			$params['app'] = $this->app;
 		}
 		if (!array_key_exists('data', $params)) {
 			$params['data'] = $this->getData($view);
 		}
-		return $engine->render($viewPath, $params);
+
+		return $engine->render($view->getPath(), $params);
 	}
 
-	/**
-	 * @param $engineName
-	 * @return RenderEngineInterface
-	 */
-	protected function getEngine($engineName)
-	{
-		return $this->engines[$engineName];
-	}
-
-	protected function getAbsoluteViewPath(ViewInterface $view)
-	{
-		$viewPath = str_replace('/', DIRECTORY_SEPARATOR, $view->getPath());
-		$viewPathParts = array($this->viewDirectory, $viewPath);
-		return implode(DIRECTORY_SEPARATOR, $viewPathParts);
-	}
-
-	protected function getData($view)
+	protected function getData(ViewInterface $view)
 	{
 		$data = array();
 		/** @var DataProviderInterface $dataProvider */
-		foreach ($this->getDataProviders($view) as $dataProvider) {
+		foreach ($view->getDataProviders() as $dataProvider) {
 			$data[$dataProvider->getName()] = $dataProvider->getData();
 		}
 		return $data;
-	}
-
-	protected function getDataProviders(ViewInterface $view)
-	{
-		return $view->getDataProviders();
 	}
 }

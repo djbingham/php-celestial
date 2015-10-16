@@ -1,11 +1,11 @@
 <?php
-namespace Module\Render\DataProvider;
+namespace Sloth\Module\Render\DataProvider;
 
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Module\Render\Face\DataProviderInterface;
 use Sloth\Module\Resource as ResourceModule;
 
-class ResourceDataProvider implements DataProviderInterface
+class ResourceListProvider implements DataProviderInterface
 {
 	/**
 	 * @var string

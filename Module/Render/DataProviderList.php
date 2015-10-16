@@ -1,9 +1,9 @@
 <?php
-namespace Module\Render;
+namespace Sloth\Module\Render;
 
-use Module\Render\Face\DataProviderListInterface;
 use Sloth\Helper\ObjectListTrait;
 use Sloth\Module\Render\Face\DataProviderInterface;
+use Sloth\Module\Render\Face\DataProviderListInterface;
 
 class DataProviderList implements DataProviderListInterface
 {

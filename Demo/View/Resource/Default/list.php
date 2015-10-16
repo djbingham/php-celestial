@@ -1,30 +1,40 @@
 <?php
 /**
  * @var Sloth\App $app
- * @var string $resourceName
- * @var Sloth\Module\Resource\ResourceList $resources
+ * @var array $data
  */
+
+/** @var Sloth\Module\Resource\ResourceList $resources */
+$resources = $data['resources'];
+
+/** @var Sloth\Module\Resource\Definition\Resource $resourceDefinition */
+$resourceDefinition = $data['resourceDefinition'];
+
+$resourceName = lcfirst($resourceDefinition->name);
 ?>
 <h2>Resource List</h2>
 <p>
-	<a href="<?= $app->createUrl(array('resource', $resourceName, 'definition')) ?>">Definition</a>
+	<a href="<?= $app->createUrl(array('resource', 'definition', $resourceName)) ?>">Definition</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('resource', $resourceName, 'filter')) ?>">Filter</a>
+	<a href="<?= $app->createUrl(array('resource', 'filter', $resourceName)) ?>">Filter</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('resource', $resourceName, 'search')) ?>">Search</a>
+	<a href="<?= $app->createUrl(array('resource', 'search', $resourceName)) ?>">Search</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('resource', $resourceName, 'create')) ?>">Create</a>
+	<a href="<?= $app->createUrl(array('resource', 'create', $resourceName)) ?>">Create</a>
 </p>
 <dl>
-	<?php foreach ($resources as $index => $resource): ?>
+	<?php
+		/** @var Sloth\Module\Resource\Resource $resource */
+		foreach ($data['resources'] as $index => $resource):
+	?>
 
 		<dt>
-			<a href="<?= $app->createUrl(array('resource', $resourceName, $resource->getAttribute('id'))) ?>">
+			<a href="<?= $app->createUrl(array('resource', 'view', $resourceName, $resource['id'])) ?>">
 				Resource #<?= $index ?>
 			</a>
 		</dt>
 		<dd>
-			<?= renderAttributeList($resource->getAttributes()); ?>
+			<?= renderAttributeList($resource); ?>
 		</dd>
 
 	<?php endforeach ?>

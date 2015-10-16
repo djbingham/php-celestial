@@ -3,49 +3,53 @@ namespace Sloth\Controller;
 
 use Sloth\Base\Controller;
 use Sloth\Exception;
-use Sloth\Module\Resource\RequestParser\RestfulParsedRequest;
-use Sloth\Request;
+use Sloth\Face\RequestInterface;
+use Sloth\Module\RestApi\Face\ParsedRequestInterface;
 
 abstract class RestfulController extends Controller
 {
 	/**
-	 * @param Request $request
+	 * @param RequestInterface $request
 	 * @param string $route
-	 * @return RestfulParsedRequest
+	 * @return ParsedRequestInterface
 	 */
-	abstract protected function parseRequest(Request $request, $route);
+	abstract protected function parseRequest(RequestInterface $request, $route);
 
 	/**
-	 * @param RestfulParsedRequest $request
+	 * @param ParsedRequestInterface $request
+	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handleGet(RestfulParsedRequest $request);
+	abstract protected function handleGet(ParsedRequestInterface $request, $route);
 
 	/**
-	 * @param RestfulParsedRequest $request
+	 * @param ParsedRequestInterface $request
+	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handlePost(RestfulParsedRequest $request);
+	abstract protected function handlePost(ParsedRequestInterface $request, $route);
 
 	/**
-	 * @param RestfulParsedRequest $request
+	 * @param ParsedRequestInterface $request
+	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handlePut(RestfulParsedRequest $request);
+	abstract protected function handlePut(ParsedRequestInterface $request, $route);
 
 	/**
-	 * @param RestfulParsedRequest $request
+	 * @param ParsedRequestInterface $request
+	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handleDelete(RestfulParsedRequest $request);
+	abstract protected function handleDelete(ParsedRequestInterface $request, $route);
 
 	/**
-	 * @param Request $request
+	 * @param RequestInterface $request
 	 * @param string $route
 	 * @return string
 	 * @throws Exception\InvalidRequestException
 	 */
-    public function execute(Request $request, $route)
+    public function execute(RequestInterface $request, $route)
     {
 		$parsedRequest = $this->parseRequest($request, $route);
 		$method = 'handle' . ucfirst($parsedRequest->getMethod());

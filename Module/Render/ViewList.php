@@ -2,30 +2,21 @@
 namespace Sloth\Module\Render;
 
 use Sloth\Helper\ObjectList;
-use Sloth\Module\Render\View;
+use Sloth\Module\Render\Face\ViewInterface;
 
 class ViewList extends ObjectList
 {
-	public function push(View $view)
+	public function push(ViewInterface $view)
 	{
 		$this->items[] = $view;
 		return $this;
 	}
 
-	/**
-	 * @param string $index
-	 * @return View
-	 */
 	public function getByIndex($index)
 	{
 		return parent::getByIndex($index);
 	}
 
-	/**
-	 * @param $propertyName
-	 * @param $value
-	 * @return View
-	 */
 	public function getByProperty($propertyName, $value)
 	{
 		return parent::getByProperty($propertyName, $value);

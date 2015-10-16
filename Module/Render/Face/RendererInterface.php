@@ -7,10 +7,25 @@ interface RendererInterface
 {
 	/**
 	 * @param App $app
-	 * @param array $engines
-	 * @param string $viewDirectory
+	 * @return $this
 	 */
-	public function __construct(App $app, array $engines, $viewDirectory);
+	public function setApp(App $app);
+
+	/**
+	 * @return App
+	 */
+	public function getApp();
+
+	/**
+	 * @param ViewFactoryInterface $viewFactory
+	 * @return $this
+	 */
+	public function setViewFactory(ViewFactoryInterface $viewFactory);
+
+	/**
+	 * @return ViewFactoryInterface
+	 */
+	public function getViewFactory();
 
 	/**
 	 * @param ViewInterface $view

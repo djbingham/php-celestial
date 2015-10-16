@@ -57,6 +57,10 @@ class ResourceList implements ResourceListInterface
 		return count($this->resources);
 	}
 
+	/**
+	 * @param int $index
+	 * @return MyResource
+	 */
 	public function getByIndex($index)
 	{
 		$item = null;
@@ -68,8 +72,9 @@ class ResourceList implements ResourceListInterface
 
 	public function save()
 	{
+		/** @var MyResource $resource */
 		foreach ($this->resources as $resource) {
-			$this->factory->update($resource);
+			$resource->save();
 		}
 		return $this;
 	}
@@ -158,15 +163,6 @@ class ResourceList implements ResourceListInterface
 			$this->unshift($resource);
 		}
 		return $this;
-	}
-
-    /**
-     * @param int $index
-     * @return MyResource
-     */
-	public function get($index)
-	{
-		return $this->resources[$index];
 	}
 
     public function count()

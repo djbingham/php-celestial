@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Example URLs:
  * http://my-project.co.uk => DefaultController::getDefault

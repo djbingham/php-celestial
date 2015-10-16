@@ -1,20 +1,24 @@
 <?php
 use Sloth\Module\Resource\Definition\Table;
+
 /**
  * @var Sloth\App $app
- * @var string $resourceName
- * @var Sloth\Module\Resource\Definition\Resource $resourceDefinition
+ * @var array $data
  */
+
+/** @var Sloth\Module\Resource\Definition\Resource $resourceDefinition */
+$resourceDefinition = $data['resourceDefinition'];
+$resourceName = lcfirst($resourceDefinition->name);
 ?>
-<h2>Create Resources (<?= $resourceName ?>)</h2>
+<h2>Create Resources (<?= ucfirst($resourceName) ?>)</h2>
 <p>
-	<a href="<?= $app->createUrl(array('resource', $resourceName, 'definition')) ?>">Definition</a>
+	<a href="<?= $app->createUrl(array('resource', 'definition', $resourceName)) ?>">Definition</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('resource', $resourceName, 'list')) ?>"><?= ucfirst($resourceName) ?> List</a>
+	<a href="<?= $app->createUrl(array('resource', 'view', $resourceName)) ?>"><?= ucfirst($resourceName) ?> List</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('resource', $resourceName, 'search')) ?>"><?= ucfirst($resourceName) ?> Search</a>
+	<a href="<?= $app->createUrl(array('resource', 'search', $resourceName)) ?>"><?= ucfirst($resourceName) ?> Search</a>
 </p>
-<form action="<?= $app->createUrl(array('resource', lcfirst($resourceName))) ?>" method="post">
+<form action="<?= $app->createUrl(array('resource', 'create', lcfirst($resourceName))) ?>" method="post">
 	<?= renderAttributeListInputs($resourceDefinition->attributes, $resourceDefinition->table) ?>
 	<button type="submit">Create</button>
 </form>

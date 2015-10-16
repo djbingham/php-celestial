@@ -22,35 +22,5 @@
 				"surname": true
 			}
 		}
-	},
-	"views": {
-		"": {
-			"engine": "php",
-			"path": "default/list.php"
-		},
-		".html": {
-			"engine": "mustache",
-			"path": "user/list.html"
-		},
-		".php": {
-			"engine": "php",
-			"path": "default/list.php"
-		},
-		"list": {
-			"engine": "mustache",
-			"path": "user/list.html"
-		},
-		"list.html": {
-			"engine": "mustache",
-			"path": "user/list.html"
-		},
-		"list.php": {
-			"engine": "php",
-			"path": "default/list.php"
-		},
-		"list.json": {
-			"engine": "json",
-			"path": "default/list.json"
-		}
 	}
 }

@@ -1,19 +1,23 @@
 <?php
 /**
  * @var Sloth\App $app
- * @var string $resourceName
- * @var Sloth\Module\Resource\Definition\Resource $resourceDefinition
+ * @var array $data
  */
+
+/** @var Sloth\Module\Resource\Definition\Resource $resourceDefinition */
+$resourceDefinition = $data['resourceDefinition'];
+
+$resourceName = lcfirst($resourceDefinition->name);
 ?>
-<h2>Search Resources (<?= $resourceName ?>)</h2>
+<h2>Search Resources (<?= ucfirst($resourceName) ?>)</h2>
 <p>
-	<a href="<?= $app->createUrl(array('resource', $resourceName, 'definition')) ?>">Definition</a>
+	<a href="<?= $app->createUrl(array('resource', 'definition', $resourceName)) ?>">Definition</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('resource', $resourceName, 'list')) ?>"><?= ucfirst($resourceName) ?> List</a>
+	<a href="<?= $app->createUrl(array('resource', 'view', $resourceName)) ?>"><?= ucfirst($resourceName) ?> List</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('resource', $resourceName, 'filter')) ?>"><?= ucfirst($resourceName) ?> Filter</a>
+	<a href="<?= $app->createUrl(array('resource', 'filter', $resourceName)) ?>"><?= ucfirst($resourceName) ?> Filter</a>
 </p>
-<form action="<?= $app->createUrl(array('resource', lcfirst($resourceName), 'searchResult')) ?>" method="get">
+<form action="<?= $app->createUrl(array('resource', 'search', lcfirst($resourceName))) ?>" method="get">
 	<?= renderAttributeListInputs($resourceDefinition->attributes) ?>
 	<button type="submit">Search</button>
 </form>

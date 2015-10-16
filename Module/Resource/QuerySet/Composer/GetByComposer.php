@@ -63,6 +63,7 @@ class GetByComposer extends Base\AbstractComposer
 			} else {
 				$descendantFilters = array();
 			}
+
 			$descendantQuerySet = $this->buildQuerySetForLinkDescendants($link, $descendantFilters);
 			if (!is_null($descendantQuerySet)) {
 				foreach ($descendantQuerySet as $descendantSingleQueryWrapper) {

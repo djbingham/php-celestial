@@ -32,11 +32,6 @@ class ResourceDefinitionBuilder
 	 */
 	private $attributeListBuilder;
 
-	/**
-	 * @var ViewListBuilder
-	 */
-	private $viewListBuilder;
-
 	public function setManifestValidator(ResourceManifestValidator $validator)
 	{
 		$this->manifestValidator = $validator;
@@ -54,13 +49,12 @@ class ResourceDefinitionBuilder
 		$this->tableBuilder = $builders['tableBuilder'];
 		$this->validatorListBuilder = $builders['validatorListBuilder'];
 		$this->attributeListBuilder = $builders['attributeListBuilder'];
-		$this->viewListBuilder = $builders['viewListBuilder'];
 		return $this;
 	}
 
 	public function buildFromName($tableName)
 	{
-		$filePathParts = explode(DIRECTORY_SEPARATOR, $tableName);
+		$filePathParts = explode('/', $tableName);
 		$lastPathPartIndex = count($filePathParts) - 1;
 		$filePathParts[$lastPathPartIndex] = ucfirst($filePathParts[$lastPathPartIndex]);
 
@@ -98,7 +92,6 @@ class ResourceDefinitionBuilder
 		$resource->primaryAttribute = $manifest['primaryAttribute'];
 		$resource->table = $this->tableBuilder->buildFromName($manifest['table']);
 		$resource->validators = $this->validatorListBuilder->build($manifest['validators']);
-		$resource->views = $this->viewListBuilder->build($manifest['views']);
 
 		return $resource;
 	}
@@ -120,9 +113,6 @@ class ResourceDefinitionBuilder
 
 	private function padManifest(array $manifest)
 	{
-		if (!array_key_exists('views', $manifest)) {
-			$manifest['views'] = array();
-		}
 		if (!array_key_exists('validators', $manifest)) {
 			$manifest['validators'] = array();
 		}

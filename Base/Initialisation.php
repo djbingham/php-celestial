@@ -60,7 +60,8 @@ abstract class Initialisation
 				'tableDirectory' => $this->getTableManifestDirectory(),
 				'resourceDirectory' => $this->getResourceManifestDirectory(),
 				'tableValidator' => new Module\Resource\TableManifestValidator(),
-				'resourceValidator' => new Module\Resource\ResourceManifestValidator()
+				'resourceValidator' => new Module\Resource\ResourceManifestValidator(),
+				'resourceNamespace' => 'Sloth\Demo\Resource'
 			)));
 			$this->moduleLoader->register('render', new Module\Render\Factory(array(
 				'app' => $this->getApp(),
@@ -69,7 +70,20 @@ abstract class Initialisation
 					'php' => new Module\Render\Engine\Php(),
 					'json' => new Module\Render\Engine\Json()
 				),
-				'directory' => $this->getApp()->rootDirectory() . DIRECTORY_SEPARATOR . 'view'
+				'directory' => $this->getApp()->rootDirectory() . DIRECTORY_SEPARATOR . 'view',
+				'dataProviders' => array(),
+				'viewFactory' => new Module\Render\ViewFactory(array(
+					'renderEngineFactory' => new Module\Render\RenderEngineFactory(),
+					'dataProviderFactory' => new Module\Render\DataProviderFactory(array(
+						'resourceModule' => $this->moduleLoader->getModule('resource')
+					)),
+					'viewDirectory' => $this->getViewDirectory()
+				))
+			)));
+			$this->moduleLoader->register('restApi', new Module\RestApi\Factory(array(
+				'app' => $this->getApp(),
+				'resourceModule' => $this->moduleLoader->getModule('resource'),
+				'renderModule' => $this->moduleLoader->getModule('render')
 			)));
 		}
 		return $this->moduleLoader;
@@ -87,6 +101,12 @@ abstract class Initialisation
 			$this->renderer = new Module\Render\Renderer($this->getApp(), $engines, $viewDirectory);
 		}
 		return $this->renderer;
+	}
+
+	protected function getViewDirectory()
+	{
+		$directoryParts = array($this->getApp()->rootDirectory(), 'view');
+		return implode(DIRECTORY_SEPARATOR, $directoryParts);
 	}
 
 	protected function getResourceManifestDirectory()

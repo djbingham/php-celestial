@@ -50,8 +50,7 @@ abstract class UnitTest extends \PHPUnit_Framework_TestCase
 		$tableDefinitionBuilder->setSubBuilders(array(
 			'tableFieldListBuilder' => new TableFieldListBuilder($attributeBuilder),
 			'linkListBuilder' => new LinkListBuilder($tableDefinitionBuilder),
-			'validatorListBuilder' => $validatorListBuilder,
-			'viewListBuilder' => new ViewListBuilder()
+			'validatorListBuilder' => $validatorListBuilder
 		));
 
 		return $tableDefinitionBuilder;

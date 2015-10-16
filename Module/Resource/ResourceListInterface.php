@@ -51,7 +51,7 @@ interface ResourceListInterface extends ResourceInterface, \Iterator
      * @param int $index
      * @return ResourceInterface
      */
-    public function get($index);
+    public function getByIndex($index);
 
     /**
      * Returns the number of resources currently in the list

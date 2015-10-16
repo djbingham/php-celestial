@@ -60,7 +60,8 @@ class Config extends BaseConfig
     public function modules()
     {
         return new BaseConfig\Modules(array(
-			'resource' => 'Sloth\\Module\\Resource\\Factory'
+			'resource' => 'Sloth\\Module\\Resource\\Factory',
+			'render' => 'Sloth\\Module\\Render\\Factory'
         ));
     }
 

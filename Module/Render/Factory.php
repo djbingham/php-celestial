@@ -13,31 +13,28 @@ class Factory implements ModuleFactoryInterface
 	private $app;
 
 	/**
-	 * @var array
+	 * @var ViewFactory
 	 */
-	private $engines = array();
-
-	/**
-	 * @var string
-	 */
-	private $directory;
+	private $viewFactory;
 
 	public function __construct(array $dependencies)
 	{
 		$this->validateDependencies($dependencies);
 		$this->app = $dependencies['app'];
-		$this->engines = $dependencies['engines'];
-		$this->directory = $dependencies['directory'];
+		$this->viewFactory = $dependencies['viewFactory'];
 	}
 
 	public function initialise()
 	{
-		return new Renderer($this->app, $this->engines, $this->directory);
+		$renderer = new Renderer();
+		$renderer->setApp($this->app)
+			->setViewFactory($this->viewFactory);
+		return $renderer;
 	}
 
 	private function validateDependencies(array $dependencies)
 	{
-		$required = array('app', 'engines', 'directory');
+		$required = array('app', 'engines', 'dataProviders', 'viewFactory');
 		$missing = array_diff($required, array_keys($dependencies));
 		if (!empty($missing)) {
 			throw new InvalidArgumentException(
@@ -47,11 +44,8 @@ class Factory implements ModuleFactoryInterface
 		if (!($dependencies['app'] instanceof App)) {
 			throw new InvalidArgumentException('Invalid app given in dependencies for Render module');
 		}
-		if (!is_array($dependencies['engines'])) {
-			throw new InvalidArgumentException('Invalid engines given in dependencies for Render module');
-		}
-		if (!is_dir($dependencies['directory'])) {
-			throw new InvalidArgumentException('Invalid directory given in dependencies for Render module');
+		if (!($dependencies['viewFactory'] instanceof ViewFactory)) {
+			throw new InvalidArgumentException('Invalid view factory given in dependencies for Render module');
 		}
 	}
 }

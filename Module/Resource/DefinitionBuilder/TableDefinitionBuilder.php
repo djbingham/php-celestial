@@ -17,11 +17,6 @@ class TableDefinitionBuilder
 	private $linkListBuilder;
 
 	/**
-	 * @var ViewListBuilder
-	 */
-	private $viewListBuilder;
-
-	/**
 	 * @var ValidatorListBuilder
 	 */
 	private $validatorListBuilder;
@@ -47,7 +42,6 @@ class TableDefinitionBuilder
 		$this->validatorListBuilder = $builders['validatorListBuilder'];
 		$this->tableFieldListBuilder = $builders['tableFieldListBuilder'];
 		$this->linkListBuilder = $builders['linkListBuilder'];
-		$this->viewListBuilder = $builders['viewListBuilder'];
 		return $this;
 	}
 
@@ -88,7 +82,6 @@ class TableDefinitionBuilder
 		$table->fields = $this->tableFieldListBuilder->build($table, $manifest['fields']);
 		$table->links = $this->linkListBuilder->build($table, $manifest['links']);
 		$table->validators = $this->validatorListBuilder->build($manifest['validators']);
-		$table->views = $this->viewListBuilder->build($manifest['views']);
 
 		return $table;
 	}
@@ -115,9 +108,6 @@ class TableDefinitionBuilder
 		}
 		if (!array_key_exists('links', $manifest)) {
 			$manifest['links'] = array();
-		}
-		if (!array_key_exists('views', $manifest)) {
-			$manifest['views'] = array();
 		}
 		if (!array_key_exists('validators', $manifest)) {
 			$manifest['validators'] = array();

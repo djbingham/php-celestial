@@ -3,19 +3,26 @@ use \Sloth\Module\Resource\Definition\Table;
 
 /**
  * @var Sloth\App $app
- * @var Sloth\Module\Resource\Definition\Resource $resourceDefinition
- * @var Sloth\Module\Resource\Resource $resource
+ * @var array $data
  */
+
+/** @var Sloth\Module\Resource\Definition\Resource $resourceDefinition */
+$resourceDefinition = $data['resourceDefinition'];
+
+/** @var Sloth\Module\Resource\Resource $resource */
+$resource = $data['resource'];
+
+$resourceName = lcfirst($resourceDefinition->name);
 ?>
-<h2>Update Resource (<?= $resourceDefinition->name ?>)</h2>
+<h2>Update Resource (<?= ucfirst($resourceDefinition->name) ?>)</h2>
 <p>
-	<a href="<?= $app->createUrl(array('resource', $resourceDefinition->name, 'definition')) ?>">Definition</a>
+	<a href="<?= $app->createUrl(array('resource', 'definition', $resourceDefinition->name)) ?>">Definition</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('resource', $resourceDefinition->name, 'list')) ?>"><?= ucfirst($resourceDefinition->name) ?> List</a>
+	<a href="<?= $app->createUrl(array('resource', 'list', $resourceDefinition->name)) ?>"><?= ucfirst($resourceDefinition->name) ?> List</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('resource', $resourceDefinition->name, 'search')) ?>"><?= ucfirst($resourceDefinition->name) ?> Search</a>
+	<a href="<?= $app->createUrl(array('resource', 'search', $resourceDefinition->name)) ?>"><?= ucfirst($resourceDefinition->name) ?> Search</a>
 </p>
-<form action="<?= $app->createUrl(array('resource', lcfirst($resourceDefinition->name), $resource->getAttribute($resourceDefinition->primaryAttribute), 'put')) ?>" method="post">
+<form action="<?= $app->createUrl(array('resource', 'update', lcfirst($resourceDefinition->name), $resource->getAttribute($resourceDefinition->primaryAttribute))) ?>" method="post">
 	<?= renderAttributeListInputs($resourceDefinition->attributes, $resourceDefinition->table, $resource->getAttributes()) ?>
 	<button type="submit">Update</button>
 </form>

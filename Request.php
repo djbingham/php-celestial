@@ -3,8 +3,9 @@
 namespace Sloth;
 
 use Sloth\Exception\InvalidArgumentException;
+use Sloth\Face\RequestInterface;
 
-class Request
+class Request implements RequestInterface
 {
 	/**
 	 * @var string

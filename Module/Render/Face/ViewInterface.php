@@ -1,8 +1,6 @@
 <?php
 namespace Sloth\Module\Render\Face;
 
-use Module\Render\Face\DataProviderListInterface;
-
 interface ViewInterface
 {
 	/**
@@ -16,9 +14,9 @@ interface ViewInterface
 	public function getPath();
 
 	/**
-	 * @return string
+	 * @return RenderEngineInterface
 	 */
-	public function getEngineName();
+	public function getEngine();
 
 	/**
 	 * @return DataProviderListInterface

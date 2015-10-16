@@ -1,10 +1,16 @@
 <?php
 /**
  * @var Sloth\App $app
- * @var string $resourceName
- * @var Sloth\Module\Resource\Resource $resource
- * @var Sloth\Module\Resource\Definition\Resource $resourceDefinition
+ * @var array $data
  */
+
+/** @var Sloth\Module\Resource\Resource $resource */
+$resource = $data['resource'];
+
+/** @var Sloth\Module\Resource\Definition\Resource $resourceDefinition */
+$resourceDefinition = $data['resourceDefinition'];
+
+$resourceName = lcfirst($resourceDefinition->name);
 $primaryAttribute = $resourceDefinition->primaryAttribute;
 $resourceId = $resource->getAttribute($primaryAttribute);
 ?>
@@ -12,9 +18,9 @@ $resourceId = $resource->getAttribute($primaryAttribute);
 <p>
 	<a href="<?= $app->createUrl(array('resource', 'index')) ?>">Resource Index</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('resource', $resourceName, 'list')) ?>"><?= ucfirst($resourceName) ?> List</a>
+	<a href="<?= $app->createUrl(array('resource', 'view', $resourceName)) ?>"><?= ucfirst($resourceName) ?> List</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('resource', $resourceName, 'update', $resourceId)) ?>">Update</a>
+	<a href="<?= $app->createUrl(array('resource', 'update', $resourceName, $resourceId)) ?>">Update</a>
 </p>
 <dl>
 	<?= renderAttributeList($resource->getAttributes()); ?>

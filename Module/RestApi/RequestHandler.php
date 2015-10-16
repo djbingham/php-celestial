@@ -1,35 +1,41 @@
 <?php
-namespace Sloth\Module\Resource\Controller;
+namespace Sloth\Module\RestApi;
 
+use Sloth\Module\RestApi\Face\ParsedRequestInterface;
+use Sloth\Module\RestApi\Face\RequestHandlerInterface;
 use Sloth\Request;
 use Sloth\Exception;
-use Sloth\Controller\RestfulController;
-use Sloth\Module\Resource;
+use Sloth\Module\Resource as ResourceModule;
+use Sloth\Module\Render as RenderModule;
 
-abstract class ResourceController extends RestfulController
+class RequestHandler implements RequestHandlerInterface
 {
 	/**
-	 * @return Resource\RequestParser\RestfulRequestParser
+	 * @var ResourceModule\ModuleCore
 	 */
-	abstract protected function getRequestParser();
+	private $resourceModule;
 
-	public function parseRequest(Request $request, $route, $quit = false)
+	/**
+	 * @var RenderModule\Renderer
+	 */
+	private $renderModule;
+
+	public function setResourceModule(ResourceModule\ModuleCore $resourceModule)
 	{
-		$requestParser = $this->getRequestParser();
-		$parsedRequest = $requestParser->parse($request, $route);
-		if ($parsedRequest->getUnresolvedRoute() === 'index') {
-			$parsedRequest->setMethod('index');
-		} else {
-			if ($parsedRequest->getView() !== null) {
-				$function = $parsedRequest->getView()->getFunctionName();
-			} else {
-				$function = $parsedRequest->getViewName();
-			}
-			if (in_array($function, array('put', 'delete')) && $parsedRequest->getMethod() === 'post') {
-				$parsedRequest->setMethod($function);
-			}
-		}
-		return $parsedRequest;
+		$this->resourceModule = $resourceModule;
+		return $this;
+	}
+
+	public function setRenderModule(RenderModule\Renderer $renderModule)
+	{
+		$this->renderModule = $renderModule;
+		return $this;
+	}
+
+	public function handle(ParsedRequestInterface $parsedRequest, $route)
+	{
+		$handler = 'handle' . ucfirst($parsedRequest->getMethod());
+		return $this->$handler($parsedRequest);
 	}
 
 	protected function getResourceNames($directory)
@@ -44,23 +50,19 @@ abstract class ResourceController extends RestfulController
 		return $resourceNames;
 	}
 
-	protected function handleGet(Resource\RequestParser\RestfulParsedRequest $request)
+	protected function handleGet(ParsedRequest $request)
 	{
-		$renderer = $this->getRenderer();
+		$renderer = $this->renderModule;
 
 		$requestParams = $request->getParams()->get();
-		$resourceName = $request->getResourceRoute();
 		$resourceDefinition = $request->getResourceDefinition();
-		$resourceFactory = $request->getResourceFactory();
 		$resourceId = $request->getResourceId();
-		$view = $request->getView();
+		$extension = $request->getExtension();
+		if ($extension === null) {
+			$extension = 'json';
+		}
 
-		$viewName = $view->name;
-		$function = $view->getFunctionName();
-		$pathExtension = $view->getPathExtension();
-		$nameExtension = $view->getNameExtension();
-
-		switch ($function) {
+		switch (null) {
 			case 'definition':
 				$output = $this->handleGetDefinition($request);
 				break;
@@ -80,70 +82,91 @@ abstract class ResourceController extends RestfulController
 				$output = $this->handleGetSearchResult($request);
 				break;
 			default:
-				$filters = $this->convertRequestParamsToSimpleSearchFilters($requestParams);
+//				$filters = $this->convertRequestParamsToSimpleSearchFilters($requestParams);
+//				if (isset($resourceId)) {
+//					$filters[$resourceDefinition->primaryAttribute] = $resourceId;
+//				}
+//
+//				$resourceList = $resourceFactory->getBy($resourceDefinition->attributes, $filters);
+//
+//				if (isset($resourceId)) {
+//					$viewData = $resourceList->current();
+//				} elseif ($resourceList->length() > 0) {
+//					$viewData = $resourceList;
+//				} else {
+//					$viewData = null;
+//				}
+//
+//				$view = $this->renderModule->getViewFactory()->build(array(
+//					'engine' => $extension
+//				));
+//				$output = $renderer->render($view, $viewData->getAttributes());
+
+				$filters = $this->convertRequestParamsToSearchFilters($requestParams);
 				if (isset($resourceId)) {
-					$filters[$resourceDefinition->primaryAttribute] = $resourceId;
+					$filters[] = array(
+						'subject' => $resourceDefinition->primaryAttribute,
+						'comparator' => '=',
+						'value' => $resourceId
+					);
 				}
 
-				$resourceList = $resourceFactory->getBy($resourceDefinition->attributes, $filters);
+				$view = $this->renderModule->getViewFactory()->build(array(
+					'engine' => $extension,
+					'path' => 'resource/Default/list.' . $extension,
+					'dataProviders' => array(
+						'resourceName' => array(
+							'engine' => 'static',
+							'options' => array(
+								'data' => $resourceDefinition->name
+							)
+						),
+						'resources' => array(
+							'engine' => 'resource',
+							'options' => array(
+								'resourceName' => $resourceDefinition->name,
+								'filters' => $filters
+							)
+						)
+					)
+				));
+				$output = $renderer->render($view);
 
-				if (isset($resourceId) && $viewName === '') {
-					$viewName = 'item';
-					if (!empty($nameExtension)) {
-						$viewName .= $nameExtension;
-					}
-					$view = $resourceDefinition->views->getByProperty('name', $viewName);
-				}
-
-				if ($view->name === 'item') {
-					$output = $renderer->render($view, array(
-						'resourceName' => $resourceName,
-						'resourceDefinition' => $resourceDefinition,
-						'resource' => $pathExtension === 'php' ? $resourceList->get(0) : $resourceList->get(0)->getAttributes()
-					));
-				} else {
-					$output = $renderer->render($view, array(
-						'resourceName' => $resourceName,
-						'resourceDefinition' => $resourceDefinition,
-						'resources' => $pathExtension === 'php' ? $resourceList : $resourceList->getAttributes()
-					));
-				}
 				break;
 		}
 
 		return $output;
 	}
 
-	protected function handleIndex(Resource\RequestParser\RestfulParsedRequest $request)
+	protected function handleIndex(ParsedRequest $request)
 	{
-		$resources = $this->getResourceNames($this->getResourceModule()->getResourceManifestDirectory());
+		$resources = $this->getResourceNames($this->resourceModule->getResourceManifestDirectory());
 		$view = new \Sloth\Module\Render\View();
 		$view->name = 'index';
 		$view->path = 'resource/default/index.php';
 		$view->engine = 'php';
-		$renderer = $this->getRenderer();
-		return $renderer->render($view, array(
+		return $this->renderModule->render($view, array(
 			'resources' => $resources
 		));
 	}
 
-	protected function handleGetDefinition(Resource\RequestParser\RestfulParsedRequest $request)
+	protected function handleGetDefinition(ParsedRequest $request)
 	{
-		return $this->getRenderer()->render($request->getView(), array(
+		return $this->renderModule->render($request->getView(), array(
 			'resourceName' => $request->getResourceRoute(),
 			'resourceDefinition' => $request->getResourceDefinition()
 		));
 	}
 
-	protected function handleGetCreate(Resource\RequestParser\RestfulParsedRequest $request)
+	protected function handleGetCreate(ParsedRequest $request)
 	{
-		return $this->getRenderer()->render($request->getView(), array(
+		return $this->renderModule->render($request->getView(), array(
 			'resourceName' => $request->getResourceRoute(),
 			'resourceDefinition' => $request->getResourceDefinition()
 		));
 	}
 
-	protected function handleGetUpdate(Resource\RequestParser\RestfulParsedRequest $request)
+	protected function handleGetUpdate(ParsedRequest $request)
 	{
 		$resourceDefinition = $request->getResourceDefinition();
 		$resourceId = $request->getResourceId();
@@ -158,24 +181,24 @@ abstract class ResourceController extends RestfulController
 		$filters = array(
 			$primaryAttribute => $resourceId
 		);
-		$resource = $request->getResourceFactory()->getBy($resourceDefinition->attributes, $filters)->get(0);
+		$resource = $request->getResourceFactory()->getBy($resourceDefinition->attributes, $filters)->getByIndex(0);
 
-		return $this->getRenderer()->render($request->getView(), array(
+		return $this->renderModule->render($request->getView(), array(
 			'resourceName' => $request->getResourceRoute(),
 			'resourceDefinition' => $request->getResourceDefinition(),
 			'resource' => $resource
 		));
 	}
 
-	protected function handleGetFilter(Resource\RequestParser\RestfulParsedRequest $request)
+	protected function handleGetFilter(ParsedRequest $request)
 	{
-		return $this->getRenderer()->render($request->getView(), array(
+		return $this->renderModule->render($request->getView(), array(
 			'resourceName' => $request->getResourceRoute(),
 			'resourceDefinition' => $request->getResourceDefinition()
 		));
 	}
 
-	protected function handleGetSearchForm(Resource\RequestParser\RestfulParsedRequest $request)
+	protected function handleGetSearchForm(ParsedRequest $request)
 	{
 		$resourceDefinition = $request->getResourceDefinition();
 		$requestParams = $request->getParams()->get();
@@ -183,13 +206,13 @@ abstract class ResourceController extends RestfulController
 		if (array_key_exists('filters', $requestParams)) {
 			$filters = $this->stripUnusedSearchFilters($requestParams['filters']);
 			$resourceList = $request->getResourceFactory()->search($resourceDefinition->attributes, $filters);
-			$output = $this->getRenderer()->render($request->getView(), array(
+			$output = $this->renderModule->render($request->getView(), array(
 				'resourceName' => $request->getResourceRoute(),
 				'resourceDefinition' => $resourceDefinition,
 				'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
 			));
 		} else {
-			$output = $this->getRenderer()->render($request->getView(), array(
+			$output = $this->renderModule->render($request->getView(), array(
 				'resourceName' => $request->getResourceRoute(),
 				'resourceDefinition' => $resourceDefinition
 			));
@@ -197,7 +220,7 @@ abstract class ResourceController extends RestfulController
 		return $output;
 	}
 
-	protected function handleGetSearchResult(Resource\RequestParser\RestfulParsedRequest $request)
+	protected function handleGetSearchResult(ParsedRequest $request)
 	{
 		$requestParams = $request->getParams()->get();
 		$extension = $request->getView()->getPathExtension();
@@ -207,14 +230,14 @@ abstract class ResourceController extends RestfulController
 			$filters = array();
 		}
 		$resourceList = $request->getResourceFactory()->search($request->getResourceDefinition()->attributes, $filters);
-		return $this->getRenderer()->render($request->getView(), array(
+		return $this->renderModule->render($request->getView(), array(
 			'resourceName' => $request->getResourceRoute(),
 			'resourceDefinition' => $request->getResourceDefinition(),
 			'resources' => $extension === 'php' ? $resourceList : $resourceList->getAttributes()
 		));
 	}
 
-	protected function handlePost(Resource\RequestParser\RestfulParsedRequest $request)
+	protected function handlePost(ParsedRequest $request)
 	{
 		$attributes = $request->getParams()->post();
 		$resourceDefinition = $request->getResourceDefinition();
@@ -237,7 +260,7 @@ abstract class ResourceController extends RestfulController
 		$this->app->redirect($redirectUrl);
 	}
 
-	protected function handlePut(Resource\RequestParser\RestfulParsedRequest $request)
+	protected function handlePut(ParsedRequest $request)
 	{
 		$attributes = $request->getParams()->post();
 		$resourceDefinition = $request->getResourceDefinition();
@@ -273,7 +296,7 @@ abstract class ResourceController extends RestfulController
 		$this->app->redirect($redirectUrl);
 	}
 
-	protected function handleDelete(Resource\RequestParser\RestfulParsedRequest $request)
+	protected function handleDelete(ParsedRequest $request)
 	{
 		$resourceModule = $this->getResourceFactory();
 		$resourceFactory = $this->instantiateResourceFactory($request);
@@ -286,22 +309,6 @@ abstract class ResourceController extends RestfulController
 		$output = $resourceModule->renderer()->renderDeletedResource($resourceFactory, $resource, $outputFormat);
 
 		return $output;
-	}
-
-	/**
-	 * @return Resource\ModuleCore
-	 */
-	protected function getResourceModule()
-	{
-		return $this->module('resource');
-	}
-
-	/**
-	 * @return \Sloth\Module\Render\Face\RendererInterface
-	 */
-	protected function getRenderer()
-	{
-		return $this->module('render');
 	}
 
 	protected function convertRequestParamsToSimpleSearchFilters(array $requestParams)
@@ -318,6 +325,26 @@ abstract class ResourceController extends RestfulController
 			}
 		}
 		return $attributes;
+	}
+
+	protected function convertRequestParamsToSearchFilters(array $requestParams, $prefix = null)
+	{
+		$filters = array();
+		foreach ($requestParams as $name => $value) {
+			if ((is_string($value) && strlen($value) > 0)) {
+				$filters[] = array(
+					'subject' => $name,
+					'comparator' => '=',
+					'value' => $value
+				);
+			} elseif ((is_array($value) && count($value) > 0)) {
+				$nestedFilters = $this->convertRequestParamsToSearchFilters($value, $prefix . '.' . $name);
+				if (!empty($nestedFilters)) {
+					$filters = array_merge($filters, $nestedFilters);
+				}
+			}
+		}
+		return $filters;
 	}
 
 	protected function stripUnusedSearchFilters(array $filters)
