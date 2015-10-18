@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Demo\Controller\Resource;
+namespace Sloth\Module\RestApi\Controller;
 
 use Sloth\Controller\RestfulController;
 use Sloth\Exception\InvalidRequestException;
@@ -9,7 +9,7 @@ use Sloth\Module\Resource\ModuleCore;
 use Sloth\Module\RestApi\Face\ParsedRequestInterface;
 use Sloth\Module\RestApi\RequestParser;
 
-class ViewController extends RestfulController
+class SearchController extends RestfulController
 {
 	public function parseRequest(RequestInterface $request, $route)
 	{
@@ -22,8 +22,8 @@ class ViewController extends RestfulController
 	{
 		$renderer = $this->getRenderModule();
 
+		$requestParams = $request->getParams()->get();
 		$resourceDefinition = $request->getResourceDefinition();
-		$resourceId = $request->getResourceId();
 		$extension = $request->getExtension();
 		if ($extension === null) {
 			$extension = 'php';
@@ -37,31 +37,18 @@ class ViewController extends RestfulController
 				)
 			)
 		);
-		if (isset($resourceId)) {
-			$filters = array(
-				array(
-					'subject' => $resourceDefinition->primaryAttribute,
-					'comparator' => '=',
-					'value' => $resourceId
-				)
-			);
-			$dataProviders['resource'] = array(
-				'engine' => 'resource',
-				'options' => array(
-					'resourceName' => $resourceDefinition->name,
-					'filters' => $filters
-				)
-			);
-			$viewPath = 'Resource/Default/item.' . $extension;
+
+		if (!array_key_exists('filters', $requestParams)) {
+			$viewPath = 'Resource/Default/searchForm.' . $extension;
 		} else {
+			$viewPath = 'Resource/Default/list.' . $extension;
 			$dataProviders['resources'] = array(
 				'engine' => 'resourceList',
 				'options' => array(
 					'resourceName' => $resourceDefinition->name,
-					'filters' => array()
+					'filters' => $this->stripUnusedSearchFilters($requestParams['filters'])
 				)
 			);
-			$viewPath = 'Resource/Default/list.' . $extension;
 		}
 
 		$view = $renderer->getViewFactory()->build(array(
@@ -102,5 +89,15 @@ class ViewController extends RestfulController
 	private function getResourceModule()
 	{
 		return $this->module('resource');
+	}
+
+	protected function stripUnusedSearchFilters(array $filters)
+	{
+		foreach ($filters as $index => $filter) {
+			if ($filter['comparator'] === '') {
+				unset($filters[$index]);
+			}
+		}
+		return array_values($filters);
 	}
 }

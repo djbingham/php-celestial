@@ -53,7 +53,9 @@ class Config extends BaseConfig
 	public function routes()
 	{
 		return new BaseConfig\Routes(array(
-
+			'resource' => array(
+				'namespace' => 'Sloth\\Module\\RestApi\\Controller'
+			)
 		));
 	}
 

@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Demo\Controller\Resource;
+namespace Sloth\Module\RestApi\Controller;
 
 use Sloth\Controller\RestfulController;
 use Sloth\Exception\InvalidRequestException;
@@ -9,7 +9,7 @@ use Sloth\Module\Resource\ModuleCore;
 use Sloth\Module\RestApi\Face\ParsedRequestInterface;
 use Sloth\Module\RestApi\RequestParser;
 
-class SearchController extends RestfulController
+class FilterController extends RestfulController
 {
 	public function parseRequest(RequestInterface $request, $route)
 	{
@@ -38,17 +38,19 @@ class SearchController extends RestfulController
 			)
 		);
 
-		if (!array_key_exists('filters', $requestParams)) {
-			$viewPath = 'Resource/Default/searchForm.' . $extension;
+		if (empty($requestParams)) {
+			$viewPath = 'Resource/Default/filterForm.' . $extension;
 		} else {
-			$viewPath = 'Resource/Default/list.' . $extension;
+			$filters = $this->convertRequestParamsToSearchFilters($requestParams);
+			$filters = $this->stripUnusedSearchFilters($filters);
 			$dataProviders['resources'] = array(
 				'engine' => 'resourceList',
 				'options' => array(
 					'resourceName' => $resourceDefinition->name,
-					'filters' => $this->stripUnusedSearchFilters($requestParams['filters'])
+					'filters' => $filters
 				)
 			);
+			$viewPath = 'Resource/Default/list.' . $extension;
 		}
 
 		$view = $renderer->getViewFactory()->build(array(
@@ -91,10 +93,24 @@ class SearchController extends RestfulController
 		return $this->module('resource');
 	}
 
+	private function convertRequestParamsToSearchFilters(array $requestParams)
+	{
+		$filters = array();
+		foreach ($requestParams as $name => $value) {
+			$name = str_replace('_', '.', $name);
+			$filters[] = array(
+				'subject' => $name,
+				'comparator' => '=',
+				'value' => $value
+			);
+		}
+		return $filters;
+	}
+
 	protected function stripUnusedSearchFilters(array $filters)
 	{
 		foreach ($filters as $index => $filter) {
-			if ($filter['comparator'] === '') {
+			if (strlen($filter['value']) === 0) {
 				unset($filters[$index]);
 			}
 		}

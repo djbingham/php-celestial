@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Demo\Controller\Resource;
+namespace Sloth\Module\RestApi\Controller;
 
 use Sloth\Controller\RestfulController;
 use Sloth\Exception\InvalidRequestException;
@@ -9,7 +9,7 @@ use Sloth\Module\Resource\ModuleCore;
 use Sloth\Module\RestApi\Face\ParsedRequestInterface;
 use Sloth\Module\RestApi\RequestParser;
 
-class FilterController extends RestfulController
+class ViewController extends RestfulController
 {
 	public function parseRequest(RequestInterface $request, $route)
 	{
@@ -22,8 +22,8 @@ class FilterController extends RestfulController
 	{
 		$renderer = $this->getRenderModule();
 
-		$requestParams = $request->getParams()->get();
 		$resourceDefinition = $request->getResourceDefinition();
+		$resourceId = $request->getResourceId();
 		$extension = $request->getExtension();
 		if ($extension === null) {
 			$extension = 'php';
@@ -37,17 +37,28 @@ class FilterController extends RestfulController
 				)
 			)
 		);
-
-		if (empty($requestParams)) {
-			$viewPath = 'Resource/Default/filterForm.' . $extension;
+		if (isset($resourceId)) {
+			$filters = array(
+				array(
+					'subject' => $resourceDefinition->primaryAttribute,
+					'comparator' => '=',
+					'value' => $resourceId
+				)
+			);
+			$dataProviders['resource'] = array(
+				'engine' => 'resource',
+				'options' => array(
+					'resourceName' => $resourceDefinition->name,
+					'filters' => $filters
+				)
+			);
+			$viewPath = 'Resource/Default/item.' . $extension;
 		} else {
-			$filters = $this->convertRequestParamsToSearchFilters($requestParams);
-			$filters = $this->stripUnusedSearchFilters($filters);
 			$dataProviders['resources'] = array(
 				'engine' => 'resourceList',
 				'options' => array(
 					'resourceName' => $resourceDefinition->name,
-					'filters' => $filters
+					'filters' => array()
 				)
 			);
 			$viewPath = 'Resource/Default/list.' . $extension;
@@ -91,29 +102,5 @@ class FilterController extends RestfulController
 	private function getResourceModule()
 	{
 		return $this->module('resource');
-	}
-
-	private function convertRequestParamsToSearchFilters(array $requestParams)
-	{
-		$filters = array();
-		foreach ($requestParams as $name => $value) {
-			$name = str_replace('_', '.', $name);
-			$filters[] = array(
-				'subject' => $name,
-				'comparator' => '=',
-				'value' => $value
-			);
-		}
-		return $filters;
-	}
-
-	protected function stripUnusedSearchFilters(array $filters)
-	{
-		foreach ($filters as $index => $filter) {
-			if (strlen($filter['value']) === 0) {
-				unset($filters[$index]);
-			}
-		}
-		return array_values($filters);
 	}
 }

@@ -24,16 +24,12 @@ class Router extends Base\Router
 				$routeData = $this->searchControllers($request);
 			}
 
-			if (!array_key_exists('controller', $routeData)) {
-				throw new InvalidRequestException(sprintf('No controller found for request: %s', $requestUri));
-			}
-			if (!array_key_exists('route', $routeData)) {
-				$routeData['route'] = '';
+			if (!array_key_exists('controller', $routeData) && !array_key_exists('namespace', $routeData)) {
+				throw new InvalidRequestException(sprintf('No controller or namespace found for request: %s', $requestUri));
 			}
 
-			$controller = $this->instantiateController($routeData['controller'], $app);
 			$route = $routeData['route'];
-
+			$controller = $this->instantiateController($routeData['controller'], $app);
 			$output = $controller->execute($request, $route);
 
 			if ($canCacheRequest) {
@@ -66,25 +62,67 @@ class Router extends Base\Router
 
 	protected function searchRoutes(Request $request)
 	{
-		$requestPathParts = explode('/', $request->getPath());
-		$controller = null;
-		$route = '';
+		$availableRoutes = $this->config->routes();
+		$routeString = null;
+		$controllerName = null;
 
-		while (count($requestPathParts) > 0) {
-			$proposedRoute = implode('/', $requestPathParts);
+		if ($availableRoutes->count() > 0) {
+			$routeParts = explode('/', $request->getPath());
+			$remainingPathParts = array();
 
-			if ($this->config->routes()->routeExists($proposedRoute)) {
-				$controller = $this->config->routes()[$proposedRoute];
-				$route = $proposedRoute;
-				break;
+			while (count($routeParts) > 0) {
+				$proposedRoute = implode('/', $routeParts);
+
+				if ($availableRoutes->routeExists($proposedRoute)) {
+					$routeParams = $availableRoutes->get($proposedRoute);
+					$routeString = $routeParams->getRoute();
+					$controllerName = $routeParams->getControllerName();
+
+					if ($controllerName === null) {
+						$namespace = $routeParams->getNamespace();
+
+						$controllerSearchResult = $this->findController($remainingPathParts, $namespace);
+						$controllerName = $controllerSearchResult['controllerName'];
+						$routeString .= '/' . $controllerSearchResult['route'];
+					}
+					break;
+				}
+
+				array_unshift($remainingPathParts, array_pop($routeParts));
 			}
-
-			array_pop($requestPathParts);
 		}
 
 		return array(
-			'controller' => $controller,
-			'route' => $route
+			'route' => $routeString,
+			'controller' => $controllerName
+		);
+	}
+
+	private function findController(array $routeParts, $namespace = null)
+	{
+		$controller = null;
+		$controllerPathParts = array();
+
+		foreach ($routeParts as $routePart) {
+			$controllerPathParts[] = ucfirst($routePart);
+		}
+
+		while (!empty($controllerPathParts)) {
+			$path = implode('\\', $controllerPathParts);
+			if ($namespace !== null) {
+				$path = $namespace . '\\' . $path . 'Controller';
+			}
+			if (class_exists($path)) {
+				$controller = $path;
+				break;
+			}
+			array_pop($controllerPathParts);
+			array_pop($routeParts);
+		}
+
+		return array(
+			'controllerName' => $controller,
+			'route' => implode('/', $routeParts)
 		);
 	}
 
@@ -119,8 +157,8 @@ class Router extends Base\Router
 		}
 
 		return array(
-			'controller' => $controllerClass,
-			'route' => $route
+			'route' => $route,
+			'controller' => $controllerClass
 		);
 	}
 

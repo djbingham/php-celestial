@@ -102,7 +102,7 @@ class Request implements RequestInterface
 
 	public function getPath()
 	{
-		return rtrim($this->path, '/');
+		return trim($this->path, '/');
 	}
 
 	public function getQueryString()

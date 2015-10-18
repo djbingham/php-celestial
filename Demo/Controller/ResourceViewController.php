@@ -1,28 +1,24 @@
 <?php
-namespace Sloth\Demo\Controller\Resource;
+namespace Sloth\Demo\Controller;
 
 use Sloth\Controller\RestfulController;
 use Sloth\Exception\InvalidRequestException;
-use Sloth\Face\RequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Resource\ModuleCore;
 use Sloth\Module\RestApi\Face\ParsedRequestInterface;
-use Sloth\Module\RestApi\RequestParser;
 
-class DefinitionController extends RestfulController
+class ResourceViewController extends RestfulController
 {
 	public function parseRequest(RequestInterface $request, $route)
 	{
-		$requestParser = new RequestParser();
-		$requestParser->setResourceModule($this->getResourceModule());
-		return $requestParser->parse($request, $route);
+		$requestProperties = $request->toArray();
+		return new ParsedRequest($requestProperties);
 	}
 
 	public function handleGet(ParsedRequestInterface $request, $route)
 	{
 		$renderer = $this->getRenderModule();
 
-		$resourceDefinition = $request->getResourceDefinition();
 		$extension = $request->getExtension();
 		if ($extension === null) {
 			$extension = 'php';
@@ -30,12 +26,12 @@ class DefinitionController extends RestfulController
 
 		$view = $renderer->getViewFactory()->build(array(
 			'engine' => $extension,
-			'path' => 'Resource/Default/definition.' . $extension,
+			'path' => 'Resource/Default/index.' . $extension,
 			'dataProviders' => array(
-				'resourceDefinition' => array(
+				'resourceNames' => array(
 					'engine' => 'static',
 					'options' => array(
-						'data' => $resourceDefinition
+						'data' => $resourceNames
 					)
 				)
 			)
@@ -46,17 +42,17 @@ class DefinitionController extends RestfulController
 
 	public function handlePost(ParsedRequestInterface $request, $route)
 	{
-		throw new InvalidRequestException('Cannot post to resource/view');
+		throw new InvalidRequestException('Cannot post to resource/index');
 	}
 
 	public function handlePut(ParsedRequestInterface $request, $route)
 	{
-		throw new InvalidRequestException('Cannot put to resource/view');
+		throw new InvalidRequestException('Cannot put to resource/index');
 	}
 
 	public function handleDelete(ParsedRequestInterface $request, $route)
 	{
-		throw new InvalidRequestException('Cannot delete from resource/view');
+		throw new InvalidRequestException('Cannot delete from resource/index');
 	}
 
 	/**
