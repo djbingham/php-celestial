@@ -5,7 +5,7 @@ use Sloth\Exception\InvalidArgumentException;
 use Sloth\Module\Render\Face\DataProviderInterface;
 use Sloth\Module\Resource as ResourceModule;
 
-class ResourceListProvider implements DataProviderInterface
+class PhpResourceListProvider implements DataProviderInterface
 {
 	/**
 	 * @var string
@@ -57,7 +57,7 @@ class ResourceListProvider implements DataProviderInterface
 		$resourceFactory = $resourceModule->getResourceFactory($this->getResourceName());
 		$resourceDefinition = $resourceFactory->getResourceDefinition();
 		$resources = $resourceFactory->search($resourceDefinition->attributes, $this->getResourceFilters());
-		return $resources->getAttributes();
+		return $resources;
 	}
 
 	private function validateOptions(array $options)

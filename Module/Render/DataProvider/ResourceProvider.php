@@ -54,8 +54,8 @@ class ResourceProvider implements DataProviderInterface
 	public function getData()
 	{
 		$resourceModule = $this->resourceModule;
-		$resourceDefinition = $resourceModule->resourceDefinitionBuilder()->buildFromName($this->getResourceName());
-		$resourceFactory = $resourceModule->resourceFactory($resourceDefinition->table);
+		$resourceFactory = $resourceModule->getResourceFactory($this->getResourceName());
+		$resourceDefinition = $resourceFactory->getResourceDefinition();
 		$resources = $resourceFactory->search($resourceDefinition->attributes, $this->getResourceFilters());
 		return $resources->getByIndex(0);
 	}

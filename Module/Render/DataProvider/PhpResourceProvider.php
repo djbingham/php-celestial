@@ -54,16 +54,10 @@ class PhpResourceProvider implements DataProviderInterface
 	public function getData()
 	{
 		$resourceModule = $this->resourceModule;
-		$resourceDefinition = $resourceModule->resourceDefinitionBuilder()->buildFromName($this->getResourceName());
-
-
-		// TODO: Make this use custom resource factory, if exists.
-		// In this case, may not have a table definition to build above.
-		$resourceFactory = $resourceModule->resourceFactory($resourceDefinition->table);
-
-
+		$resourceFactory = $resourceModule->getResourceFactory($this->getResourceName());
+		$resourceDefinition = $resourceFactory->getResourceDefinition();
 		$resources = $resourceFactory->search($resourceDefinition->attributes, $this->getResourceFilters());
-		return $resources;
+		return $resources->getByIndex(0);
 	}
 
 	private function validateOptions(array $options)

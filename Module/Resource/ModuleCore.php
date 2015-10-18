@@ -118,11 +118,6 @@ class ModuleCore
 		return $resourceBuilder;
 	}
 
-	public function resourceFactory(Definition\Table $definition)
-	{
-		return new ResourceFactory($definition, $this->getQuerySetFactory());
-	}
-
 	public function resourceExists($resourcePath)
 	{
 		$manifestFilePath = $this->getManifestPath($resourcePath);
@@ -136,12 +131,17 @@ class ModuleCore
 		return $exists;
 	}
 
+	/**
+	 * @param string $resourcePath
+	 * @return ResourceFactoryInterface
+	 * @throws InvalidRequestException
+	 */
 	public function getResourceFactory($resourcePath)
 	{
 		$manifestFilePath = $this->getManifestPath($resourcePath);
 		$factoryClass = $this->getFactoryClass($resourcePath);
 
-		if (empty($factoryClass)) {
+		if (!class_exists($factoryClass)) {
 			$factoryClass = 'Sloth\Module\Resource\ResourceFactory';
 		} elseif (!is_a($factoryClass, 'Sloth\Module\Resource\ResourceFactoryInterface', true)) {
 			throw new InvalidRequestException(
@@ -150,14 +150,12 @@ class ModuleCore
 		}
 
 		if (is_file($manifestFilePath)) {
-			$tableDefinition = $this->resourceDefinitionBuilder()->buildFromFile($manifestFilePath)->table;
+			$resourceDefinition = $this->resourceDefinitionBuilder()->buildFromFile($manifestFilePath);
 		} else {
-			$tableDefinition = null;
+			$resourceDefinition = null;
 		}
 
-		echo $factoryClass;
-
-		$factory = new $factoryClass($tableDefinition, $this->getQuerySetFactory());
+		$factory = new $factoryClass($resourceDefinition, $this->getQuerySetFactory());
 
 		return $factory;
 	}

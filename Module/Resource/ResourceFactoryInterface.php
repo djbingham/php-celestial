@@ -6,15 +6,15 @@ use Sloth\Module\Resource\Resource as ResourceModel;
 interface ResourceFactoryInterface
 {
 	/**
-	 * @param Definition\Table $definition
+	 * @param Definition\Resource $definition
 	 * @param QuerySetFactory $querySetFactory
 	 */
-	public function __construct(Definition\Table $definition, QuerySetFactory $querySetFactory);
+	public function __construct(Definition\Resource $definition, QuerySetFactory $querySetFactory);
 
 	/**
-	 * @return Definition\Table
+	 * @return Definition\Resource
 	 */
-	public function getTableDefinition();
+	public function getResourceDefinition();
 
 	/**
 	 * Fetch resources form the database whose attributeList exactly match the supplied values
