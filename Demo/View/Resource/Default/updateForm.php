@@ -14,15 +14,15 @@ $resource = $data['resource'];
 
 $resourceName = lcfirst($resourceDefinition->name);
 ?>
-<h2>Update Resource (<?= ucfirst($resourceDefinition->name) ?>)</h2>
+<h2>Update Resource (<?= ucfirst($resourceName) ?>)</h2>
 <p>
-	<a href="<?= $app->createUrl(array('resource', 'definition', $resourceDefinition->name)) ?>">Definition</a>
+	<a href="<?= $app->createUrl(array('resource', 'definition', $resourceName)) ?>">Definition</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('resource', 'list', $resourceDefinition->name)) ?>"><?= ucfirst($resourceDefinition->name) ?> List</a>
+	<a href="<?= $app->createUrl(array('resource', 'view', $resourceName)) ?>"><?= ucfirst($resourceName) ?> List</a>
 	&nbsp;|&nbsp;
-	<a href="<?= $app->createUrl(array('resource', 'search', $resourceDefinition->name)) ?>"><?= ucfirst($resourceDefinition->name) ?> Search</a>
+	<a href="<?= $app->createUrl(array('resource', 'search', $resourceName)) ?>"><?= ucfirst($resourceName) ?> Search</a>
 </p>
-<form action="<?= $app->createUrl(array('resource', 'update', lcfirst($resourceDefinition->name), $resource->getAttribute($resourceDefinition->primaryAttribute))) ?>" method="post">
+<form action="<?= $app->createUrl(array('resource', 'update', $resourceName, $resource->getAttribute($resourceDefinition->primaryAttribute))) ?>" method="post">
 	<?= renderAttributeListInputs($resourceDefinition->attributes, $resourceDefinition->table, $resource->getAttributes()) ?>
 	<button type="submit">Update</button>
 </form>
