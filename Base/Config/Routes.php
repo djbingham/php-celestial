@@ -22,7 +22,7 @@ class Routes
 	 */
 	public function get($name)
 	{
-		if (!array_key_exists($name, $this->routes)) {
+		if (!$this->routeExists($name)) {
 			throw new Exception\InvalidArgumentException(
 				sprintf('Unrecognised route requested: %s', $name)
 			);

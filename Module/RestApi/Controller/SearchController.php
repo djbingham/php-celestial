@@ -39,9 +39,9 @@ class SearchController extends RestfulController
 		);
 
 		if (!array_key_exists('filters', $requestParams)) {
-			$viewPath = 'Resource/Default/searchForm.' . $extension;
+			$viewPath = 'Default/searchForm.' . $extension;
 		} else {
-			$viewPath = 'Resource/Default/list.' . $extension;
+			$viewPath = 'Default/list.' . $extension;
 			$dataProviders['resources'] = array(
 				'engine' => 'resourceList',
 				'options' => array(
@@ -80,7 +80,7 @@ class SearchController extends RestfulController
 	 */
 	private function getRenderModule()
 	{
-		return $this->module('render');
+		return $this->module('resourceRender');
 	}
 
 	/**

@@ -138,7 +138,7 @@ class Router extends Base\Router
 			$controllerNamespace = sprintf('%s\\Controller', $this->config->rootNamespace());
 
 			while (count($requestPathParts) > 0) {
-				$proposedClass = $controllerNamespace . implode('\\', $controllerPathParts) . 'Controller';
+				$proposedClass = $controllerNamespace . '\\' . implode('\\', $controllerPathParts) . 'Controller';
 
 				if (class_exists($proposedClass)) {
 					$controllerClass = $proposedClass;

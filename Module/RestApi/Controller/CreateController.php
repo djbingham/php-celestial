@@ -26,7 +26,7 @@ class CreateController extends RestfulController
 
 		$view = $renderer->getViewFactory()->build(array(
 			'engine' => 'php',
-			'path' => 'Resource/Default/createForm.php',
+			'path' => 'Default/createForm.php',
 			'dataProviders' => array(
 				'resourceDefinition' => array(
 					'engine' => 'static',
@@ -77,7 +77,7 @@ class CreateController extends RestfulController
 	 */
 	private function getRenderModule()
 	{
-		return $this->module('render');
+		return $this->module('resourceRender');
 	}
 
 	/**

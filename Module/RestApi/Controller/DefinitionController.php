@@ -30,7 +30,7 @@ class DefinitionController extends RestfulController
 
 		$view = $renderer->getViewFactory()->build(array(
 			'engine' => $extension,
-			'path' => 'Resource/Default/definition.' . $extension,
+			'path' => 'Default/definition.' . $extension,
 			'dataProviders' => array(
 				'resourceDefinition' => array(
 					'engine' => 'static',
@@ -64,7 +64,7 @@ class DefinitionController extends RestfulController
 	 */
 	private function getRenderModule()
 	{
-		return $this->module('render');
+		return $this->module('resourceRender');
 	}
 
 	/**

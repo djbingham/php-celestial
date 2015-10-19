@@ -30,7 +30,7 @@ class IndexController extends RestfulController
 
 		$view = $renderer->getViewFactory()->build(array(
 			'engine' => $extension,
-			'path' => 'Resource/Default/index.' . $extension,
+			'path' => 'Default/index.' . $extension,
 			'dataProviders' => array(
 				'resourceNames' => array(
 					'engine' => 'static',
@@ -64,7 +64,7 @@ class IndexController extends RestfulController
 	 */
 	private function getRenderModule()
 	{
-		return $this->module('render');
+		return $this->module('resourceRender');
 	}
 
 	/**

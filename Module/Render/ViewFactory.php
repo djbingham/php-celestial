@@ -23,6 +23,11 @@ class ViewFactory implements ViewFactoryInterface
 	/**
 	 * @var string
 	 */
+	private $viewManifestDirectory;
+
+	/**
+	 * @var string
+	 */
 	private $viewDirectory;
 
 	public function __construct(array $dependencies)
@@ -30,6 +35,7 @@ class ViewFactory implements ViewFactoryInterface
 		$this->validateDependencies($dependencies);
 		$this->renderEngineFactory = $dependencies['renderEngineFactory'];
 		$this->dataProviderFactory = $dependencies['dataProviderFactory'];
+		$this->viewManifestDirectory = $dependencies['viewManifestDirectory'];
 		$this->viewDirectory = $dependencies['viewDirectory'];
 	}
 
@@ -49,9 +55,11 @@ class ViewFactory implements ViewFactoryInterface
 		if ($this->isCached(['view', $viewPath, 'manifest'])) {
 			$viewManifest = $this->getCached(['view', $viewPath, 'manifest']);
 		} else {
-			$manifestPath = $this->locateViewManifestFile($viewPath);
+			$manifestPath = $this->getManifestFilePath($viewPath);
 			$viewListManifest = $this->getViewListManifest($manifestPath);
-			$viewName = ltrim('/', preg_replace(sprintf('/^%s/', $manifestPath), '', $viewPath));
+
+			$escapedManifestPath = str_replace('/', '\/', $manifestPath);
+			$viewName = ltrim(preg_replace(sprintf('/^%s/', $escapedManifestPath), '', $viewPath), '/');
 
 			if (!array_key_exists($viewName, $viewListManifest)) {
 				throw new InvalidRequestException(
@@ -122,8 +130,9 @@ class ViewFactory implements ViewFactoryInterface
 		if ($this->isCached(['viewListManifest', $manifestPath])) {
 			$viewListManifest = $this->getCached(['viewListManifest', $manifestPath]);
 		} else {
-			$fileContents = file_get_contents($manifestPath);
-			$viewListManifest = json_decode($fileContents);
+			$filePath = $this->getFileFromManifestPath($manifestPath);
+			$fileContents = file_get_contents($filePath);
+			$viewListManifest = json_decode($fileContents, true);
 
 			$this->setCached(['viewListManifest', $manifestPath], $viewListManifest);
 		}
@@ -131,18 +140,22 @@ class ViewFactory implements ViewFactoryInterface
 		return $viewListManifest;
 	}
 
-	private function locateViewManifestFile($viewPath)
+	private function getManifestFilePath($viewPath)
 	{
-		if ($this->isCached(['view', $viewPath, 'manifestFile'])) {
-			$manifestPath = $this->getCached(['view', $viewPath, 'manifestFile']);
+		if ($this->isCached(['view', $viewPath, 'manifestPath'])) {
+			$manifestPath = $this->getCached(['view', $viewPath, 'manifestPath']);
 		} else {
 			$viewPathParts = explode('/', $viewPath);
-			$manifestPath = $this->viewDirectory;
+			$manifestPathParts = array();
+			$manifestPath = '';
 
 			$found = false;
 			while (!empty($viewPathParts)) {
-				$manifestPath .= DIRECTORY_SEPARATOR . array_shift($viewPathParts);
-				if (is_file($manifestPath)) {
+				$manifestPathParts[] = array_shift($viewPathParts);
+				$manifestPath = implode(DIRECTORY_SEPARATOR, $manifestPathParts);
+				$manifestFile = $this->getFileFromManifestPath($manifestPath);
+
+				if (is_file($manifestFile)) {
 					$found = true;
 					break;
 				}
@@ -152,10 +165,15 @@ class ViewFactory implements ViewFactoryInterface
 				throw new InvalidRequestException(sprintf('View not found with requested path: `%s`', $viewPath));
 			}
 
-			$this->setCached(['view', $viewPath, 'manifestFile'], $manifestPath);
+			$this->setCached(['view', $viewPath, 'manifestPath'], $manifestPath);
 		}
 
 		return $manifestPath;
+	}
+
+	private function getFileFromManifestPath($manifestPath)
+	{
+		return $this->viewManifestDirectory . DIRECTORY_SEPARATOR . $manifestPath . '.json';
 	}
 
 	private function padViewManifest(array $viewManifest)

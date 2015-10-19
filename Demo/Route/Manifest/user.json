@@ -1,0 +1,103 @@
+{
+	"": {
+		"engine": "mustache",
+		"path": "user/list.html",
+		"dataProviders": {
+			"users": {
+				"engine": "resourceList",
+				"options": {
+					"resourceName": "User"
+				}
+			}
+		}
+	},
+	".json": {
+		"engine": "json",
+		"path": "user/list.json",
+		"providers": {
+			"users": {
+				"engine": "resource",
+				"resourceName": "User",
+				"options": {}
+			}
+		}
+	},
+	"item": {
+		"engine": "mustache",
+		"path": "user/item.html",
+		"providers": {
+			"users": {
+				"engine": "resource",
+				"resourceName": "User",
+				"options": {
+					"filters": "get"
+				}
+			}
+		}
+	},
+	"filter": {
+		"engine": "mustache",
+		"path": "user/filterForm.html",
+		"providers": {
+			"users": {
+				"engine": "resource",
+				"resourceName": "User",
+				"options": {
+					"definition": true
+				}
+			}
+		}
+	},
+	"search": {
+		"engine": "mustache",
+		"path": "user/searchForm.html",
+		"providers": {
+			"users": {
+				"engine": "resource",
+				"resourceName": "User",
+				"options": {
+					"definition": true
+				}
+			}
+		}
+	},
+	"searchResult": {
+		"engine": "mustache",
+		"path": "user/list.html",
+		"providers": {
+			"users": {
+				"engine": "resource",
+				"resourceName": "User",
+				"options": {
+					"filters": "get"
+				}
+			}
+		}
+	},
+	"create": {
+		"engine": "mustache",
+		"path": "user/createForm.html",
+		"providers": {
+			"users": {
+				"engine": "resource",
+				"resourceName": "User",
+				"options": {
+					"definition": true
+				}
+			}
+		}
+	},
+	"update": {
+		"engine": "mustache",
+		"path": "user/updateForm.html",
+		"providers": {
+			"users": {
+				"engine": "resource",
+				"resourceName": "User",
+				"options": {
+					"definition": true
+				}
+			}
+		}
+	}
+}

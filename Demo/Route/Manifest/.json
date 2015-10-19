@@ -1,0 +1,6 @@
+{
+	"": {
+		"engine": "mustache",
+		"path": "home.html"
+	}
+}

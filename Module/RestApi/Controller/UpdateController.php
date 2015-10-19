@@ -34,7 +34,7 @@ class UpdateController extends RestfulController
 
 		$view = $renderer->getViewFactory()->build(array(
 			'engine' => 'php',
-			'path' => 'Resource/Default/updateForm.php',
+			'path' => 'Default/updateForm.php',
 			'dataProviders' => array(
 				'resourceDefinition' => array(
 					'engine' => 'static',
@@ -110,7 +110,7 @@ class UpdateController extends RestfulController
 	 */
 	private function getRenderModule()
 	{
-		return $this->module('render');
+		return $this->module('resourceRender');
 	}
 
 	/**

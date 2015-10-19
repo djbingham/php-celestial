@@ -52,7 +52,7 @@ class ViewController extends RestfulController
 					'filters' => $filters
 				)
 			);
-			$viewPath = 'Resource/Default/item.' . $extension;
+			$viewPath = 'Default/item.' . $extension;
 		} else {
 			$dataProviders['resources'] = array(
 				'engine' => 'resourceList',
@@ -61,7 +61,7 @@ class ViewController extends RestfulController
 					'filters' => array()
 				)
 			);
-			$viewPath = 'Resource/Default/list.' . $extension;
+			$viewPath = 'Default/list.' . $extension;
 		}
 
 		$view = $renderer->getViewFactory()->build(array(
@@ -93,7 +93,7 @@ class ViewController extends RestfulController
 	 */
 	private function getRenderModule()
 	{
-		return $this->module('render');
+		return $this->module('resourceRender');
 	}
 
 	/**

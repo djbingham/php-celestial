@@ -77,7 +77,26 @@ abstract class Initialisation
 					'dataProviderFactory' => new Module\Render\DataProviderFactory(array(
 						'resourceModule' => $this->moduleLoader->getModule('resource')
 					)),
+					'viewManifestDirectory' => $this->getViewManifestDirectory(),
 					'viewDirectory' => $this->getViewDirectory()
+				))
+			)));
+			$this->moduleLoader->register('resourceRender', new Module\Render\Factory(array(
+				'app' => $this->getApp(),
+				'engines' => array(
+					'mustache' => new Module\Render\Engine\Mustache(),
+					'php' => new Module\Render\Engine\Php(),
+					'json' => new Module\Render\Engine\Json()
+				),
+				'directory' => $this->getApp()->rootDirectory() . DIRECTORY_SEPARATOR . 'View',
+				'dataProviders' => array(),
+				'viewFactory' => new Module\Render\ViewFactory(array(
+					'renderEngineFactory' => new Module\Render\RenderEngineFactory(),
+					'dataProviderFactory' => new Module\Render\DataProviderFactory(array(
+						'resourceModule' => $this->moduleLoader->getModule('resource')
+					)),
+					'viewManifestDirectory' => $this->getViewManifestDirectory(),
+					'viewDirectory' => $this->getResourceViewDirectory()
 				))
 			)));
 			$this->moduleLoader->register('restApi', new Module\RestApi\Factory(array(
@@ -105,7 +124,19 @@ abstract class Initialisation
 
 	protected function getViewDirectory()
 	{
-		$directoryParts = array($this->getApp()->rootDirectory(), 'view');
+		$directoryParts = array($this->getApp()->rootDirectory(), 'Route', 'View');
+		return implode(DIRECTORY_SEPARATOR, $directoryParts);
+	}
+
+	protected function getViewManifestDirectory()
+	{
+		$directoryParts = array($this->getApp()->rootDirectory(), 'Route', 'Manifest');
+		return implode(DIRECTORY_SEPARATOR, $directoryParts);
+	}
+
+	protected function getResourceViewDirectory()
+	{
+		$directoryParts = array($this->getApp()->rootDirectory(), 'View', 'Resource');
 		return implode(DIRECTORY_SEPARATOR, $directoryParts);
 	}
 

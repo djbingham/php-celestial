@@ -39,7 +39,7 @@ class FilterController extends RestfulController
 		);
 
 		if (empty($requestParams)) {
-			$viewPath = 'Resource/Default/filterForm.' . $extension;
+			$viewPath = 'Default/filterForm.' . $extension;
 		} else {
 			$filters = $this->convertRequestParamsToSearchFilters($requestParams);
 			$filters = $this->stripUnusedSearchFilters($filters);
@@ -50,7 +50,7 @@ class FilterController extends RestfulController
 					'filters' => $filters
 				)
 			);
-			$viewPath = 'Resource/Default/list.' . $extension;
+			$viewPath = 'Default/list.' . $extension;
 		}
 
 		$view = $renderer->getViewFactory()->build(array(
@@ -82,7 +82,7 @@ class FilterController extends RestfulController
 	 */
 	private function getRenderModule()
 	{
-		return $this->module('render');
+		return $this->module('resourceRender');
 	}
 
 	/**

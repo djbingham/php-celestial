@@ -1,0 +1,13 @@
+<h2>User List</h2>
+<dl>
+{{#data.users}}
+	<dt>({{id}}) {{forename}} {{surname}}</dt>
+	<dd>
+		<ul>
+			{{#friends}}
+				<li>({{id}}) {{forename}} {{surname}}</li>
+			{{/friends}}
+		</ul>
+	</dd>
+{{/data.users}}
+</dl>

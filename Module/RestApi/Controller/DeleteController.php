@@ -56,6 +56,6 @@ class DeleteController extends RestfulController
 	 */
 	private function getResourceModule()
 	{
-		return $this->module('resource');
+		return $this->module('resourceRender');
 	}
 }
