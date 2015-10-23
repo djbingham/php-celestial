@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Demo\Controller;
+namespace SlothDemo\Controller;
 
 use Sloth\Base\Controller\RestfulController;
 use Sloth\Exception\InvalidRequestException;

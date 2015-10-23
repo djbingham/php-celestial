@@ -1,8 +1,8 @@
 <?php
-namespace Sloth\Demo;
+namespace SlothDemo;
 
 use Sloth\Base\Config as BaseConfig;
-use SlothDefault;
+use Sloth\SlothDefault;
 
 class Config extends BaseConfig
 {
@@ -26,13 +26,13 @@ class Config extends BaseConfig
 
 	public function rootNamespace()
 	{
-		return 'Sloth\Demo';
+		return 'SlothDemo';
 	}
 
 	public function defaultController()
 	{
 		if (!isset($this->defaultController)) {
-			$this->defaultController = 'Sloth\\Demo\\Controller\\DefaultController';
+			$this->defaultController = 'SlothDemo\\Controller\\DefaultController';
 		}
 		return $this->defaultController;
 	}
@@ -63,30 +63,30 @@ class Config extends BaseConfig
     {
         return new BaseConfig\Modules(array(
 			'resource' => array(
-				'factoryClass' => 'Sloth\\Demo\\Module\\Resource\\Factory',
+				'factoryClass' => 'SlothDemo\\Module\\Resource\\Factory',
 				'options' => array(
 					'resourceManifestDirectory' => $this->rootDirectory() . '/Resource/ResourceManifest',
 					'tableManifestDirectory' => $this->rootDirectory() . '/Resource/TableManifest',
-					'resourceNamespace' => 'Sloth\\Demo\\Resource'
+					'resourceNamespace' => 'SlothDemo\\Resource'
 				)
 			),
 			'render' => array(
-				'factoryClass' => 'Sloth\\Demo\\Module\\Render\\Factory',
+				'factoryClass' => 'SlothDemo\\Module\\Render\\Factory',
 				'options' => array(
 					'viewManifestDirectory' => $this->rootDirectory() . '/Route/Manifest',
 					'viewDirectory' => $this->rootDirectory() . '/Route/View'
 				)
 			),
 			'restResource' => array(
-				'factoryClass' => 'Sloth\\Demo\\Module\\Resource\\Factory',
+				'factoryClass' => 'SlothDemo\\Module\\Resource\\Factory',
 				'options' => array(
 					'resourceManifestDirectory' => $this->rootDirectory() . '/Resource/ResourceManifest',
 					'tableManifestDirectory' => $this->rootDirectory() . '/Resource/TableManifest',
-					'resourceNamespace' => 'Sloth\\Demo\\Resource'
+					'resourceNamespace' => 'SlothDemo\\Resource'
 				)
 			),
 			'restRender' => array(
-				'factoryClass' => 'Sloth\\Demo\\Module\\Render\\Factory',
+				'factoryClass' => 'SlothDemo\\Module\\Render\\Factory',
 				'options' => array(
 					'viewManifestDirectory' => null,
 					'viewDirectory' => $this->rootDirectory() . '/View/Resource'

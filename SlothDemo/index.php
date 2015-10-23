@@ -29,11 +29,11 @@
  *
  */
 
-require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'autoload.php';
+require __DIR__ . DIRECTORY_SEPARATOR . 'autoload.php';
 
 new Sloth\Utility\Autoload(__DIR__, 'SlothDemo');
 
-$config = new Sloth\Demo\Config();
+$config = new SlothDemo\Config();
 $request = Sloth\Request::fromServerVars();
 $init = $config->initialisation();
 $app = $init->getApp();

@@ -1,5 +1,5 @@
 <?php
-namespace SlothDefault;
+namespace Sloth\SlothDefault;
 
 use Sloth\Base;
 use Sloth\App;

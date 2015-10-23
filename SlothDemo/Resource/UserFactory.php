@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Demo\Resource;
+namespace SlothDemo\Resource;
 
 use Sloth\Module\Resource\ResourceFactory;
 

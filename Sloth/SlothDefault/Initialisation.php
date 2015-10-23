@@ -1,7 +1,7 @@
 <?php
-namespace SlothDefault;
+namespace Sloth\SlothDefault;
 
-use SlothDefault;
+use Sloth\SlothDefault;
 use SlothMySql;
 
 class Initialisation extends \Sloth\Base\Initialisation

@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Demo\Module\Render;
+namespace SlothDemo\Module\Render;
 
 class Factory extends \Sloth\Module\Render\Factory
 {

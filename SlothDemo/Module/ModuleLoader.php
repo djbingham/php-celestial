@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Demo\Module;
+namespace SlothDemo\Module;
 
 class ModuleLoader extends \Sloth\Module\ModuleLoader
 {
