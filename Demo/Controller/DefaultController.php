@@ -28,17 +28,17 @@ class DefaultController extends RestfulController
 
 	public function handlePost(ParsedRequestInterface $request, $route)
 	{
-		throw new InvalidRequestException('Cannot post to resource/index');
+		throw new InvalidRequestException('Cannot post to default controller');
 	}
 
 	public function handlePut(ParsedRequestInterface $request, $route)
 	{
-		throw new InvalidRequestException('Cannot put to resource/index');
+		throw new InvalidRequestException('Cannot put to default controller');
 	}
 
 	public function handleDelete(ParsedRequestInterface $request, $route)
 	{
-		throw new InvalidRequestException('Cannot delete from resource/index');
+		throw new InvalidRequestException('Cannot delete from default controller');
 	}
 
 	/**
