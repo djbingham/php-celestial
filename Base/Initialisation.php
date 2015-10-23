@@ -54,101 +54,12 @@ abstract class Initialisation
 	public function getModuleLoader()
 	{
 		if (!isset($this->moduleLoader)) {
-			$this->moduleLoader = new Module\ModuleLoader();
-			$this->moduleLoader->register('resource', new Module\Resource\Factory(array(
-				'app' => $this->getApp(),
-				'tableDirectory' => $this->getTableManifestDirectory(),
-				'resourceDirectory' => $this->getResourceManifestDirectory(),
-				'tableValidator' => new Module\Resource\TableManifestValidator(),
-				'resourceValidator' => new Module\Resource\ResourceManifestValidator(),
-				'resourceNamespace' => 'Sloth\Demo\Resource'
-			)));
-			$this->moduleLoader->register('render', new Module\Render\Factory(array(
-				'app' => $this->getApp(),
-				'engines' => array(
-					'mustache' => new Module\Render\Engine\Mustache(),
-					'php' => new Module\Render\Engine\Php(),
-					'json' => new Module\Render\Engine\Json()
-				),
-				'directory' => $this->getApp()->rootDirectory() . DIRECTORY_SEPARATOR . 'view',
-				'dataProviders' => array(),
-				'viewFactory' => new Module\Render\ViewFactory(array(
-					'renderEngineFactory' => new Module\Render\RenderEngineFactory(),
-					'dataProviderFactory' => new Module\Render\DataProviderFactory(array(
-						'resourceModule' => $this->moduleLoader->getModule('resource')
-					)),
-					'viewManifestDirectory' => $this->getViewManifestDirectory(),
-					'viewDirectory' => $this->getViewDirectory()
-				))
-			)));
-			$this->moduleLoader->register('resourceRender', new Module\Render\Factory(array(
-				'app' => $this->getApp(),
-				'engines' => array(
-					'mustache' => new Module\Render\Engine\Mustache(),
-					'php' => new Module\Render\Engine\Php(),
-					'json' => new Module\Render\Engine\Json()
-				),
-				'directory' => $this->getApp()->rootDirectory() . DIRECTORY_SEPARATOR . 'View',
-				'dataProviders' => array(),
-				'viewFactory' => new Module\Render\ViewFactory(array(
-					'renderEngineFactory' => new Module\Render\RenderEngineFactory(),
-					'dataProviderFactory' => new Module\Render\DataProviderFactory(array(
-						'resourceModule' => $this->moduleLoader->getModule('resource')
-					)),
-					'viewManifestDirectory' => $this->getViewManifestDirectory(),
-					'viewDirectory' => $this->getResourceViewDirectory()
-				))
-			)));
-			$this->moduleLoader->register('restApi', new Module\RestApi\Factory(array(
-				'app' => $this->getApp(),
-				'resourceModule' => $this->moduleLoader->getModule('resource'),
-				'renderModule' => $this->moduleLoader->getModule('render')
-			)));
+			$this->moduleLoader = new Module\ModuleLoader($this->getApp());
+			$modules = $this->config->modules();
+			foreach ($modules as $moduleConfig) {
+				$this->moduleLoader->register($moduleConfig->getName(), $moduleConfig);
+			}
 		}
 		return $this->moduleLoader;
-	}
-
-	public function getRenderer()
-	{
-		if (!isset($this->renderer)) {
-			$viewDirectory = $this->getApp()->rootDirectory() . DIRECTORY_SEPARATOR . 'view';
-			$engines = array(
-				'mustache' => new Module\Render\Engine\Mustache(),
-				'php' => new Module\Render\Engine\Php(),
-				'json' => new Module\Render\Engine\Json()
-			);
-			$this->renderer = new Module\Render\Renderer($this->getApp(), $engines, $viewDirectory);
-		}
-		return $this->renderer;
-	}
-
-	protected function getViewDirectory()
-	{
-		$directoryParts = array($this->getApp()->rootDirectory(), 'Route', 'View');
-		return implode(DIRECTORY_SEPARATOR, $directoryParts);
-	}
-
-	protected function getViewManifestDirectory()
-	{
-		$directoryParts = array($this->getApp()->rootDirectory(), 'Route', 'Manifest');
-		return implode(DIRECTORY_SEPARATOR, $directoryParts);
-	}
-
-	protected function getResourceViewDirectory()
-	{
-		$directoryParts = array($this->getApp()->rootDirectory(), 'View', 'Resource');
-		return implode(DIRECTORY_SEPARATOR, $directoryParts);
-	}
-
-	protected function getResourceManifestDirectory()
-	{
-		$directoryParts = array($this->getApp()->rootDirectory(), 'resource', 'resourceManifest');
-		return implode(DIRECTORY_SEPARATOR, $directoryParts);
-	}
-
-	protected function getTableManifestDirectory()
-	{
-		$directoryParts = array($this->getApp()->rootDirectory(), 'resource', 'tableManifest');
-		return implode(DIRECTORY_SEPARATOR, $directoryParts);
 	}
 }

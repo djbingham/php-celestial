@@ -1,15 +1,15 @@
 <?php
-namespace Sloth\Module\RestApi\Controller;
+namespace Sloth\Api\Rest\Controller;
 
-use Sloth\Controller\RestfulController;
+use Sloth\Base\Controller\RestfulController;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Face\RequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Resource\ModuleCore;
-use Sloth\Module\RestApi\Face\ParsedRequestInterface;
-use Sloth\Module\RestApi\RequestParser;
+use Sloth\Api\Rest\Face\ParsedRequestInterface;
+use Sloth\Api\Rest\RequestParser;
 
-class ViewController extends RestfulController
+class DefinitionController extends RestfulController
 {
 	public function parseRequest(RequestInterface $request, $route)
 	{
@@ -23,51 +23,22 @@ class ViewController extends RestfulController
 		$renderer = $this->getRenderModule();
 
 		$resourceDefinition = $request->getResourceDefinition();
-		$resourceId = $request->getResourceId();
 		$extension = $request->getExtension();
 		if ($extension === null) {
 			$extension = 'php';
 		}
 
-		$dataProviders = array(
-			'resourceDefinition' => array(
-				'engine' => 'static',
-				'options' => array(
-					'data' => $resourceDefinition
-				)
-			)
-		);
-		if (isset($resourceId)) {
-			$filters = array(
-				array(
-					'subject' => $resourceDefinition->primaryAttribute,
-					'comparator' => '=',
-					'value' => $resourceId
-				)
-			);
-			$dataProviders['resource'] = array(
-				'engine' => 'resource',
-				'options' => array(
-					'resourceName' => $resourceDefinition->name,
-					'filters' => $filters
-				)
-			);
-			$viewPath = 'Default/item.' . $extension;
-		} else {
-			$dataProviders['resources'] = array(
-				'engine' => 'resourceList',
-				'options' => array(
-					'resourceName' => $resourceDefinition->name,
-					'filters' => array()
-				)
-			);
-			$viewPath = 'Default/list.' . $extension;
-		}
-
 		$view = $renderer->getViewFactory()->build(array(
 			'engine' => $extension,
-			'path' => $viewPath,
-			'dataProviders' => $dataProviders
+			'path' => 'Default/definition.' . $extension,
+			'dataProviders' => array(
+				'resourceDefinition' => array(
+					'engine' => 'static',
+					'options' => array(
+						'data' => $resourceDefinition
+					)
+				)
+			)
 		));
 
 		return $renderer->render($view);

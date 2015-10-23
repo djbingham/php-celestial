@@ -1,51 +1,75 @@
 <?php
 namespace Sloth\Module\Render;
 
+use Helper\InternalCacheTrait;
 use Sloth\App;
 use Sloth\Exception\InvalidArgumentException;
-use Sloth\Module\Face\ModuleFactoryInterface;
+use Sloth\Module\Base\AbstractModuleFactory;
 
-class Factory implements ModuleFactoryInterface
+class Factory extends AbstractModuleFactory
 {
-	/**
-	 * @var App
-	 */
-	private $app;
+	use InternalCacheTrait;
 
 	/**
 	 * @var ViewFactory
 	 */
-	private $viewFactory;
-
-	public function __construct(array $dependencies)
-	{
-		$this->validateDependencies($dependencies);
-		$this->app = $dependencies['app'];
-		$this->viewFactory = $dependencies['viewFactory'];
-	}
+	protected $viewFactory;
 
 	public function initialise()
 	{
 		$renderer = new Renderer();
 		$renderer->setApp($this->app)
-			->setViewFactory($this->viewFactory);
+			->setViewFactory($this->getViewFactory());
 		return $renderer;
 	}
 
-	private function validateDependencies(array $dependencies)
+	protected function getViewFactory()
 	{
-		$required = array('app', 'engines', 'dataProviders', 'viewFactory');
-		$missing = array_diff($required, array_keys($dependencies));
+		if (!$this->isCached('viewFactory')) {
+			$this->setCached('viewFactory', new ViewFactory(array(
+				'viewManifestDirectory' => $this->options['viewManifestDirectory'],
+				'viewDirectory' => $this->options['viewDirectory'],
+				'renderEngineFactory' => $this->getRenderEngineFactory(),
+				'dataProviderFactory' => $this->getDataProviderFactory()
+			)));
+		}
+		return $this->getCached('viewFactory');
+	}
+
+	protected function getRenderEngineFactory()
+	{
+		if (!$this->isCached('renderEngineFactory')) {
+			$this->setCached('renderEngineFactory', new RenderEngineFactory(array(
+
+			)));
+		}
+		return $this->getCached('renderEngineFactory');
+	}
+
+	protected function getDataProviderFactory()
+	{
+		if (!$this->isCached('dataProviderFactory')) {
+			$this->setCached('dataProviderFactory', new DataProviderFactory(array(
+				'resourceModule' => $this->app->module('resource')
+			)));
+		}
+		return $this->getCached('dataProviderFactory');
+	}
+
+	protected function validateOptions()
+	{
+		$required = array();
+		$missing = array_diff($required, array_keys($this->options));
 		if (!empty($missing)) {
 			throw new InvalidArgumentException(
 				'Missing required dependencies for Render module: ' . implode(', ', $missing)
 			);
 		}
-		if (!($dependencies['app'] instanceof App)) {
-			throw new InvalidArgumentException('Invalid app given in dependencies for Render module');
+		if (!empty($this->options['viewManifestDirectory']) && !is_dir($this->options['viewManifestDirectory'])) {
+			throw new InvalidArgumentException('Invalid view manifest directory given in options for Render module');
 		}
-		if (!($dependencies['viewFactory'] instanceof ViewFactory)) {
-			throw new InvalidArgumentException('Invalid view factory given in dependencies for Render module');
+		if (!is_dir($this->options['viewDirectory'])) {
+			throw new InvalidArgumentException('Invalid view directory given in options for Render module');
 		}
 	}
 }

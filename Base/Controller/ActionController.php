@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Controller;
+namespace Sloth\Base\Controller;
 
 use Sloth\Base\Controller;
 use Sloth\Exception\InvalidRequestException;
@@ -8,8 +8,10 @@ use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Render\View;
 use Sloth\Request;
 
-class ActionController extends Controller
+abstract class ActionController extends Controller
 {
+	abstract protected function handleIndex(RequestInterface $request);
+
 	public function execute(RequestInterface $request, $controllerRoute)
 	{
 		$escapedControllerRoute = str_replace('/', '\/', $controllerRoute);

@@ -54,7 +54,7 @@ class Config extends BaseConfig
 	{
 		return new BaseConfig\Routes(array(
 			'resource' => array(
-				'namespace' => 'Sloth\\Module\\RestApi\\Controller'
+				'namespace' => 'Sloth\\Api\\Rest\\Controller'
 			)
 		));
 	}
@@ -62,8 +62,28 @@ class Config extends BaseConfig
     public function modules()
     {
         return new BaseConfig\Modules(array(
-			'resource' => 'Sloth\\Module\\Resource\\Factory',
-			'render' => 'Sloth\\Module\\Render\\Factory'
+			'resource' => array(
+				'factoryClass' => 'Sloth\\Demo\\Module\\Resource\\Factory',
+				'options' => array(
+					'resourceManifestDirectory' => $this->rootDirectory() . '/Resource/ResourceManifest',
+					'tableManifestDirectory' => $this->rootDirectory() . '/Resource/TableManifest',
+					'resourceNamespace' => 'Sloth\\Demo\\Resource'
+				)
+			),
+			'render' => array(
+				'factoryClass' => 'Sloth\\Demo\\Module\\Render\\Factory',
+				'options' => array(
+					'viewManifestDirectory' => $this->rootDirectory() . '/Route/Manifest',
+					'viewDirectory' => $this->rootDirectory() . '/Route/View'
+				)
+			),
+			'resourceRender' => array(
+				'factoryClass' => 'Sloth\\Demo\\Module\\Render\\Factory',
+				'options' => array(
+					'viewManifestDirectory' => null,
+					'viewDirectory' => $this->rootDirectory() . '/View/Resource'
+				)
+			)
         ));
     }
 

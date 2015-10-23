@@ -1,10 +1,10 @@
 <?php
-namespace Sloth\Controller;
+namespace Sloth\Base\Controller;
 
 use Sloth\Base\Controller;
 use Sloth\Exception;
 use Sloth\Face\RequestInterface;
-use Sloth\Module\RestApi\Face\ParsedRequestInterface;
+use Sloth\Api\Rest\Face\ParsedRequestInterface;
 
 abstract class RestfulController extends Controller
 {

@@ -1,13 +1,13 @@
 <?php
-namespace Sloth\Module\RestApi\Controller;
+namespace Sloth\Api\Rest\Controller;
 
-use Sloth\Controller\RestfulController;
+use Sloth\Base\Controller\RestfulController;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Face\RequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Resource\ModuleCore;
-use Sloth\Module\RestApi\Face\ParsedRequestInterface;
-use Sloth\Module\RestApi\RequestParser;
+use Sloth\Api\Rest\Face\ParsedRequestInterface;
+use Sloth\Api\Rest\RequestParser;
 
 class CreateController extends RestfulController
 {

@@ -1,15 +1,15 @@
 <?php
-namespace Sloth\Module\RestApi\Controller;
+namespace Sloth\Api\Rest\Controller;
 
-use Sloth\Controller\RestfulController;
+use Sloth\Base\Controller\RestfulController;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Face\RequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Resource\ModuleCore;
-use Sloth\Module\RestApi\Face\ParsedRequestInterface;
-use Sloth\Module\RestApi\RequestParser;
+use Sloth\Api\Rest\Face\ParsedRequestInterface;
+use Sloth\Api\Rest\RequestParser;
 
-class FilterController extends RestfulController
+class SearchController extends RestfulController
 {
 	public function parseRequest(RequestInterface $request, $route)
 	{
@@ -38,19 +38,17 @@ class FilterController extends RestfulController
 			)
 		);
 
-		if (empty($requestParams)) {
-			$viewPath = 'Default/filterForm.' . $extension;
+		if (!array_key_exists('filters', $requestParams)) {
+			$viewPath = 'Default/searchForm.' . $extension;
 		} else {
-			$filters = $this->convertRequestParamsToSearchFilters($requestParams);
-			$filters = $this->stripUnusedSearchFilters($filters);
+			$viewPath = 'Default/list.' . $extension;
 			$dataProviders['resources'] = array(
 				'engine' => 'resourceList',
 				'options' => array(
 					'resourceName' => $resourceDefinition->name,
-					'filters' => $filters
+					'filters' => $this->stripUnusedSearchFilters($requestParams['filters'])
 				)
 			);
-			$viewPath = 'Default/list.' . $extension;
 		}
 
 		$view = $renderer->getViewFactory()->build(array(
@@ -93,24 +91,10 @@ class FilterController extends RestfulController
 		return $this->module('resource');
 	}
 
-	private function convertRequestParamsToSearchFilters(array $requestParams)
-	{
-		$filters = array();
-		foreach ($requestParams as $name => $value) {
-			$name = str_replace('_', '.', $name);
-			$filters[] = array(
-				'subject' => $name,
-				'comparator' => '=',
-				'value' => $value
-			);
-		}
-		return $filters;
-	}
-
 	protected function stripUnusedSearchFilters(array $filters)
 	{
 		foreach ($filters as $index => $filter) {
-			if (strlen($filter['value']) === 0) {
+			if ($filter['comparator'] === '') {
 				unset($filters[$index]);
 			}
 		}

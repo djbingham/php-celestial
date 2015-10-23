@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\RestApi\Face;
+namespace Sloth\Api\Rest\Face;
 
 use Sloth\Face\RequestInterface;
 use Sloth\Module\Resource\Definition\Resource as ResourceDefinition;

@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\RestApi;
+namespace Sloth\Api\Rest;
 
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Module\Resource as ResourceModule;

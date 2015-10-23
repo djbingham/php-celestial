@@ -1,12 +1,12 @@
 <?php
 namespace Sloth\Demo\Controller;
 
-use Sloth\Controller\RestfulController;
+use Sloth\Base\Controller\RestfulController;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Face\RequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
-use Sloth\Module\RestApi\Face\ParsedRequestInterface;
-use Sloth\Module\RestApi\ParsedRequest;
+use Sloth\Api\Rest\Face\ParsedRequestInterface;
+use Sloth\Api\Rest\ParsedRequest;
 
 class DefaultController extends RestfulController
 {

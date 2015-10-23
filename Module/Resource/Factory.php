@@ -1,96 +1,61 @@
 <?php
 namespace Sloth\Module\Resource;
 
-use Sloth\App;
+use Helper\InternalCacheTrait;
 use Sloth\Exception\InvalidArgumentException;
-use Sloth\Module\Face\ModuleFactoryInterface;
+use Sloth\Module\Base\AbstractModuleFactory;
 
-class Factory implements ModuleFactoryInterface
+class Factory extends AbstractModuleFactory
 {
-	/**
-	 * @var App
-	 */
-	private $app;
-
-	/**
-	 * @var string
-	 */
-	private $tableDirectory;
-
-	/**
-	 * @var string
-	 */
-	private $resourceDirectory;
-
-	/**
-	 * @var TableManifestValidator
-	 */
-	private $tableValidator;
-
-	/**
-	 * @var ResourceManifestValidator
-	 */
-	private $resourceValidator;
-
-	/**
-	 * @var string
-	 */
-	private $resourceNamespace;
-
-	public function __construct(array $dependencies)
-	{
-		$this->validateDependencies($dependencies);
-		$this->app = $dependencies['app'];
-		$this->tableDirectory = $dependencies['tableDirectory'];
-		$this->resourceDirectory = $dependencies['resourceDirectory'];
-		$this->tableValidator = $dependencies['tableValidator'];
-		$this->resourceValidator = $dependencies['resourceValidator'];
-		$this->resourceNamespace = $dependencies['resourceNamespace'];
-	}
+	use InternalCacheTrait;
 
 	public function initialise()
 	{
 		$module = new ModuleCore($this->app);
-		$module->setTableManifestDirectory($this->tableDirectory)
-			->setResourceManifestDirectory($this->resourceDirectory)
-			->setTableManifestValidator($this->tableValidator)
-			->setResourceManifestValidator($this->resourceValidator)
-			->setResourceNamespace($this->resourceNamespace);
+		$module->setTableManifestDirectory($this->options['tableManifestDirectory'])
+			->setResourceManifestDirectory($this->options['resourceManifestDirectory'])
+			->setResourceNamespace($this->options['resourceNamespace'])
+			->setTableManifestValidator($this->getTableManifestValidator())
+			->setResourceManifestValidator($this->getResourceManifestValidator());
 		return $module;
 	}
 
-	private function validateDependencies(array $dependencies)
+	protected function validateOptions()
 	{
 		$required = array(
-			'app',
-			'tableDirectory',
-			'resourceDirectory',
-			'tableValidator',
-			'resourceValidator',
+			'tableManifestDirectory',
+			'resourceManifestDirectory',
 			'resourceNamespace'
 		);
 
-		$missing = array_diff($required, array_keys($dependencies));
+		$missing = array_diff($required, array_keys($this->options));
 		if (!empty($missing)) {
 			throw new InvalidArgumentException(
-				'Missing required dependencies for Render module: ' . implode(', ', $missing)
+				'Missing required options for Resource module: ' . implode(', ', $missing)
 			);
 		}
 
-		if (!($dependencies['app'] instanceof App)) {
-			throw new InvalidArgumentException('Invalid app given in dependencies for Render module');
+		if (!is_dir($this->options['tableManifestDirectory'])) {
+			throw new InvalidArgumentException('Invalid table directory given in options for Render module');
 		}
-		if (!is_dir($dependencies['tableDirectory'])) {
-			throw new InvalidArgumentException('Invalid table directory given in dependencies for Render module');
+		if (!is_dir($this->options['resourceManifestDirectory'])) {
+			throw new InvalidArgumentException('Invalid resource directory given in options for Render module');
 		}
-		if (!is_dir($dependencies['resourceDirectory'])) {
-			throw new InvalidArgumentException('Invalid resource directory given in dependencies for Render module');
+	}
+
+	protected function getTableManifestValidator()
+	{
+		if (!$this->isCached('tableManifestValidator')) {
+			$this->setCached('tableManifestValidator', new TableManifestValidator());
 		}
-		if (!($dependencies['tableValidator'] instanceof TableManifestValidator)) {
-			throw new InvalidArgumentException('Invalid table validator given in dependencies for Render module');
+		return $this->getCached('tableManifestValidator');
+	}
+
+	protected function getResourceManifestValidator()
+	{
+		if (!$this->isCached('resourceManifestValidator')) {
+			$this->setCached('resourceManifestValidator', new ResourceManifestValidator());
 		}
-		if (!($dependencies['resourceValidator'] instanceof ResourceManifestValidator)) {
-			throw new InvalidArgumentException('Invalid resource validator given in dependencies for Render module');
-		}
+		return $this->getCached('resourceManifestValidator');
 	}
 }

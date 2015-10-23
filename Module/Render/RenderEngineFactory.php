@@ -4,6 +4,7 @@ namespace Sloth\Module\Render;
 use Doctrine\Instantiator\Exception\InvalidArgumentException;
 use Sloth\Module\Render\Engine;
 use Sloth\Module\Render\Face\RenderEngineFactoryInterface;
+use Sloth\Module\Render\Face\RenderEngineInterface;
 
 class RenderEngineFactory implements RenderEngineFactoryInterface
 {
@@ -11,6 +12,19 @@ class RenderEngineFactory implements RenderEngineFactoryInterface
 	 * @var array
 	 */
 	protected $engines = array();
+
+	public function __construct(array $engines)
+	{
+		foreach ($engines as $engineName => $engine) {
+			$this->registerEngine($engineName, $engine);
+		}
+	}
+
+	public function registerEngine($engineName, RenderEngineInterface $engine)
+	{
+		$this->engines[$engineName] = $engine;
+		return $this;
+	}
 
 	public function getByName($engineName)
 	{
