@@ -18,11 +18,6 @@ class App
 		return $this->config->initialisation()->getModuleLoader()->getModule($name);
 	}
 
-	public function database()
-	{
-		return $this->config->initialisation()->getDatabase();
-	}
-
 	public function rootDirectory()
 	{
 		return $this->config->rootDirectory();

@@ -4,7 +4,7 @@ namespace Sloth\Module\Render;
 use Helper\InternalCacheTrait;
 use Sloth\App;
 use Sloth\Exception\InvalidArgumentException;
-use Sloth\Module\Base\AbstractModuleFactory;
+use Sloth\Base\AbstractModuleFactory;
 
 class Factory extends AbstractModuleFactory
 {
@@ -63,13 +63,15 @@ class Factory extends AbstractModuleFactory
 
 	protected function validateOptions()
 	{
-		$required = array();
+		$required = array('viewDirectory');
+
 		$missing = array_diff($required, array_keys($this->options));
 		if (!empty($missing)) {
 			throw new InvalidArgumentException(
 				'Missing required dependencies for Render module: ' . implode(', ', $missing)
 			);
 		}
+
 		if (!empty($this->options['viewManifestDirectory']) && !is_dir($this->options['viewManifestDirectory'])) {
 			throw new InvalidArgumentException('Invalid view manifest directory given in options for Render module');
 		}

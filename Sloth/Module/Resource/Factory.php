@@ -3,7 +3,7 @@ namespace Sloth\Module\Resource;
 
 use Helper\InternalCacheTrait;
 use Sloth\Exception\InvalidArgumentException;
-use Sloth\Module\Base\AbstractModuleFactory;
+use Sloth\Base\AbstractModuleFactory;
 
 class Factory extends AbstractModuleFactory
 {
@@ -12,11 +12,13 @@ class Factory extends AbstractModuleFactory
 	public function initialise()
 	{
 		$module = new ModuleCore($this->app);
-		$module->setTableManifestDirectory($this->options['tableManifestDirectory'])
-			->setResourceManifestDirectory($this->options['resourceManifestDirectory'])
-			->setResourceNamespace($this->options['resourceNamespace'])
+		$module
+			->setDatabaseWrapper($this->getDatabaseWrapper())
 			->setTableManifestValidator($this->getTableManifestValidator())
-			->setResourceManifestValidator($this->getResourceManifestValidator());
+			->setResourceManifestValidator($this->getResourceManifestValidator())
+			->setTableManifestDirectory($this->options['tableManifestDirectory'])
+			->setResourceManifestDirectory($this->options['resourceManifestDirectory'])
+			->setResourceNamespace($this->options['resourceNamespace']);
 		return $module;
 	}
 
@@ -41,6 +43,11 @@ class Factory extends AbstractModuleFactory
 		if (!is_dir($this->options['resourceManifestDirectory'])) {
 			throw new InvalidArgumentException('Invalid resource directory given in options for Render module');
 		}
+	}
+
+	protected function getDatabaseWrapper()
+	{
+		return $this->app->module('mysql');
 	}
 
 	protected function getTableManifestValidator()

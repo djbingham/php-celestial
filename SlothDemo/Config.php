@@ -7,7 +7,6 @@ use Sloth\SlothDefault;
 class Config extends BaseConfig
 {
 	private $rootUrl;
-	private $database;
 	private $defaultController;
 
 	public function rootUrl()
@@ -35,19 +34,6 @@ class Config extends BaseConfig
 			$this->defaultController = 'SlothDemo\\Controller\\DefaultController';
 		}
 		return $this->defaultController;
-	}
-
-	public function database()
-	{
-		if (!isset($this->database)) {
-			return new BaseConfig\Database(array(
-				'name' => 'slothDemo',
-				'host' => 'localhost',
-				'username' => 'slothDemo',
-				'password' => 'Sl0thD3m0P455'
-			));
-		}
-		return $this->database;
 	}
 
 	public function routes()
@@ -90,6 +76,15 @@ class Config extends BaseConfig
 				'options' => array(
 					'viewManifestDirectory' => null,
 					'viewDirectory' => $this->rootDirectory() . '/View/Resource'
+				)
+			),
+			'mysql' => array(
+				'factoryClass' => 'SlothDemo\\Module\\MySql\\Factory',
+				'options' => array(
+					'name' => 'slothDemo',
+					'host' => 'localhost',
+					'username' => 'slothDemo',
+					'password' => 'Sl0thD3m0P455'
 				)
 			)
         ));

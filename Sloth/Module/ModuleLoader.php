@@ -4,7 +4,7 @@ namespace Sloth\Module;
 use Sloth\App;
 use Sloth\Base\Config\Module\Module;
 use Sloth\Exception\NotFoundException;
-use Sloth\Module\Face\ModuleFactoryInterface;
+use Sloth\Face\ModuleFactoryInterface;
 
 class ModuleLoader
 {

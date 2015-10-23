@@ -19,16 +19,6 @@ abstract class Initialisation
 	private $moduleLoader;
 
 	/**
-	 * @var Module\Render\Renderer $renderer
-	 */
-	private $renderer;
-
-	/**
-	 * @return SlothMySql\DatabaseWrapper
-	 */
-	abstract public function getDatabase();
-
-	/**
 	 * @return Router
 	 */
 	abstract public function getRouter();

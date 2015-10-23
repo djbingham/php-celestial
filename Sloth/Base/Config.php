@@ -30,11 +30,6 @@ abstract class Config
     abstract public function modules();
 
 	/**
-	 * @return Config\Database
-	 */
-	abstract public function database();
-
-	/**
 	 * @return Config\Routes
 	 */
 	abstract public function routes();

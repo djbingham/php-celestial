@@ -9,6 +9,7 @@ use Sloth\Module\Resource\DefinitionBuilder\ResourceDefinitionBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\TableDefinitionBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\ValidatorListBuilder;
 use Sloth\App;
+use SlothMySql\DatabaseWrapper;
 
 class ModuleCore
 {
@@ -16,6 +17,11 @@ class ModuleCore
 	 * @var App
 	 */
 	private $app;
+
+	/**
+	 * @var DatabaseWrapper
+	 */
+	private $databaseWrapper;
 
 	/**
 	 * @var TableManifestValidator
@@ -47,6 +53,12 @@ class ModuleCore
 		$this->app = $app;
 	}
 
+	public function setDatabaseWrapper(DatabaseWrapper $databaseWrapper)
+	{
+		$this->databaseWrapper = $databaseWrapper;
+		return $this;
+	}
+
 	public function setResourceManifestValidator(ResourceManifestValidator $resourceManifestValidator)
 	{
 		$this->resourceManifestValidator = $resourceManifestValidator;
@@ -63,6 +75,11 @@ class ModuleCore
 	{
 		$this->tableManifestDirectory = $directory;
 		return $this;
+	}
+
+	public function getDatabaseWrapper()
+	{
+		return $this->databaseWrapper;
 	}
 
 	public function getTableManifestDirectory()
@@ -181,7 +198,7 @@ class ModuleCore
 	private function getQuerySetFactory()
 	{
 		$querySetFactory = new QuerySetFactory();
-		$querySetFactory->setDatabase($this->app->database());
+		$querySetFactory->setDatabase($this->getDatabaseWrapper());
 		return $querySetFactory;
 	}
 }

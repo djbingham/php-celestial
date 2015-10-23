@@ -1,9 +1,9 @@
 <?php
-namespace Sloth\Module\Base;
+namespace Sloth\Base;
 
 use Sloth\App;
 use Sloth\Exception\InvalidArgumentException;
-use Sloth\Module\Face\ModuleFactoryInterface;
+use Sloth\Face\ModuleFactoryInterface;
 
 abstract class AbstractModuleFactory implements ModuleFactoryInterface
 {
