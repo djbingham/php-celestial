@@ -50,7 +50,7 @@ class Factory extends AbstractModuleFactory
 	{
 		if (!$this->isCached('dataProviderFactory')) {
 			$this->setCached('dataProviderFactory', new DataProviderFactory(array(
-				'resourceModule' => $this->app->module('resource')
+				'resourceModule' => $this->app->module('restResource')
 			)));
 		}
 		return $this->getCached('dataProviderFactory');

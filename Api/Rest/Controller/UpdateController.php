@@ -110,7 +110,7 @@ class UpdateController extends RestfulController
 	 */
 	private function getRenderModule()
 	{
-		return $this->module('resourceRender');
+		return $this->module('restRender');
 	}
 
 	/**
@@ -118,7 +118,7 @@ class UpdateController extends RestfulController
 	 */
 	private function getResourceModule()
 	{
-		return $this->module('resource');
+		return $this->module('restResource');
 	}
 
 	private function getUpdateFiltersFromResource(array $attributes, ResourceModule\Definition\Resource $resourceDefinition)

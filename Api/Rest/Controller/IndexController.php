@@ -64,7 +64,7 @@ class IndexController extends RestfulController
 	 */
 	private function getRenderModule()
 	{
-		return $this->module('resourceRender');
+		return $this->module('restRender');
 	}
 
 	/**
@@ -72,7 +72,7 @@ class IndexController extends RestfulController
 	 */
 	private function getResourceModule()
 	{
-		return $this->module('resource');
+		return $this->module('restResource');
 	}
 
 	private function getResourceNames($directory)

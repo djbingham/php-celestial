@@ -80,7 +80,7 @@ class SearchController extends RestfulController
 	 */
 	private function getRenderModule()
 	{
-		return $this->module('resourceRender');
+		return $this->module('restRender');
 	}
 
 	/**
@@ -88,7 +88,7 @@ class SearchController extends RestfulController
 	 */
 	private function getResourceModule()
 	{
-		return $this->module('resource');
+		return $this->module('restResource');
 	}
 
 	protected function stripUnusedSearchFilters(array $filters)

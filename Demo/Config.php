@@ -77,7 +77,15 @@ class Config extends BaseConfig
 					'viewDirectory' => $this->rootDirectory() . '/Route/View'
 				)
 			),
-			'resourceRender' => array(
+			'restResource' => array(
+				'factoryClass' => 'Sloth\\Demo\\Module\\Resource\\Factory',
+				'options' => array(
+					'resourceManifestDirectory' => $this->rootDirectory() . '/Resource/ResourceManifest',
+					'tableManifestDirectory' => $this->rootDirectory() . '/Resource/TableManifest',
+					'resourceNamespace' => 'Sloth\\Demo\\Resource'
+				)
+			),
+			'restRender' => array(
 				'factoryClass' => 'Sloth\\Demo\\Module\\Render\\Factory',
 				'options' => array(
 					'viewManifestDirectory' => null,

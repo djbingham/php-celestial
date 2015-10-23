@@ -64,7 +64,7 @@ class DefinitionController extends RestfulController
 	 */
 	private function getRenderModule()
 	{
-		return $this->module('resourceRender');
+		return $this->module('restRender');
 	}
 
 	/**
@@ -72,6 +72,6 @@ class DefinitionController extends RestfulController
 	 */
 	private function getResourceModule()
 	{
-		return $this->module('resource');
+		return $this->module('restResource');
 	}
 }
