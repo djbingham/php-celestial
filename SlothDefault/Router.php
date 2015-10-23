@@ -107,15 +107,23 @@ class Router extends Base\Router
 			$controllerPathParts[] = ucfirst($routePart);
 		}
 
+		if (empty($controllerPathParts)) {
+			$controllerPathParts[] = 'index';
+		}
+
 		while (!empty($controllerPathParts)) {
 			$path = implode('\\', $controllerPathParts);
+
 			if ($namespace !== null) {
-				$path = $namespace . '\\' . $path . 'Controller';
+				$proposedClass = $namespace . '\\' . $path . 'Controller';
 			}
-			if (class_exists($path)) {
-				$controller = $path;
+
+			if (class_exists($proposedClass)) {
+				$controller = $proposedClass;
 				break;
 			}
+
+
 			array_pop($controllerPathParts);
 			array_pop($routeParts);
 		}
