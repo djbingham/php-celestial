@@ -7,7 +7,6 @@ use Sloth\SlothDefault;
 class Config extends BaseConfig
 {
 	private $rootUrl;
-	private $defaultController;
 
 	public function rootUrl()
 	{
@@ -28,26 +27,21 @@ class Config extends BaseConfig
 		return 'SlothDemo';
 	}
 
-	public function defaultController()
-	{
-		if (!isset($this->defaultController)) {
-			$this->defaultController = 'SlothDemo\\Controller\\DefaultController';
-		}
-		return $this->defaultController;
-	}
-
-	public function routes()
-	{
-		return new BaseConfig\Routes(array(
-			'resource' => array(
-				'namespace' => 'Sloth\\Api\\Rest\\Controller'
-			)
-		));
-	}
-
     public function modules()
     {
         return new BaseConfig\Modules(array(
+			'router' => array(
+				'factoryClass' => 'Sloth\\Module\\Router\\Factory',
+				'options' => array(
+					'routes' => new BaseConfig\Routes(array(
+						'resource' => array(
+							'namespace' => 'Sloth\\Api\\Rest\\Controller'
+						)
+					)),
+					'rootNamespace' => $this->rootNamespace(),
+					'defaultController' => 'SlothDemo\\Controller\\DefaultController'
+				)
+			),
 			'resource' => array(
 				'factoryClass' => 'SlothDemo\\Module\\Resource\\Factory',
 				'options' => array(
@@ -89,9 +83,4 @@ class Config extends BaseConfig
 			)
         ));
     }
-
-	public function initialisation()
-	{
-		return new SlothDefault\Initialisation($this);
-	}
 }

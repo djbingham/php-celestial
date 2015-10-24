@@ -6,6 +6,11 @@ use Sloth\Request\Params;
 interface RequestInterface
 {
 	/**
+	 * @return Boolean
+	 */
+	public function canBeCached();
+
+	/**
 	 * @return string
 	 */
 	public function getMethod();

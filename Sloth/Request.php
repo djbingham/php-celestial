@@ -90,6 +90,11 @@ class Request implements RequestInterface
         return $instance;
     }
 
+	public function canBeCached()
+	{
+		return ($this->getMethod() === 'get');
+	}
+
 	public function getMethod()
 	{
 		return $this->method;

@@ -19,23 +19,8 @@ abstract class Config
 	 */
 	abstract public function rootNamespace();
 
-	/**
-	 * @return string
-	 */
-	abstract public function defaultController();
-
     /**
      * @return Config\Modules
      */
     abstract public function modules();
-
-	/**
-	 * @return Config\Routes
-	 */
-	abstract public function routes();
-
-	/**
-	 * @return Initialisation
-	 */
-	abstract public function initialisation();
 }

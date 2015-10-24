@@ -44,6 +44,15 @@ trait InternalCacheTrait
 		return $cached;
 	}
 
+	protected function searchCache($name)
+	{
+		$output = null;
+		if ($this->isCached($name)) {
+			$output = $this->getCached($name);
+		}
+		return $output;
+	}
+
 	private function setSubCached(array $subCachePath, $name, $value)
 	{
 		$subCache = &$this->cache;

@@ -1,8 +1,15 @@
 <?php
 namespace Sloth;
 
-class App
+use Sloth\Module\ModuleLoader;
+
+abstract class App
 {
+	/**
+	 * @var ModuleLoader
+	 */
+	protected $moduleLoader;
+
 	/**
 	 * @var Base\Config
 	 */
@@ -13,9 +20,15 @@ class App
 		$this->config = $config;
 	}
 
+	public function setModuleLoader(ModuleLoader $moduleLoader)
+	{
+		$this->moduleLoader = $moduleLoader;
+		return $this;
+	}
+
 	public function module($name)
 	{
-		return $this->config->initialisation()->getModuleLoader()->getModule($name);
+		return $this->moduleLoader->getModule($name);
 	}
 
 	public function rootDirectory()
@@ -31,6 +44,11 @@ class App
 	public function rootUrl()
 	{
 		return $this->config->rootUrl();
+	}
+
+	public function moduleLoader()
+	{
+		return new $this->config->moduleLoader();
 	}
 
 	public function createUrl(array $pathParts = array())

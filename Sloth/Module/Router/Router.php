@@ -1,17 +1,16 @@
 <?php
-namespace Sloth\SlothDefault;
+namespace Sloth\Module\Router;
 
 use Sloth\Base;
-use Sloth\App;
 use Sloth\Request;
 use Sloth\Exception\InvalidRequestException;
 
-class Router extends Base\Router
+class Router extends \Sloth\Module\Router\Base\Router
 {
-	public function route(App $app, Request $request)
+	public function route(Request $request)
 	{
 		$output = null;
-		$canCacheRequest = $this->canCache($request);
+		$canCacheRequest = $request->canBeCached();
 		$requestUri = $request->getUri();
 
 		if ($canCacheRequest) {
@@ -29,40 +28,20 @@ class Router extends Base\Router
 			}
 
 			$route = $routeData['route'];
-			$controller = $this->instantiateController($routeData['controller'], $app);
+			$controller = $this->instantiateController($routeData['controller']);
 			$output = $controller->execute($request, $route);
 
 			if ($canCacheRequest) {
-				$this->cacheOutput($requestUri, $output);
+				$this->cache($requestUri, $output);
 			}
 		}
 
 		return $output;
 	}
 
-	protected function canCache(Request $request)
-	{
-		return $request->getMethod() === 'getChild';
-	}
-
-	protected function searchCache($uri)
-	{
-		$output = null;
-		if (array_key_exists($uri, $this->cache)) {
-			$output = $this->cache[$uri];
-		}
-		return $output;
-	}
-
-	protected function cacheOutput($requestUri, $output)
-	{
-		$this->cache[$requestUri] = $output;
-		return $this;
-	}
-
 	protected function searchRoutes(Request $request)
 	{
-		$availableRoutes = $this->config->routes();
+		$availableRoutes = $this->routes;
 		$routeString = null;
 		$controllerName = null;
 
@@ -114,8 +93,9 @@ class Router extends Base\Router
 		while (!empty($controllerPathParts)) {
 			$path = implode('\\', $controllerPathParts);
 
+			$proposedClass = $path . 'Controller';
 			if ($namespace !== null) {
-				$proposedClass = $namespace . '\\' . $path . 'Controller';
+				$proposedClass = $namespace . '\\' . $proposedClass;
 			}
 
 			if (class_exists($proposedClass)) {
@@ -143,7 +123,7 @@ class Router extends Base\Router
 
 		if (count($requestPathParts) > 0) {
 			$controllerPathParts = array_map('ucFirst', $requestPathParts);
-			$controllerNamespace = sprintf('%s\\Controller', $this->config->rootNamespace());
+			$controllerNamespace = sprintf('%s\\Controller', $this->rootNamespace);
 
 			while (count($requestPathParts) > 0) {
 				$proposedClass = $controllerNamespace . '\\' . implode('\\', $controllerPathParts) . 'Controller';
@@ -160,7 +140,7 @@ class Router extends Base\Router
 		}
 
 		if (empty($controllerClass)) {
-			$controllerClass = $this->config->defaultController();
+			$controllerClass = $this->defaultController;
 			$route = '';
 		}
 
@@ -172,18 +152,17 @@ class Router extends Base\Router
 
 	/**
 	 * @param string $class
-	 * @param App $app
 	 * @return Base\Controller
 	 * @throws InvalidRequestException if class does not match an existing class
 	 */
-	protected function instantiateController($class, App $app)
+	protected function instantiateController($class)
 	{
 		if (!class_exists($class)) {
 			throw new InvalidRequestException(sprintf('Request routed to an unknown class name: %s', $class));
 		}
 
 		try {
-			$controller = new $class($app);
+			$controller = new $class($this->app);
 		} catch (\Exception $e) {
 			throw new InvalidRequestException(sprintf('Failed to instantiate controller class: %s', $class));
 		}
@@ -193,5 +172,17 @@ class Router extends Base\Router
 		}
 
 		return $controller;
+	}
+
+	protected function searchCache($requestUri)
+	{
+		$output = null;
+
+		return $output;
+	}
+
+	protected function cache($requestUri, $output)
+	{
+		return $this;
 	}
 }
