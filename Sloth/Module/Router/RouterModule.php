@@ -5,7 +5,7 @@ use Sloth\Base;
 use Sloth\Request;
 use Sloth\Exception\InvalidRequestException;
 
-class Router extends \Sloth\Module\Router\Base\Router
+class RouterModule extends \Sloth\Module\Router\Base\Router
 {
 	public function route(Request $request)
 	{

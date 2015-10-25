@@ -7,7 +7,7 @@ class Factory extends AbstractModuleFactory
 {
 	public function initialise()
 	{
-		return new Router(array(
+		return new RouterModule(array(
 			'app' => $this->app,
 			'routes' => $this->options['routes'],
 			'rootNamespace' => $this->options['rootNamespace'],
