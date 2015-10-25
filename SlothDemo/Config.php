@@ -43,7 +43,7 @@ class Config extends BaseConfig
 				)
 			),
 			'resource' => array(
-				'factoryClass' => 'SlothDemo\\Module\\Resource\\Factory',
+				'factoryClass' => 'Sloth\\Module\\Resource\\Factory',
 				'options' => array(
 					'resourceManifestDirectory' => $this->rootDirectory() . '/Resource/ResourceManifest',
 					'tableManifestDirectory' => $this->rootDirectory() . '/Resource/TableManifest',
@@ -51,14 +51,14 @@ class Config extends BaseConfig
 				)
 			),
 			'render' => array(
-				'factoryClass' => 'SlothDemo\\Module\\Render\\Factory',
+				'factoryClass' => 'Sloth\\Module\\Render\\Factory',
 				'options' => array(
 					'viewManifestDirectory' => $this->rootDirectory() . '/Route/Manifest',
 					'viewDirectory' => $this->rootDirectory() . '/Route/View'
 				)
 			),
 			'restResource' => array(
-				'factoryClass' => 'SlothDemo\\Module\\Resource\\Factory',
+				'factoryClass' => 'Sloth\\Module\\Resource\\Factory',
 				'options' => array(
 					'resourceManifestDirectory' => $this->rootDirectory() . '/Resource/ResourceManifest',
 					'tableManifestDirectory' => $this->rootDirectory() . '/Resource/TableManifest',
@@ -66,14 +66,14 @@ class Config extends BaseConfig
 				)
 			),
 			'restRender' => array(
-				'factoryClass' => 'SlothDemo\\Module\\Render\\Factory',
+				'factoryClass' => 'Sloth\\Module\\Render\\Factory',
 				'options' => array(
 					'viewManifestDirectory' => null,
 					'viewDirectory' => $this->rootDirectory() . '/View/Resource'
 				)
 			),
 			'mysql' => array(
-				'factoryClass' => 'SlothDemo\\Module\\MySql\\Factory',
+				'factoryClass' => 'Sloth\\Module\\MySql\\Factory',
 				'options' => array(
 					'name' => 'slothDemo',
 					'host' => 'localhost',

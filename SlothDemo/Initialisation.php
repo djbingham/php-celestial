@@ -3,7 +3,7 @@ namespace SlothDemo;
 
 use Sloth\Module\Router\Base\Router;
 use Sloth\Request;
-use SlothDemo\Module\ModuleLoader;
+use Sloth\Module\ModuleLoader;
 
 class Initialisation extends \Sloth\Base\Initialisation
 {
