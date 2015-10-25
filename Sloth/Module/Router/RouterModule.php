@@ -2,7 +2,7 @@
 namespace Sloth\Module\Router;
 
 use Sloth\Base;
-use Sloth\Request;
+use Sloth\Module\Request\Request;
 use Sloth\Exception\InvalidRequestException;
 
 class RouterModule extends \Sloth\Module\Router\Base\Router

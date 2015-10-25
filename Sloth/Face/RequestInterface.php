@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Face;
 
-use Sloth\Request\Params;
+use Sloth\Module\Request\Params;
 
 interface RequestInterface
 {

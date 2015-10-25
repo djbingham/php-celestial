@@ -3,7 +3,7 @@ namespace Sloth;
 
 use Sloth\Module\ModuleLoader;
 
-abstract class App
+class App
 {
 	/**
 	 * @var ModuleLoader
@@ -44,11 +44,6 @@ abstract class App
 	public function rootUrl()
 	{
 		return $this->config->rootUrl();
-	}
-
-	public function moduleLoader()
-	{
-		return new $this->config->moduleLoader();
 	}
 
 	public function createUrl(array $pathParts = array())

@@ -1,24 +1,23 @@
 <?php
 namespace SlothDemo;
 
+use Sloth\App;
 use Sloth\Module\Router\Base\Router;
-use Sloth\Request;
 use Sloth\Module\ModuleLoader;
 
-class Initialisation extends \Sloth\Base\Initialisation
+class Initialisation implements \Sloth\Face\Initialisation
 {
-	public function execute()
-	{
-		$request = $this->getRequest();
-		$app = $this->getApp($this->getConfig());
-		$router = $this->getRouter($app);
+	/**
+	 * @var App
+	 */
+	private $app;
 
-		echo $router->route($request);
-	}
-
-	protected function getRequest()
+	public function getApp()
 	{
-		return Request::fromServerVars();
+		if (!isset($this->app)) {
+			$this->app = $this->buildApp($this->getConfig());
+		}
+		return $this->app;
 	}
 
 	protected function getConfig()
@@ -26,7 +25,7 @@ class Initialisation extends \Sloth\Base\Initialisation
 		return new Config();
 	}
 
-	protected function getApp(Config $config)
+	protected function buildApp(Config $config)
 	{
 		$app = new App($config);
 		$app->setModuleLoader($this->getModuleLoader($app, $config));

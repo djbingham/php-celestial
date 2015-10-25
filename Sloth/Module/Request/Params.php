@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Request;
+namespace Sloth\Module\Request;
 
 use Sloth\Exception\InvalidArgumentException;
 

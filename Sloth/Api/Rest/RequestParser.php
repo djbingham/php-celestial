@@ -4,7 +4,7 @@ namespace Sloth\Api\Rest;
 use Sloth\Face\RequestInterface;
 use Sloth\Module\Resource as ResourceModule;
 use Sloth\Module\Render as RenderModule;
-use Sloth\Request;
+use Sloth\Module\Request\Request;
 use Sloth\Exception;
 
 class RequestParser implements Face\RequestParserInterface

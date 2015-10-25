@@ -6,7 +6,7 @@ use Sloth\Exception\InvalidRequestException;
 use Sloth\Face\RequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Render\View;
-use Sloth\Request;
+use Sloth\Module\Request\Request;
 
 abstract class ActionController extends Controller
 {

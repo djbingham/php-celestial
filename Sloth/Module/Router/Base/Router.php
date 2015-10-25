@@ -4,7 +4,7 @@ namespace Sloth\Module\Router\Base;
 use Helper\InternalCacheTrait;
 use Sloth\App;
 use Sloth\Base\Config\Routes;
-use Sloth\Request;
+use Sloth\Module\Request\Request;
 
 abstract class Router
 {

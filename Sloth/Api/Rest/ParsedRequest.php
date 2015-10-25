@@ -4,7 +4,7 @@ namespace Sloth\Api\Rest;
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Module\Resource as ResourceModule;
 use Sloth\Module\Render as RenderModule;
-use Sloth\Request;
+use Sloth\Module\Request\Request;
 
 class ParsedRequest extends Request implements Face\ParsedRequestInterface
 {

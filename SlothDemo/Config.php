@@ -30,6 +30,10 @@ class Config extends BaseConfig
     public function modules()
     {
         return new BaseConfig\Modules(array(
+			'request' => array(
+				'factoryClass' => 'Sloth\\Module\\Request\\Factory',
+				'options' => array()
+			),
 			'router' => array(
 				'factoryClass' => 'Sloth\\Module\\Router\\Factory',
 				'options' => array(
