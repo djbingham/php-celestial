@@ -114,7 +114,7 @@ class UpdateController extends RestfulController
 	}
 
 	/**
-	 * @return ResourceModule\ModuleCore
+	 * @return ResourceModule\ResourceModule
 	 */
 	private function getResourceModule()
 	{

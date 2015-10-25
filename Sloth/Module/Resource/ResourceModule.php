@@ -11,7 +11,7 @@ use Sloth\Module\Resource\DefinitionBuilder\ValidatorListBuilder;
 use Sloth\App;
 use SlothMySql\DatabaseWrapper;
 
-class ModuleCore
+class ResourceModule
 {
 	/**
 	 * @var App

@@ -11,7 +11,7 @@ class Factory extends AbstractModuleFactory
 
 	public function initialise()
 	{
-		$module = new ModuleCore($this->app);
+		$module = new ResourceModule($this->app);
 		$module
 			->setDatabaseWrapper($this->getDatabaseWrapper())
 			->setTableManifestValidator($this->getTableManifestValidator())

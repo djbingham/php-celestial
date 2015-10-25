@@ -5,7 +5,7 @@ use Sloth\Base\Controller\RestfulController;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Face\RequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
-use Sloth\Module\Resource\ModuleCore;
+use Sloth\Module\Resource\ResourceModule;
 use Sloth\Api\Rest\Face\ParsedRequestInterface;
 use Sloth\Api\Rest\RequestParser;
 
@@ -97,7 +97,7 @@ class ViewController extends RestfulController
 	}
 
 	/**
-	 * @return ModuleCore
+	 * @return ResourceModule
 	 */
 	private function getResourceModule()
 	{

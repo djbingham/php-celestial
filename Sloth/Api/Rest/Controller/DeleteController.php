@@ -4,7 +4,7 @@ namespace Sloth\Api\Rest\Controller;
 use Sloth\Base\Controller\RestfulController;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Face\RequestInterface;
-use Sloth\Module\Resource\ModuleCore;
+use Sloth\Module\Resource\ResourceModule;
 use Sloth\Api\Rest\Face\ParsedRequestInterface;
 use Sloth\Api\Rest\RequestParser;
 
@@ -52,7 +52,7 @@ class DeleteController extends RestfulController
 	}
 
 	/**
-	 * @return ModuleCore
+	 * @return ResourceModule
 	 */
 	private function getResourceModule()
 	{

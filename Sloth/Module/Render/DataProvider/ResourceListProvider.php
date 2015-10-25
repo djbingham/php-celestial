@@ -18,7 +18,7 @@ class ResourceListProvider implements DataProviderInterface
 	private $options = array();
 
 	/**
-	 * @var ResourceModule\ModuleCore
+	 * @var ResourceModule\ResourceModule
 	 */
 	private $resourceModule;
 
@@ -107,7 +107,7 @@ class ResourceListProvider implements DataProviderInterface
 				'Missing required dependencies for Render module: ' . implode(', ', $missing)
 			);
 		}
-		if (!($dependencies['resourceModule'] instanceof ResourceModule\ModuleCore)) {
+		if (!($dependencies['resourceModule'] instanceof ResourceModule\ResourceModule)) {
 			throw new InvalidArgumentException('Invalid resource module given in dependencies for Render module');
 		}
 	}

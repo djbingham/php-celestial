@@ -10,11 +10,11 @@ use Sloth\Exception;
 class RequestParser implements Face\RequestParserInterface
 {
 	/**
-	 * @var ResourceModule\ModuleCore
+	 * @var ResourceModule\ResourceModule
 	 */
 	protected $resourceModule;
 
-	public function setResourceModule(ResourceModule\ModuleCore $resourceModule)
+	public function setResourceModule(ResourceModule\ResourceModule $resourceModule)
 	{
 		$this->resourceModule = $resourceModule;
 		return $this;

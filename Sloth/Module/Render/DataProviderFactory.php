@@ -3,7 +3,7 @@ namespace Sloth\Module\Render;
 
 use Module\Render\Face\DataProviderFactoryInterface;
 use Sloth\Exception\InvalidArgumentException;
-use Sloth\Module\Resource\ModuleCore as ResourceModuleCore;
+use Sloth\Module\Resource\ResourceModule as ResourceModuleCore;
 
 class DataProviderFactory implements DataProviderFactoryInterface
 {

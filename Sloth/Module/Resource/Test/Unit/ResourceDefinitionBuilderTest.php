@@ -3,7 +3,7 @@ namespace Sloth\Module\Resource\Test;
 
 require_once dirname(__DIR__) . '/UnitTest.php';
 
-use Sloth\Module\Resource\ModuleCore;
+use Sloth\Module\Resource\ResourceModule;
 use Sloth\Module\Resource\ResourceManifestValidator;
 use DemoResource\Test\UnitTest;
 use Sloth\App;
@@ -15,7 +15,7 @@ class IntegrationTest extends UnitTest
 
 	public function testTableCanBeBuiltFromNamedManifestFileUsingDefaultSubBuilders()
 	{
-		$factory = new ModuleCore($this->mockApp());
+		$factory = new ResourceModule($this->mockApp());
 		$resourceManifestValidator = new ResourceManifestValidator();
 		$resourceManifestDirectory = dirname(__DIR__) . '/sample/resourceManifest';
 		$tableManifestValidator = new TableManifestValidator();
@@ -37,7 +37,7 @@ class IntegrationTest extends UnitTest
 
 	public function testConnectedTablesAreLoadedOnDemand()
 	{
-		$factory = new ModuleCore($this->mockApp());
+		$factory = new ResourceModule($this->mockApp());
 		$resourceManifestValidator = new ResourceManifestValidator();
 		$resourceManifestDirectory = dirname(__DIR__) . '/sample/resourceManifest';
 		$tableManifestValidator = new TableManifestValidator();
