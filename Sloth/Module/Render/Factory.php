@@ -17,7 +17,7 @@ class Factory extends AbstractModuleFactory
 
 	public function initialise()
 	{
-		$renderer = new Renderer();
+		$renderer = new RenderModule();
 		$renderer->setApp($this->app)
 			->setViewFactory($this->getViewFactory());
 		return $renderer;

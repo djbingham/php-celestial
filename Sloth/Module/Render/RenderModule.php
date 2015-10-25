@@ -7,7 +7,7 @@ use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Render\Face\ViewFactoryInterface;
 use Sloth\Module\Render\Face\ViewInterface;
 
-class Renderer implements RendererInterface
+class RenderModule implements RendererInterface
 {
 	/**
 	 * @var App
