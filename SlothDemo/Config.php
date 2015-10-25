@@ -2,7 +2,6 @@
 namespace SlothDemo;
 
 use Sloth\Base\Config as BaseConfig;
-use Sloth\SlothDefault;
 
 class Config extends BaseConfig
 {
