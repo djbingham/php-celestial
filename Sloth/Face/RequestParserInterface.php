@@ -1,7 +1,5 @@
 <?php
-namespace Sloth\Api\Rest\Face;
-
-use Sloth\Face\RequestInterface;
+namespace Sloth\Face;
 
 interface RequestParserInterface
 {

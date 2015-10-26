@@ -30,20 +30,11 @@ class Params
 	 */
 	private $server = array();
 
-	public function __construct(array $params)
+	public function __construct(array $properties)
 	{
-		foreach ($params as $type => $paramsOfType) {
-			if (!property_exists($this, $type)) {
-				throw new InvalidArgumentException(
-					sprintf('Request contains params of unknown type: %s', $type)
-				);
-			}
-			if (!is_array($paramsOfType)) {
-				throw new InvalidArgumentException(
-					sprintf('Request params should be in an array. Non-array given: %s', print_r($paramsOfType, true))
-				);
-			}
-			$this->$type = $paramsOfType;
+		$this->validateProperties($properties);
+		foreach ($properties as $type => $propertiesOfType) {
+			$this->$type = $propertiesOfType;
 		}
 	}
 
@@ -70,5 +61,32 @@ class Params
 	public function server()
 	{
 		return $this->server;
+	}
+
+	public function toArray()
+	{
+		return array(
+			'get' => $this->get(),
+			'post' => $this->post(),
+			'cookie' => $this->cookie(),
+			'session' => $this->session(),
+			'server' => $this->server()
+		);
+	}
+
+	protected function validateProperties(array $properties)
+	{
+		foreach ($properties as $type => $propertiesOfType) {
+			if (!property_exists($this, $type)) {
+				throw new InvalidArgumentException(
+					sprintf('Request contains params of unknown type: %s', $type)
+				);
+			}
+			if (!is_array($propertiesOfType)) {
+				throw new InvalidArgumentException(
+					sprintf('Request params should be in an array. Non-array given: %s', print_r($propertiesOfType, true))
+				);
+			}
+		}
 	}
 }

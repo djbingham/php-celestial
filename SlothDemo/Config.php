@@ -42,7 +42,7 @@ class Config extends BaseConfig
 						)
 					)),
 					'rootNamespace' => $this->rootNamespace(),
-					'defaultController' => 'SlothDemo\\Controller\\DefaultController'
+					'defaultController' => 'Sloth\\Api\\View\\ViewController'
 				)
 			),
 			'resource' => array(

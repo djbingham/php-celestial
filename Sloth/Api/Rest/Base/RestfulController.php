@@ -1,47 +1,47 @@
 <?php
-namespace Sloth\Base\Controller;
+namespace Sloth\Api\Rest\Base;
 
 use Sloth\Base\Controller;
 use Sloth\Exception;
 use Sloth\Face\RequestInterface;
-use Sloth\Api\Rest\Face\ParsedRequestInterface;
+use Sloth\Api\Rest\Face\RestfulParsedRequestInterface;
 
 abstract class RestfulController extends Controller
 {
 	/**
 	 * @param RequestInterface $request
 	 * @param string $route
-	 * @return ParsedRequestInterface
+	 * @return RestfulParsedRequestInterface
 	 */
 	abstract protected function parseRequest(RequestInterface $request, $route);
 
 	/**
-	 * @param ParsedRequestInterface $request
+	 * @param RestfulParsedRequestInterface $request
 	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handleGet(ParsedRequestInterface $request, $route);
+	abstract protected function handleGet(RestfulParsedRequestInterface $request, $route);
 
 	/**
-	 * @param ParsedRequestInterface $request
+	 * @param RestfulParsedRequestInterface $request
 	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handlePost(ParsedRequestInterface $request, $route);
+	abstract protected function handlePost(RestfulParsedRequestInterface $request, $route);
 
 	/**
-	 * @param ParsedRequestInterface $request
+	 * @param RestfulParsedRequestInterface $request
 	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handlePut(ParsedRequestInterface $request, $route);
+	abstract protected function handlePut(RestfulParsedRequestInterface $request, $route);
 
 	/**
-	 * @param ParsedRequestInterface $request
+	 * @param RestfulParsedRequestInterface $request
 	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handleDelete(ParsedRequestInterface $request, $route);
+	abstract protected function handleDelete(RestfulParsedRequestInterface $request, $route);
 
 	/**
 	 * @param RequestInterface $request

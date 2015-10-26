@@ -1,36 +1,29 @@
 <?php
 namespace Sloth\Api\Rest\Controller;
 
-use Sloth\Base\Controller\RestfulController;
+use Sloth\Base\Controller;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Face\RequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Resource\ResourceModule;
-use Sloth\Api\Rest\Face\ParsedRequestInterface;
-use Sloth\Api\Rest\ParsedRequest;
 
-class IndexController extends RestfulController
+class IndexController extends Controller
 {
-	public function parseRequest(RequestInterface $request, $route)
+	public function execute(RequestInterface $request, $route)
 	{
-		$requestProperties = $request->toArray();
-		return new ParsedRequest($requestProperties);
-	}
-
-	public function handleGet(ParsedRequestInterface $request, $route)
-	{
-		$renderer = $this->getRenderModule();
-
-		$extension = $request->getExtension();
-		if ($extension === null) {
-			$extension = 'php';
+		if ($request->getMethod() !== 'get') {
+			throw new InvalidRequestException(
+				sprintf('Invalid request method used: `%s`. Allowed methods: get', $request->getMethod())
+			);
 		}
+
+		$renderer = $this->getRenderModule();
 
 		$resourceNames = $this->getResourceNames($this->getResourceModule()->getResourceManifestDirectory());
 
 		$view = $renderer->getViewFactory()->build(array(
-			'engine' => $extension,
-			'path' => 'Default/index.' . $extension,
+			'engine' => 'php',
+			'path' => 'Default/index.php',
 			'dataProviders' => array(
 				'resourceNames' => array(
 					'engine' => 'static',
@@ -42,21 +35,6 @@ class IndexController extends RestfulController
 		));
 
 		return $renderer->render($view);
-	}
-
-	public function handlePost(ParsedRequestInterface $request, $route)
-	{
-		throw new InvalidRequestException('Cannot post to resource/index');
-	}
-
-	public function handlePut(ParsedRequestInterface $request, $route)
-	{
-		throw new InvalidRequestException('Cannot put to resource/index');
-	}
-
-	public function handleDelete(ParsedRequestInterface $request, $route)
-	{
-		throw new InvalidRequestException('Cannot delete from resource/index');
 	}
 
 	/**

@@ -1,24 +1,24 @@
 <?php
 namespace Sloth\Api\Rest\Controller;
 
-use Sloth\Base\Controller\RestfulController;
+use Sloth\Api\Rest\Face\RestfulParsedRequestInterface;
+use Sloth\Api\Rest\Base\RestfulController;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Face\RequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Resource\ResourceModule;
-use Sloth\Api\Rest\Face\ParsedRequestInterface;
-use Sloth\Api\Rest\RequestParser;
+use Sloth\Api\Rest\RestfulRequestParser;
 
 class CreateController extends RestfulController
 {
 	public function parseRequest(RequestInterface $request, $route)
 	{
-		$requestParser = new RequestParser();
+		$requestParser = new RestfulRequestParser();
 		$requestParser->setResourceModule($this->getResourceModule());
 		return $requestParser->parse($request, $route);
 	}
 
-	public function handleGet(ParsedRequestInterface $request, $route)
+	public function handleGet(RestfulParsedRequestInterface $request, $route)
 	{
 		$renderer = $this->getRenderModule();
 
@@ -40,7 +40,7 @@ class CreateController extends RestfulController
 		return $renderer->render($view);
 	}
 
-	public function handlePost(ParsedRequestInterface $request, $route)
+	public function handlePost(RestfulParsedRequestInterface $request, $route)
 	{
 		$attributes = $request->getParams()->post();
 		$resourceDefinition = $request->getResourceDefinition();
@@ -62,12 +62,12 @@ class CreateController extends RestfulController
 		$this->app->redirect($redirectUrl);
 	}
 
-	public function handlePut(ParsedRequestInterface $request, $route)
+	public function handlePut(RestfulParsedRequestInterface $request, $route)
 	{
 		throw new InvalidRequestException('Cannot put to resource/create');
 	}
 
-	public function handleDelete(ParsedRequestInterface $request, $route)
+	public function handleDelete(RestfulParsedRequestInterface $request, $route)
 	{
 		throw new InvalidRequestException('Cannot delete from resource/create');
 	}

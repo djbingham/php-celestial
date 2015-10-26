@@ -39,17 +39,14 @@ class Request implements RequestInterface
 
 	public function __construct(array $properties)
 	{
-		$this->method = $properties['method'];
-		$this->uri = $properties['uri'];
-		$this->path = $properties['path'];
-		$this->queryString = $properties['queryString'];
-		$this->fragment = $properties['fragment'];
-		$this->params = new Params(array(
-			'get' => $properties['params']['get'],
-			'post' => $properties['params']['post'],
-			'cookie' => $properties['params']['cookie'],
-			'server' => $properties['params']['server']
-		));
+		$this->validateProperties($properties);
+
+		$properties['params'] = new Params($properties['params']);
+
+		foreach ($properties as $key => $value) {
+			$this->$key = $value;
+		}
+
 		return $this;
 	}
 
@@ -106,12 +103,41 @@ class Request implements RequestInterface
             'path' => $this->getPath(),
             'queryString' => $this->getQueryString(),
             'fragment' => $this->getFragment(),
-            'params' => array(
-                'get' => $this->getParams()->get(),
-                'post' => $this->getParams()->post(),
-                'cookie' => $this->getParams()->cookie(),
-                'server' => $this->getParams()->server(),
-            )
+            'params' => $this->getParams()->toArray()
         );
     }
+
+	protected function validateProperties(array $properties)
+	{
+		$required = array('method', 'uri', 'path', 'queryString', 'fragment', 'params');
+		$missing = array_diff($required, array_keys($properties));
+		if (!empty($missing)) {
+			throw new InvalidArgumentException(
+				'Missing required properties for Request instance: ' . implode(', ', $missing)
+			);
+		}
+
+		foreach ($properties as $propertyName => $propertyValue) {
+			if (!property_exists($this, $propertyName)) {
+				throw new InvalidArgumentException(
+					sprintf('Unrecognised property given to Request: %s', $propertyName)
+				);
+			}
+		}
+
+		$stringProperties = array('method', 'uri', 'path', 'queryString', 'fragment');
+		foreach ($stringProperties as $propertyName) {
+			if (!is_string($properties[$propertyName])) {
+				throw new InvalidArgumentException(
+					sprintf('Invalid value given to Request instance for property `%s`', $propertyName)
+				);
+			}
+		}
+
+		if (!is_array($properties['params'])) {
+			throw new InvalidArgumentException(
+				sprintf('Invalid `params` value given to Request instance: %s', json_encode($properties['params']))
+			);
+		}
+	}
 }

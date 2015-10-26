@@ -4,10 +4,9 @@ namespace Sloth\Api\Rest;
 use Sloth\Face\RequestInterface;
 use Sloth\Module\Resource as ResourceModule;
 use Sloth\Module\Render as RenderModule;
-use Sloth\Module\Request\Request;
 use Sloth\Exception;
 
-class RequestParser implements Face\RequestParserInterface
+class RestfulRequestParser implements \Sloth\Face\RequestParserInterface
 {
 	/**
 	 * @var ResourceModule\ResourceModule
@@ -55,13 +54,13 @@ class RequestParser implements Face\RequestParserInterface
 
 		$requestProperties = $request->toArray();
 		$requestProperties['originalRequest'] = $request;
-		$requestProperties['params'] = $request->getParams();
+		$requestProperties['params'] = $request->getParams()->toArray();
 		$requestProperties['resourcePath'] = $resourcePath;
 		$requestProperties['resourceId'] = $resourceId;
 		$requestProperties['resourceFactory'] = $resourceFactory;
 		$requestProperties['resourceDefinition'] = $resourceDefinition;
 		$requestProperties['extension'] = $extension;
 
-		return new ParsedRequest($requestProperties);
+		return new RestfulParsedRequest($requestProperties);
 	}
 }

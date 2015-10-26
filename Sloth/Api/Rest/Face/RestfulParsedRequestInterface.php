@@ -1,21 +1,14 @@
 <?php
 namespace Sloth\Api\Rest\Face;
 
-use Sloth\Face\RequestInterface;
+use Sloth\Face\ParsedRequestInterface;
 use Sloth\Module\Resource\Definition\Resource as ResourceDefinition;
 use Sloth\Module\Resource\ResourceFactoryInterface;
 
-interface ParsedRequestInterface extends RequestInterface
+interface RestfulParsedRequestInterface extends ParsedRequestInterface
 {
-	public function __construct(array $properties);
-
 	/**
-	 * @return RequestInterface
-	 */
-	public function getOriginalRequest();
-
-	/**
-	 * @return mixed
+	 * @return number|string
 	 */
 	public function getResourceId();
 
