@@ -145,13 +145,15 @@ class ViewFactory implements ViewFactoryInterface
 		if ($this->isCached(['view', $viewPath, 'manifestPath'])) {
 			$manifestPath = $this->getCached(['view', $viewPath, 'manifestPath']);
 		} else {
-			$viewPathParts = explode('/', $viewPath);
-			$manifestPathParts = array();
+			$manifestPathParts = explode('/', $viewPath);
+			$viewPathParts = array();
 			$manifestPath = '';
 
 			$found = false;
-			while (!empty($viewPathParts)) {
-				$manifestPathParts[] = array_shift($viewPathParts);
+			$counter = 0;
+			$limit = count($manifestPathParts);
+			while ($counter <= $limit) {
+				$counter++;
 				$manifestPath = implode(DIRECTORY_SEPARATOR, $manifestPathParts);
 				$manifestFile = $this->getFileFromManifestPath($manifestPath);
 
@@ -159,6 +161,7 @@ class ViewFactory implements ViewFactoryInterface
 					$found = true;
 					break;
 				}
+				array_unshift($viewPathParts, array_pop($manifestPathParts));
 			}
 
 			if (!$found) {
