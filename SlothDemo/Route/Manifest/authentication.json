@@ -1,0 +1,18 @@
+{
+	"loginForm": {
+		"engine": "mustache",
+		"path": "loginForm.html"
+	},
+	"loginResult": {
+		"engine": "mustache",
+		"path": "loginResult.html"
+	},
+	"loginFailed": {
+		"engine": "mustache",
+		"path": "loginFailed.html"
+	},
+	"logoutResult": {
+		"engine": "mustache",
+		"path": "logoutResult.html"
+	}
+}

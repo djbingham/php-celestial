@@ -6,6 +6,16 @@
 			"autoIncrement": true,
 			"validators": []
 		},
+		"username": {
+			"type": "text(50)",
+			"field": "username",
+			"validators": []
+		},
+		"password": {
+			"type": "text(50)",
+			"field": "password",
+			"validators": []
+		},
 		"forename": {
 			"type": "text(50)",
 			"field": "forename",

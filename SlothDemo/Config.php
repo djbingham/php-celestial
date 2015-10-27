@@ -33,16 +33,34 @@ class Config extends BaseConfig
 				'factoryClass' => 'Sloth\\Module\\Request\\Factory',
 				'options' => array()
 			),
+			'session' => array(
+				'factoryClass' => 'Sloth\\Module\\Session\\Factory',
+				'options' => array()
+			),
 			'router' => array(
 				'factoryClass' => 'Sloth\\Module\\Router\\Factory',
 				'options' => array(
 					'routes' => new BaseConfig\Routes(array(
 						'resource' => array(
 							'namespace' => 'Sloth\\Api\\Rest\\Controller'
+						),
+						'login' => array(
+							'controller' => 'Sloth\\Api\\Authentication\\AuthenticationController'
+						),
+						'logout' => array(
+							'controller' => 'Sloth\\Api\\Authentication\\UnauthenticationController'
 						)
 					)),
 					'rootNamespace' => $this->rootNamespace(),
 					'defaultController' => 'Sloth\\Api\\View\\ViewController'
+				)
+			),
+			'authentication' => array(
+				'factoryClass' => 'Sloth\\Module\\Authentication\\Factory',
+				'options' => array(
+					'userResource' => 'user',
+					'usernameAttribute' => 'username',
+					'passwordAttribute' => 'password'
 				)
 			),
 			'resource' => array(

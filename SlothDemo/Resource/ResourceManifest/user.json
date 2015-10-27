@@ -4,6 +4,8 @@
 	"primaryAttribute": "id",
 	"attributes": {
 		"id": true,
+		"username": true,
+		"password": true,
 		"forename": true,
 		"surname": true,
 		"address": {
