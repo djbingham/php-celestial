@@ -31,14 +31,19 @@ class RequestModule
 					'server' => $_SERVER
 				)
 			);
-			$request = $this->fromArray($properties);
+			$request = $this->buildRequest($properties);
 			$this->setCached('fromServerVars', $request);
 		}
 		return $this->getCached('fromServerVars');
 	}
 
-	public function fromArray(array $properties)
+	public function buildRequest(array $properties)
 	{
 		return new Request($properties);
+	}
+
+	public function buildRoutedRequest(array $properties)
+	{
+		return new RoutedRequest($properties);
 	}
 }

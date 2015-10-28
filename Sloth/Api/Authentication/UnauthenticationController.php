@@ -2,13 +2,13 @@
 namespace Sloth\Api\Authentication;
 
 use Sloth\Base\Controller;
-use Sloth\Face\RequestInterface;
+use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Authentication\AuthenticationModule;
 use Sloth\Module\Render\Face\RendererInterface;
 
 class UnauthenticationController extends Controller
 {
-	public function execute(RequestInterface $request, $route)
+	public function execute(RoutedRequestInterface $request)
 	{
 		$renderer = $this->getRenderModule();;
 		$authentication = $this->getAuthenticationModule();

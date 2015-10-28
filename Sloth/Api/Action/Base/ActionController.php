@@ -3,18 +3,18 @@ namespace Sloth\Api\Action\Base;
 
 use Sloth\Base\Controller;
 use Sloth\Exception\InvalidRequestException;
-use Sloth\Face\RequestInterface;
+use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Render\View;
 use Sloth\Module\Request\Request;
 
 abstract class ActionController extends Controller
 {
-	abstract protected function handleIndex(RequestInterface $request);
+	abstract protected function handleIndex(RoutedRequestInterface $request);
 
-	public function execute(RequestInterface $request, $controllerRoute)
+	public function execute(RoutedRequestInterface $request)
 	{
-		$escapedControllerRoute = str_replace('/', '\/', $controllerRoute);
+		$escapedControllerRoute = str_replace('/', '\/', $request->getControllerPath());
 		$controllerRouteRegex = sprintf('/^%s/', $escapedControllerRoute);
 		$actionRoute = preg_replace($controllerRouteRegex, '', $request->getPath());
 		$actionRoute = trim($actionRoute, '/');

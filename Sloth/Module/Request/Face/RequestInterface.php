@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Face;
+namespace Sloth\Module\Request\Face;
 
 use Sloth\Module\Request\Params;
 

@@ -3,61 +3,55 @@ namespace Sloth\Api\Rest\Base;
 
 use Sloth\Base\Controller;
 use Sloth\Exception;
-use Sloth\Face\RequestInterface;
+use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Api\Rest\Face\RestfulParsedRequestInterface;
 
 abstract class RestfulController extends Controller
 {
 	/**
-	 * @param RequestInterface $request
-	 * @param string $route
+	 * @param RoutedRequestInterface $request
 	 * @return RestfulParsedRequestInterface
 	 */
-	abstract protected function parseRequest(RequestInterface $request, $route);
+	abstract protected function parseRequest(RoutedRequestInterface $request);
 
 	/**
 	 * @param RestfulParsedRequestInterface $request
-	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handleGet(RestfulParsedRequestInterface $request, $route);
+	abstract protected function handleGet(RestfulParsedRequestInterface $request);
 
 	/**
 	 * @param RestfulParsedRequestInterface $request
-	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handlePost(RestfulParsedRequestInterface $request, $route);
+	abstract protected function handlePost(RestfulParsedRequestInterface $request);
 
 	/**
 	 * @param RestfulParsedRequestInterface $request
-	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handlePut(RestfulParsedRequestInterface $request, $route);
+	abstract protected function handlePut(RestfulParsedRequestInterface $request);
 
 	/**
 	 * @param RestfulParsedRequestInterface $request
-	 * @param string $route
 	 * @return string
 	 */
-	abstract protected function handleDelete(RestfulParsedRequestInterface $request, $route);
+	abstract protected function handleDelete(RestfulParsedRequestInterface $request);
 
 	/**
-	 * @param RequestInterface $request
-	 * @param string $route
+	 * @param RoutedRequestInterface $request
 	 * @return string
 	 * @throws Exception\InvalidRequestException
 	 */
-    public function execute(RequestInterface $request, $route)
+    public function execute(RoutedRequestInterface $request)
     {
-		$parsedRequest = $this->parseRequest($request, $route);
+		$parsedRequest = $this->parseRequest($request);
 		$method = 'handle' . ucfirst($parsedRequest->getMethod());
 
 		if (!method_exists($this, $method)) {
 			throw new Exception\InvalidRequestException(sprintf('Method not found: %s', $method));
 		}
 
-		return $this->$method($parsedRequest, $route);
+		return $this->$method($parsedRequest);
     }
 }

@@ -3,13 +3,13 @@ namespace Sloth\Api\Authentication;
 
 use Sloth\Base\Controller;
 use Sloth\Exception\InvalidRequestException;
-use Sloth\Face\RequestInterface;
+use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Authentication\AuthenticationModule;
 use Sloth\Module\Render\Face\RendererInterface;
 
 class AuthenticationController extends Controller
 {
-	public function execute(RequestInterface $request, $route)
+	public function execute(RoutedRequestInterface $request)
 	{
 		$method = 'handle' . ucfirst($request->getMethod());
 
@@ -19,10 +19,10 @@ class AuthenticationController extends Controller
 			);
 		}
 
-		return $this->$method($request, $route);
+		return $this->$method($request);
 	}
 
-	protected function handleGet(RequestInterface $request, $route)
+	protected function handleGet(RoutedRequestInterface $request)
 	{
 		$renderer = $this->getRenderModule();
 
@@ -32,7 +32,7 @@ class AuthenticationController extends Controller
 		return $renderer->render($view);
 	}
 
-	protected function handlePost(RequestInterface $request, $route)
+	protected function handlePost(RoutedRequestInterface $request)
 	{
 		$renderer = $this->getRenderModule();
 		$authentication = $this->getAuthenticationModule();

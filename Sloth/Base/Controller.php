@@ -7,7 +7,7 @@ abstract class Controller
 {
 	protected $app;
 
-	abstract public function execute(Sloth\Face\RequestInterface $request, $route);
+	abstract public function execute(Sloth\Module\Request\Face\RoutedRequestInterface $request);
 
 	public function __construct(Sloth\App $app)
 	{

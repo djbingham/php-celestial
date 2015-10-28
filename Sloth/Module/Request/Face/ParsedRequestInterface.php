@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Face;
+namespace Sloth\Module\Request\Face;
 
 interface ParsedRequestInterface extends RequestInterface
 {

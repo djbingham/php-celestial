@@ -3,12 +3,12 @@ namespace Sloth\Api\View;
 
 use Sloth\Base\Controller;
 use Sloth\Exception\InvalidRequestException;
-use Sloth\Face\RequestInterface;
+use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 
 class ViewController extends Controller
 {
-	public function execute(RequestInterface $request, $route)
+	public function execute(RoutedRequestInterface $request)
 	{
 		if ($request->getMethod() !== 'get') {
 			throw new InvalidRequestException(
@@ -18,7 +18,7 @@ class ViewController extends Controller
 
 		$renderer = $this->getRenderModule();
 
-		$viewName = trim(preg_replace(sprintf('/^%s/', $route), '', $request->getPath()), '/');
+		$viewName = trim(preg_replace(sprintf('/^%s/', $request->getControllerPath()), '', $request->getPath()), '/');
 		$view = $renderer->getViewFactory()->getByName($viewName);
 
 		return $renderer->render($view);

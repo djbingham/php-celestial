@@ -3,7 +3,7 @@
 namespace Sloth\Module\Request;
 
 use Sloth\Exception\InvalidArgumentException;
-use Sloth\Face\RequestInterface;
+use Sloth\Module\Request\Face\RequestInterface;
 
 class Request implements RequestInterface
 {

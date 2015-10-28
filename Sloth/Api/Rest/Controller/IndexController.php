@@ -3,13 +3,13 @@ namespace Sloth\Api\Rest\Controller;
 
 use Sloth\Base\Controller;
 use Sloth\Exception\InvalidRequestException;
-use Sloth\Face\RequestInterface;
+use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Resource\ResourceModule;
 
 class IndexController extends Controller
 {
-	public function execute(RequestInterface $request, $route)
+	public function execute(RoutedRequestInterface $request)
 	{
 		if ($request->getMethod() !== 'get') {
 			throw new InvalidRequestException(

@@ -4,35 +4,35 @@ namespace Sloth\Api\Rest\Controller;
 use Sloth\Api\Rest\Base\RestfulController;
 use Sloth\Api\Rest\Face\RestfulParsedRequestInterface;
 use Sloth\Exception\InvalidRequestException;
-use Sloth\Face\RequestInterface;
+use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Resource\ResourceModule;
 use Sloth\Api\Rest\RestfulRequestParser;
 
 class DeleteController extends RestfulController
 {
-	public function parseRequest(RequestInterface $request, $route)
+	public function parseRequest(RoutedRequestInterface $request)
 	{
 		$requestParser = new RestfulRequestParser();
 		$requestParser->setResourceModule($this->getResourceModule());
-		return $requestParser->parse($request, $route);
+		return $requestParser->parse($request);
 	}
 
-	public function handleGet(RestfulParsedRequestInterface $request, $route)
+	public function handleGet(RestfulParsedRequestInterface $request)
 	{
-		$this->handleDelete($request, $route);
+		$this->handleDelete($request);
 	}
 
-	public function handlePost(RestfulParsedRequestInterface $request, $route)
+	public function handlePost(RestfulParsedRequestInterface $request)
 	{
 		throw new InvalidRequestException('Cannot post to resource/delete');
 	}
 
-	public function handlePut(RestfulParsedRequestInterface $request, $route)
+	public function handlePut(RestfulParsedRequestInterface $request)
 	{
 		throw new InvalidRequestException('Cannot put to resource/create');
 	}
 
-	public function handleDelete(RestfulParsedRequestInterface $request, $route)
+	public function handleDelete(RestfulParsedRequestInterface $request)
 	{
 		$resourceDefinition = $request->getResourceDefinition();
 		$resourceFactory = $request->getResourceFactory();

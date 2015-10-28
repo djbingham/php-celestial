@@ -4,39 +4,39 @@ namespace Sloth\Module\Router;
 use Sloth\Base;
 use Sloth\Module\Request\Request;
 use Sloth\Exception\InvalidRequestException;
+use Sloth\Module\Request\RequestModule;
 
 class RouterModule extends \Sloth\Module\Router\Base\Router
 {
+	/**
+	 * @var RequestModule
+	 */
+	private $requestModule;
+
+	public function __construct(array $properties)
+	{
+		parent::__construct($properties);
+		$this->requestModule = $properties['requestModule'];
+	}
+
 	public function route(Request $request)
 	{
-		$output = null;
-		$canCacheRequest = $request->canBeCached();
-		$requestUri = $request->getUri();
-
-		if ($canCacheRequest) {
-			$output = $this->searchCache($requestUri);
+		$routeData = $this->searchRoutes($request);
+		if (empty($routeData['controller'])) {
+			$routeData = $this->searchControllers($request);
 		}
 
-		if (is_null($output)) {
-			$routeData = $this->searchRoutes($request);
-			if (empty($routeData['controller'])) {
-				$routeData = $this->searchControllers($request);
-			}
-
-			if (!array_key_exists('controller', $routeData) && !array_key_exists('namespace', $routeData)) {
-				throw new InvalidRequestException(sprintf('No controller or namespace found for request: %s', $requestUri));
-			}
-
-			$route = $routeData['route'];
-			$controller = $this->instantiateController($routeData['controller']);
-			$output = $controller->execute($request, $route);
-
-			if ($canCacheRequest) {
-				$this->cache($requestUri, $output);
-			}
+		if (!array_key_exists('controller', $routeData) && !array_key_exists('namespace', $routeData)) {
+			throw new InvalidRequestException(
+				sprintf('No controller or namespace found for request: %s', $request->getUri())
+			);
 		}
 
-		return $output;
+		$requestProperties = $request->toArray();
+		$requestProperties['controllerPath'] = $routeData['route'];
+		$requestProperties['controller'] = $this->instantiateController($routeData['controller']);
+
+		return $this->requestModule->buildRoutedRequest($requestProperties);
 	}
 
 	protected function searchRoutes(Request $request)
@@ -172,17 +172,5 @@ class RouterModule extends \Sloth\Module\Router\Base\Router
 		}
 
 		return $controller;
-	}
-
-	protected function searchCache($requestUri)
-	{
-		$output = null;
-
-		return $output;
-	}
-
-	protected function cache($requestUri, $output)
-	{
-		return $this;
 	}
 }

@@ -1,12 +1,18 @@
 <?php
 namespace Sloth\Api\Rest\Face;
 
-use Sloth\Face\ParsedRequestInterface;
+use Sloth\Module\Request\Face\ParsedRequestInterface;
+use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Resource\Definition\Resource as ResourceDefinition;
 use Sloth\Module\Resource\ResourceFactoryInterface;
 
 interface RestfulParsedRequestInterface extends ParsedRequestInterface
 {
+	/**
+	 * @return RoutedRequestInterface
+	 */
+	public function getOriginalRequest();
+
 	/**
 	 * @return number|string
 	 */

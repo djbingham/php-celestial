@@ -1,12 +1,12 @@
 <?php
 namespace Sloth\Api\Rest;
 
-use Sloth\Face\RequestInterface;
+use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Resource as ResourceModule;
 use Sloth\Module\Render as RenderModule;
 use Sloth\Exception;
 
-class RestfulRequestParser implements \Sloth\Face\RequestParserInterface
+class RestfulRequestParser implements \Sloth\Module\Request\Face\RequestParserInterface
 {
 	/**
 	 * @var ResourceModule\ResourceModule
@@ -19,9 +19,9 @@ class RestfulRequestParser implements \Sloth\Face\RequestParserInterface
 		return $this;
 	}
 
-	public function parse(RequestInterface $request, $controllerRoute)
+	public function parse(RoutedRequestInterface $request)
 	{
-		$resourceRoute = str_replace($controllerRoute, '', $request->getPath());
+		$resourceRoute = str_replace($request->getControllerPath(), '', $request->getPath());
 		$resourcePath = trim($resourceRoute, '/');
 		$extension = null;
 		$extensionStartPos = strpos($resourcePath, '.');

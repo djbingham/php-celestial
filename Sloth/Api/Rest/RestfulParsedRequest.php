@@ -2,7 +2,7 @@
 namespace Sloth\Api\Rest;
 
 use Sloth\Exception\InvalidArgumentException;
-use Sloth\Face\RequestInterface;
+use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Resource as ResourceModule;
 use Sloth\Module\Render as RenderModule;
 use Sloth\Module\Request\Request;
@@ -10,7 +10,7 @@ use Sloth\Module\Request\Request;
 class RestfulParsedRequest extends Request implements Face\RestfulParsedRequestInterface
 {
 	/**
-	 * @var RequestInterface
+	 * @var RoutedRequestInterface
 	 */
 	protected $originalRequest;
 
@@ -83,7 +83,7 @@ class RestfulParsedRequest extends Request implements Face\RestfulParsedRequestI
 			);
 		}
 
-		if (!($properties['originalRequest'] instanceof RequestInterface)) {
+		if (!($properties['originalRequest'] instanceof RoutedRequestInterface)) {
 			throw new InvalidArgumentException('Invalid original request given to RestfulParsedRequest');
 		}
 
