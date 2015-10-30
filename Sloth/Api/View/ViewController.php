@@ -18,7 +18,7 @@ class ViewController extends Controller
 
 		$renderer = $this->getRenderModule();
 
-		$viewName = trim(preg_replace(sprintf('/^%s/', $request->getControllerPath()), '', $request->getPath()), '/');
+		$viewName = $this->getViewName($request);
 		$view = $renderer->getViewFactory()->getByName($viewName);
 
 		return $renderer->render($view);
@@ -30,5 +30,13 @@ class ViewController extends Controller
 	private function getRenderModule()
 	{
 		return $this->module('render');
+	}
+
+	private function getViewName(RoutedRequestInterface $request)
+	{
+		$requestPath = $request->getPath();
+		$controllerPath = $request->getControllerPath();
+		$viewPath = preg_replace("/^{$controllerPath}/", '', $requestPath);
+		return trim($viewPath, '/');
 	}
 }
