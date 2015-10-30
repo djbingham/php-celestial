@@ -142,6 +142,9 @@ class ViewFactory implements ViewFactoryInterface
 
 	private function getManifestFilePath($viewPath)
 	{
+		$pathExtension = $this->getPathExtension($viewPath);
+		$viewPath = preg_replace(sprintf('/%s$/', $pathExtension), '', $viewPath);
+
 		if ($this->isCached(['view', $viewPath, 'manifestPath'])) {
 			$manifestPath = $this->getCached(['view', $viewPath, 'manifestPath']);
 		} else {
@@ -172,6 +175,16 @@ class ViewFactory implements ViewFactoryInterface
 		}
 
 		return $manifestPath;
+	}
+
+	private function getPathExtension($path)
+	{
+		$extensionStartPos = strrpos($path, '.');
+		$extension = null;
+		if ($extensionStartPos !== false) {
+			$extension = substr($path, $extensionStartPos);
+		}
+		return $extension;
 	}
 
 	private function getFileFromManifestPath($manifestPath)
