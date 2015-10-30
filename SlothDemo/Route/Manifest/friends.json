@@ -1,0 +1,27 @@
+{
+	"": {
+		"engine": "mustache",
+		"path": "user/friends.html",
+		"dataProviders": {
+			"users": {
+				"engine": "resourceList",
+				"options": {
+					"resourceName": "User",
+					"filters": [
+						{
+							"subject": "friends.id",
+							"comparator": "=",
+							"value": {
+								"source": "dataProvider",
+								"options": {
+									"engine": "session",
+									"item": "userId"
+								}
+							}
+						}
+					]
+				}
+			}
+		}
+	}
+}
