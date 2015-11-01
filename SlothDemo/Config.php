@@ -57,11 +57,7 @@ class Config extends BaseConfig
 			),
 			'authentication' => array(
 				'factoryClass' => 'Sloth\\Module\\Authentication\\Factory',
-				'options' => array(
-					'userResource' => 'user',
-					'usernameAttribute' => 'username',
-					'passwordAttribute' => 'password'
-				)
+				'options' => array()
 			),
 			'resource' => array(
 				'factoryClass' => 'Sloth\\Module\\Resource\\Factory',
@@ -100,6 +96,18 @@ class Config extends BaseConfig
 					'host' => 'localhost',
 					'username' => 'slothDemo',
 					'password' => 'Sl0thD3m0P455'
+				)
+			),
+			'dataProvider' => array(
+				'factoryClass' => 'Sloth\\Module\\DataProvider\\Factory',
+				'options' => array(
+					'providers' => array(
+						'resource' => 'Sloth\\Module\\DataProvider\\Provider\\ResourceProvider',
+						'resourceList' => 'Sloth\\Module\\DataProvider\\Provider\\ResourceListProvider',
+						'static' => 'Sloth\\Module\\DataProvider\\Provider\\StaticDataProvider',
+						'session' => 'Sloth\\Module\\DataProvider\\Provider\\SessionDataProvider',
+						'authentication' => 'Sloth\\Module\\DataProvider\\Provider\\AuthenticationDataProvider'
+					)
 				)
 			)
         ));

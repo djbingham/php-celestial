@@ -29,6 +29,10 @@ class GetByConductor extends Base\AbstractConductor
 			$data = $this->executeQuerySetItem($queryWrapper);
 			$this->fetchedData[$queryWrapper->getTable()->getAlias()] = $data;
 			$this->executedQuerySet->push($queryWrapper);
+			if (empty($data)) {
+				// If no data found for this query, no point running remaining queries
+				break;
+			}
 		}
 		return $this->fetchedData;
 	}

@@ -4,6 +4,7 @@ namespace Sloth\Module\Render;
 use Helper\InternalCacheTrait;
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Exception\InvalidRequestException;
+use Sloth\Module\DataProvider\DataProviderModule;
 use Sloth\Module\Render\Face\ViewFactoryInterface;
 
 class ViewFactory implements ViewFactoryInterface
@@ -16,9 +17,9 @@ class ViewFactory implements ViewFactoryInterface
 	private $renderEngineFactory;
 
 	/**
-	 * @var DataProviderFactory
+	 * @var DataProviderModule
 	 */
-	private $dataProviderFactory;
+	private $dataProviderModule;
 
 	/**
 	 * @var string
@@ -34,7 +35,7 @@ class ViewFactory implements ViewFactoryInterface
 	{
 		$this->validateDependencies($dependencies);
 		$this->renderEngineFactory = $dependencies['renderEngineFactory'];
-		$this->dataProviderFactory = $dependencies['dataProviderFactory'];
+		$this->dataProviderModule = $dependencies['dataProviderModule'];
 		$this->viewManifestDirectory = $dependencies['viewManifestDirectory'];
 		$this->viewDirectory = $dependencies['viewDirectory'];
 	}
@@ -87,7 +88,7 @@ class ViewFactory implements ViewFactoryInterface
 		$view->name = $viewName;
 		$view->path = $this->viewDirectory . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $viewManifest['path']);
 		$view->engine = $this->renderEngineFactory->getByName($viewManifest['engine']);
-		$view->dataProviders = $this->dataProviderFactory->buildProviders($viewManifest['dataProviders']);
+		$view->dataProviders = $this->buildDataProviders($viewManifest['dataProviders']);
 
 		return $view;
 	}
@@ -100,14 +101,14 @@ class ViewFactory implements ViewFactoryInterface
 		$view->name = $viewManifest['name'];
 		$view->path = $this->viewDirectory . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $viewManifest['path']);
 		$view->engine = $this->renderEngineFactory->getByName($viewManifest['engine']);
-		$view->dataProviders = $this->dataProviderFactory->buildProviders($viewManifest['dataProviders']);
+		$view->dataProviders = $this->buildDataProviders($viewManifest['dataProviders']);
 
 		return $view;
 	}
 
 	private function validateDependencies(array $dependencies)
 	{
-		$required = array('renderEngineFactory', 'dataProviderFactory', 'viewDirectory');
+		$required = array('renderEngineFactory', 'dataProviderModule', 'viewDirectory');
 		$missing = array_diff($required, array_keys($dependencies));
 		if (!empty($missing)) {
 			throw new InvalidArgumentException(
@@ -117,7 +118,7 @@ class ViewFactory implements ViewFactoryInterface
 		if (!($dependencies['renderEngineFactory'] instanceof RenderEngineFactory)) {
 			throw new InvalidArgumentException('Invalid render engine factory given in dependencies for ViewFactory');
 		}
-		if (!($dependencies['dataProviderFactory'] instanceof DataProviderFactory)) {
+		if (!($dependencies['dataProviderModule'] instanceof DataProviderModule)) {
 			throw new InvalidArgumentException('Invalid data provider factory given in dependencies for ViewFactory');
 		}
 		if (!is_dir($dependencies['viewDirectory'])) {
@@ -207,5 +208,15 @@ class ViewFactory implements ViewFactoryInterface
 			$viewManifest['dataProviders'] = array();
 		}
 		return $viewManifest;
+	}
+
+	private function buildDataProviders(array $providerManifests)
+	{
+		$providers = array();
+		foreach ($providerManifests as $providerName => $providerManifest) {
+			$providers[] = $this->dataProviderModule->buildProvider($providerManifest)
+				->setName($providerName);
+		}
+		return $providers;
 	}
 }

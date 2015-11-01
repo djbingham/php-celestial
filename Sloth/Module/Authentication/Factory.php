@@ -23,11 +23,8 @@ class Factory extends AbstractModuleFactory
 		if (array_key_exists('passwordAttribute', $this->options)) {
 			$moduleProperties['passwordAttribute'] = $this->options['passwordAttribute'];
 		}
-		if (array_key_exists('sessionTokenKey', $this->options)) {
-			$moduleProperties['sessionTokenKey'] = $this->options['sessionTokenKey'];
-		}
-		if (array_key_exists('sessionUsernameKey', $this->options)) {
-			$moduleProperties['sessionUsernameKey'] = $this->options['sessionUsernameKey'];
+		if (array_key_exists('sessionDataKey', $this->options)) {
+			$moduleProperties['sessionDataKey'] = $this->options['sessionDataKey'];
 		}
 
 		return new AuthenticationModule($moduleProperties);

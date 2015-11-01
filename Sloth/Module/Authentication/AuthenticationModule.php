@@ -1,6 +1,7 @@
 <?php
 namespace Sloth\Module\Authentication;
 
+use Sloth\Exception\InvalidArgumentException;
 use Sloth\Module\Resource\ResourceModule;
 use Sloth\Module\Session\SessionModule;
 
@@ -34,27 +35,24 @@ class AuthenticationModule
 	/**
 	 * @var string
 	 */
-	private $sessionTokenKey = 'slothAuthToken';
-
-	/**
-	 * @var string
-	 */
-	private $sessionUsernameKey = 'slothUsername';
+	private $sessionDataKey = 'slothAuthentication';
 
 	public function __construct(array $properties)
 	{
 		$this->sessionModule = $properties['sessionModule'];
 		$this->resourceModule = $properties['resourceModule'];
-		$this->userResource = $properties['userResource'];
 
+		if (array_key_exists('userResource', $properties)) {
+			$this->userResource = $properties['userResource'];
+		}
 		if (array_key_exists('usernameAttribute', $properties)) {
 			$this->usernameAttribute = $properties['usernameAttribute'];
 		}
 		if (array_key_exists('passwordAttribute', $properties)) {
 			$this->passwordAttribute = $properties['passwordAttribute'];
 		}
-		if (array_key_exists('sessionTokenKey', $properties)) {
-			$this->sessionTokenKey = $properties['sessionTokenKey'];
+		if (array_key_exists('sessionDataKey', $properties)) {
+			$this->sessionDataKey = $properties['sessionDataKey'];
 		}
 	}
 
@@ -75,8 +73,14 @@ class AuthenticationModule
 
 		if ($authenticated === true) {
 			$token = $this->generateToken();
-			$this->sessionModule->set($this->sessionTokenKey, $token);
-			$this->sessionModule->set($this->sessionUsernameKey, $username);
+			if ($this->sessionModule->exists($this->sessionDataKey)) {
+				$sessionData = $this->sessionModule->get($this->sessionDataKey);
+			} else {
+				$sessionData = array();
+			}
+			$sessionData['token'] = $token;
+			$sessionData['username'] = $username;
+			$this->sessionModule->set($this->sessionDataKey, $sessionData);
 		}
 
 		return $authenticated;
@@ -84,20 +88,32 @@ class AuthenticationModule
 
 	public function isAuthenticated()
 	{
-		return $this->sessionModule->exists($this->sessionTokenKey);
+		return $this->sessionModule->exists($this->sessionDataKey);
+	}
+
+	public function getAuthenticatedData($key)
+	{
+		$output = null;
+		if ($this->isAuthenticated()) {
+			$sessionData = $this->sessionModule->get($this->sessionDataKey);
+			if (!array_key_exists($key, $sessionData)) {
+				throw new InvalidArgumentException(
+					sprintf('Item `%s` not found in session authentication data.', $key)
+				);
+			}
+			$output = $sessionData[$key];
+		}
+		return $output;
 	}
 
 	public function getAuthenticatedUsername()
 	{
-		if ($this->isAuthenticated()) {
-			return $this->sessionModule->get($this->sessionUsernameKey);
-		}
+		return $this->getAuthenticatedData('username');
 	}
 
 	public function unauthenticate()
 	{
-		$this->sessionModule->destroy($this->sessionTokenKey);
-		$this->sessionModule->destroy($this->sessionUsernameKey);
+		$this->sessionModule->destroy($this->sessionDataKey);
 	}
 
 	protected function generateToken()

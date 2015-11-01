@@ -12,7 +12,7 @@ $resourceDefinition = $data['resourceDefinition'];
 
 $resourceName = lcfirst($resourceDefinition->name);
 $primaryAttribute = $resourceDefinition->primaryAttribute;
-$resourceId = $resource->getAttribute($primaryAttribute);
+$resourceId = $resource[$primaryAttribute];
 ?>
 <h2>Resource #<?= $resourceId ?></h2>
 <p>
@@ -23,7 +23,7 @@ $resourceId = $resource->getAttribute($primaryAttribute);
 	<a href="<?= $app->createUrl(array('resource', 'update', $resourceName, $resourceId)) ?>">Update</a>
 </p>
 <dl>
-	<?= renderAttributeList($resource->getAttributes()); ?>
+	<?= renderAttributeList($resource); ?>
 </dl>
 
 <?php

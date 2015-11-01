@@ -20,10 +20,12 @@
 		},
 		"friends": {
 			"id": true,
+			"username": true,
 			"forename": true,
 			"surname": true,
 			"friends": {
 				"id": true,
+				"username": true,
 				"forename": true,
 				"surname": true
 			}

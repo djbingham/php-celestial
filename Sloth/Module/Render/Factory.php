@@ -2,7 +2,6 @@
 namespace Sloth\Module\Render;
 
 use Helper\InternalCacheTrait;
-use Sloth\App;
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Base\AbstractModuleFactory;
 
@@ -30,7 +29,7 @@ class Factory extends AbstractModuleFactory
 				'viewManifestDirectory' => $this->options['viewManifestDirectory'],
 				'viewDirectory' => $this->options['viewDirectory'],
 				'renderEngineFactory' => $this->getRenderEngineFactory(),
-				'dataProviderFactory' => $this->getDataProviderFactory()
+				'dataProviderModule' => $this->getDataProviderModule()
 			)));
 		}
 		return $this->getCached('viewFactory');
@@ -46,19 +45,9 @@ class Factory extends AbstractModuleFactory
 		return $this->getCached('renderEngineFactory');
 	}
 
-	protected function getDataProviderFactory()
+	protected function getDataProviderModule()
 	{
-		if (!$this->isCached('dataProviderFactory')) {
-			$this->setCached('dataProviderFactory', new DataProviderFactory(array(
-				'resourceModule' => $this->getResourceModule()
-			)));
-		}
-		return $this->getCached('dataProviderFactory');
-	}
-
-	protected function getResourceModule()
-	{
-		return $this->app->module('resource');
+		return $this->app->module('dataProvider');
 	}
 
 	protected function validateOptions()

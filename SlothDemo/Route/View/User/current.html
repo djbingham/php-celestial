@@ -1,0 +1,11 @@
+<h2>Current User</h2>
+<p>ID: {{data.user.id}}</p>
+<p>Name: {{data.user.forename}} {{data.user.surname}}</p>
+<h3>Friends</h3>
+<p>
+	<ul>
+		{{#data.user.friends}}
+		<li>({{id}}) {{forename}} {{surname}}</li>
+		{{/data.user.friends}}
+	</ul>
+</p>

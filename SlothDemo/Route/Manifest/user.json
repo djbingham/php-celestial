@@ -10,5 +10,29 @@
 				}
 			}
 		}
+	},
+	"current": {
+		"engine": "mustache",
+		"path": "user/current.html",
+		"dataProviders": {
+			"user": {
+				"engine": "resource",
+				"options": {
+					"resourceName": "User",
+					"filters": [
+						{
+							"subject": "username",
+							"comparator": "=",
+							"source": {
+								"engine": "authentication",
+								"options": {
+									"item": "username"
+								}
+							}
+						}
+					]
+				}
+			}
+		}
 	}
 }

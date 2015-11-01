@@ -25,7 +25,7 @@ $resourceName = lcfirst($resourceDefinition->name);
 <dl>
 	<?php
 		/** @var Sloth\Module\Resource\Resource $resource */
-		foreach ($data['resources'] as $index => $resource):
+		foreach ($resources as $index => $resource):
 	?>
 
 		<dt>
