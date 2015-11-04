@@ -1,0 +1,11 @@
+{
+	"name": "AuthenticationCookie",
+	"table": "AuthenticationCookie",
+	"primaryAttribute": "identifier",
+	"attributes": {
+		"identifier": true,
+		"username": true,
+		"token": true,
+		"expires": true
+	}
+}

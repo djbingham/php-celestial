@@ -1,0 +1,24 @@
+{
+	"fields": {
+		"identifier": {
+			"type": "text(32)",
+			"field": "identifier",
+			"validators": []
+		},
+		"userId": {
+			"type": "integer(11)",
+			"field": "userId",
+			"validators": []
+		},
+		"token": {
+			"type": "text(32)",
+			"field": "token",
+			"validators": []
+		},
+		"expires": {
+			"type": "timestamp",
+			"field": "expires",
+			"validators": []
+		}
+	}
+}
