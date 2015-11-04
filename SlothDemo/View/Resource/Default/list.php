@@ -29,7 +29,7 @@ $resourceName = lcfirst($resourceDefinition->name);
 	?>
 
 		<dt>
-			<a href="<?= $app->createUrl(array('resource', 'view', $resourceName, $resource['id'])) ?>">
+			<a href="<?= $app->createUrl(array('resource', 'view', $resourceName, $resource[$resourceDefinition->primaryAttribute])) ?>">
 				Resource #<?= $index ?>
 			</a>
 		</dt>
