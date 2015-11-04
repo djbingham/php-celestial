@@ -10,7 +10,7 @@ class UnauthenticationController extends Controller
 {
 	public function execute(RoutedRequestInterface $request)
 	{
-		$renderer = $this->getRenderModule();;
+		$renderer = $this->getRenderModule();
 		$authentication = $this->getAuthenticationModule();
 
 		$authentication->unauthenticate();

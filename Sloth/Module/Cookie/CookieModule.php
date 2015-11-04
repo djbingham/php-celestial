@@ -29,4 +29,12 @@ class CookieModule
 	{
 		return array_key_exists($name, $_COOKIE);
 	}
+
+	public function destroy($name)
+	{
+		if ($this->exists($name)) {
+			setcookie($name, '', time() - 3600);
+			unset($_COOKIE[$name]);
+		}
+	}
 }

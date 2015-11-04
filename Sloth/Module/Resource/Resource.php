@@ -1,6 +1,8 @@
 <?php
 namespace Sloth\Module\Resource;
 
+use Sloth\Exception\InvalidArgumentException;
+
 class Resource implements ResourceInterface
 {
 	private $factory;
@@ -11,6 +13,11 @@ class Resource implements ResourceInterface
 		$this->factory = $factory;
 	}
 
+	public function getDefinition()
+	{
+		return $this->factory->getResourceDefinition();
+	}
+
 	public function save()
 	{
 		$this->factory->update($this);
@@ -18,7 +25,7 @@ class Resource implements ResourceInterface
 
 	public function delete()
 	{
-		$this->factory->delete($this);
+		$this->factory->delete($this->getAttributes());
 	}
 
 	public function setAttributes(array $attributes)
@@ -42,6 +49,17 @@ class Resource implements ResourceInterface
 
 	public function getAttribute($name)
 	{
+		if (!$this->hasAttribute($name)) {
+			$attributeList = json_encode(array_keys($this->getAttributes()));
+			throw new InvalidArgumentException(
+				sprintf('Attribute `%s` not found in resource with attributes: %s', $name, $attributeList)
+			);
+		}
 		return $this->attributes[$name];
+	}
+
+	public function hasAttribute($name)
+	{
+		return array_key_exists($name, $this->attributes);
 	}
 }

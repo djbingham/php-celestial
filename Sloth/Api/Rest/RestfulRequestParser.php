@@ -1,12 +1,13 @@
 <?php
 namespace Sloth\Api\Rest;
 
+use Sloth\Module\Request\Face\RequestParserInterface;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Resource as ResourceModule;
 use Sloth\Module\Render as RenderModule;
 use Sloth\Exception;
 
-class RestfulRequestParser implements \Sloth\Module\Request\Face\RequestParserInterface
+class RestfulRequestParser implements RequestParserInterface
 {
 	/**
 	 * @var ResourceModule\ResourceModule

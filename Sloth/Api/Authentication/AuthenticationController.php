@@ -3,9 +3,10 @@ namespace Sloth\Api\Authentication;
 
 use Sloth\Base\Controller;
 use Sloth\Exception\InvalidRequestException;
+use Sloth\Module\Adapter\AdapterModule;
+use Sloth\Module\Render\RenderModule;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Authentication\AuthenticationModule;
-use Sloth\Module\Render\Face\RendererInterface;
 
 class AuthenticationController extends Controller
 {
@@ -36,22 +37,28 @@ class AuthenticationController extends Controller
 	{
 		$renderer = $this->getRenderModule();
 		$authentication = $this->getAuthenticationModule();
+		$adapterModule = $this->getAdapterModule();
 
 		$parameters = $request->getParams()->post();
+
+		$parameters = $adapterModule->getAdapter('stringBoolean')->adapt($parameters);
+		$parameters = $adapterModule->getAdapter('stringNull')->adapt($parameters);
+
 		$username = $parameters['username'];
 		$password = $parameters['password'];
+		$remember = array_key_exists('remember', $parameters) ? $parameters['remember'] : false;
 
-		$authentication->authenticateCredentials($username, $password);
+		$authentication->authenticateCredentials($username, $password, $remember);
 
 		if ($authentication->isAuthenticated()) {
-			$viewName = 'authentication/loginResult';
+			$viewName = 'authentication/loginSucceeded';
 			$parameters = array(
-				'username' => $authentication->getAuthenticatedUsername()
+				'user' => $authentication->getAuthenticatedUser()->getAttributes()
 			);
 		} else {
 			$viewName = 'authentication/loginFailed';
 			$parameters = array(
-				'username' => $authentication->getAuthenticatedUsername()
+				'username' => $username
 			);
 		}
 
@@ -69,10 +76,18 @@ class AuthenticationController extends Controller
 	}
 
 	/**
-	 * @return RendererInterface
+	 * @return RenderModule
 	 */
 	private function getRenderModule()
 	{
 		return $this->module('render');
+	}
+
+	/**
+	 * @return AdapterModule
+	 */
+	private function getAdapterModule()
+	{
+		return $this->module('adapter');
 	}
 }

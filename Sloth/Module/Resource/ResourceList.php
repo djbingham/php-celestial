@@ -25,6 +25,11 @@ class ResourceList implements ResourceListInterface
 		$this->factory = $factory;
 	}
 
+	public function getDefinition()
+	{
+		return $this->factory->getResourceDefinition();
+	}
+
 	public function current()
 	{
 		return $this->getByIndex($this->position);
@@ -52,7 +57,7 @@ class ResourceList implements ResourceListInterface
 		return array_key_exists($this->position, $this->resources);
 	}
 
-	public function length()
+	public function count()
 	{
 		return count($this->resources);
 	}
@@ -164,11 +169,6 @@ class ResourceList implements ResourceListInterface
 		}
 		return $this;
 	}
-
-    public function count()
-    {
-        return count($this->resources);
-    }
 
     private function setResourceAttributes(ResourceInterface $resource, array $attributes)
     {

@@ -1,6 +1,8 @@
 <?php
 namespace Sloth\Module\Session;
 
+use Sloth\Exception\InvalidArgumentException;
+
 class SessionModule
 {
 	public function exists($name)
@@ -10,6 +12,11 @@ class SessionModule
 
 	public function get($name)
 	{
+		if (!$this->exists($name)) {
+			throw new InvalidArgumentException(
+				sprintf('Failed to find item in session data: `%s`', $name)
+			);
+		}
 		return $_SESSION[$name];
 	}
 
@@ -19,8 +26,13 @@ class SessionModule
 		return $this;
 	}
 
-	public function destroy($name)
+	public function remove($name)
 	{
 		unset($_SESSION[$name]);
+	}
+
+	public function destroy()
+	{
+		session_destroy();
 	}
 }

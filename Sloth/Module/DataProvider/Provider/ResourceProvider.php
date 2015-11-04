@@ -18,7 +18,7 @@ class ResourceProvider extends AbstractDataProvider
 		$resources = $resourceFactory->search($resourceDefinition->attributes, $options['filters']);
 
 		$data = array();
-		if ($resources->length() > 0) {
+		if ($resources->count() > 0) {
 			$data = $resources->getByIndex(0)->getAttributes();
 		}
 

@@ -9,6 +9,11 @@ interface ResourceInterface
 	public function __construct(ResourceFactoryInterface $factory);
 
 	/**
+	 * @return Definition\Resource
+	 */
+	public function getDefinition();
+
+	/**
 	 * @return $this
 	 */
 	public function save();

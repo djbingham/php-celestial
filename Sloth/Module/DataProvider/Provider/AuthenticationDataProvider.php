@@ -10,7 +10,11 @@ class AuthenticationDataProvider extends AbstractDataProvider
 	public function getData(array $options)
 	{
 		$this->validateOptions($options);
-		return $this->authenticationModule->getAuthenticatedData($options['item']);
+		$data = $this->authenticationModule->getAuthenticatedUser()->getAttributes();
+		if (array_key_exists('item', $options)) {
+			$data = $data[$options['item']];
+		}
+		return $data;
 	}
 
 	protected function validateDependencies(array $dependencies)
