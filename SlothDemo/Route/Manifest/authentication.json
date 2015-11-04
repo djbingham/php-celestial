@@ -1,18 +1,18 @@
 {
 	"loginForm": {
 		"engine": "mustache",
-		"path": "loginForm.html"
+		"path": "Authentication/loginForm.html"
 	},
-	"loginResult": {
+	"loginSucceeded": {
 		"engine": "mustache",
-		"path": "loginResult.html"
+		"path": "Authentication/loginSucceeded.html"
 	},
 	"loginFailed": {
 		"engine": "mustache",
-		"path": "loginFailed.html"
+		"path": "Authentication/loginFailed.html"
 	},
 	"logoutResult": {
 		"engine": "mustache",
-		"path": "logoutResult.html"
+		"path": "Authentication/logoutResult.html"
 	}
 }
