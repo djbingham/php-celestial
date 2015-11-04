@@ -11,22 +11,40 @@ class HashingModule
 	/**
 	 * @var string
 	 */
-	protected $algorithm = 'md5';
+	protected $defaultAlgorithm = 'sha256';
 
 	public function setSalt($salt)
 	{
 		$this->salt = $salt;
-	}
 
-	public function setAlgorithm($algorithm)
-	{
-		$this->algorithm = $algorithm;
 		return $this;
 	}
 
-	public function hash($value)
+	public function setDefaultAlgorithm($algorithm)
 	{
-		$function = $this->algorithm;
-		return $function($value . $this->salt);
+		$this->defaultAlgorithm = $algorithm;
+
+		return $this;
+	}
+
+	public function insecureHash($value, $algorithm = null)
+	{
+		$string = $this->salt . $value;
+
+		if ($algorithm === null) {
+			$algorithm = $this->defaultAlgorithm;
+		}
+
+		return hash($algorithm, $string);
+	}
+
+	public function secureHash($value)
+	{
+		return password_hash($value, PASSWORD_DEFAULT);
+	}
+
+	public function verifySecureHash($value, $hash)
+	{
+		return password_verify($value, $hash);
 	}
 }

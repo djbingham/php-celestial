@@ -12,8 +12,8 @@ class Factory extends AbstractModuleFactory
 
 		$module->setSalt($this->options['salt']);
 
-		if (array_key_exists('method', $this->options)) {
-			$module->setAlgorithm($this->options['method']);
+		if (array_key_exists('defaultAlgorithm', $this->options)) {
+			$module->setDefaultAlgorithm($this->options['defaultAlgorithm']);
 		}
 
 		return $module;
