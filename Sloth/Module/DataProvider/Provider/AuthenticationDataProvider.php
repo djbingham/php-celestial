@@ -4,16 +4,25 @@ namespace Sloth\Module\DataProvider\Provider;
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Module\Authentication\AuthenticationModule;
 use Sloth\Module\DataProvider\Base\AbstractDataProvider;
+use Sloth\Module\Resource\ResourceInterface;
 
 class AuthenticationDataProvider extends AbstractDataProvider
 {
 	public function getData(array $options)
 	{
 		$this->validateOptions($options);
-		$data = $this->authenticationModule->getAuthenticatedUser()->getAttributes();
-		if (array_key_exists('item', $options)) {
-			$data = $data[$options['item']];
+
+		$data = null;
+		$user = $this->authenticationModule->getAuthenticatedUser();
+
+		if ($user instanceof ResourceInterface) {
+			if (array_key_exists('item', $options)) {
+				$data = $user->getAttribute($options['item']);
+			} else {
+				$data = $user->getAttributes();
+			}
 		}
+
 		return $data;
 	}
 
