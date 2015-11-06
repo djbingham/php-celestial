@@ -1,8 +1,8 @@
 <?php
 
-require __DIR__ . DIRECTORY_SEPARATOR . 'autoload.php';
+require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'autoload.php';
 
-new Sloth\Utility\Autoload(__DIR__, 'SlothDemo');
+new Sloth\Utility\Autoload(dirname(__DIR__), 'SlothDemo');
 
 $init = new \SlothDemo\Initialisation();
 $app = $init->getApp();
@@ -22,3 +22,5 @@ $routedRequest = $routerModule->route($request);
 $controller = $routedRequest->getController();
 
 echo $controller->execute($routedRequest);
+
+echo '<link rel="stylesheet" href="public/css/theme.css">';

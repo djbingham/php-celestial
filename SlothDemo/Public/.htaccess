@@ -1,5 +1,5 @@
 # Redirect all requests to index.php
 <ifmodule mod_rewrite.c>
 	RewriteEngine on
-	RewriteRule (.*) index.php
+	RewriteRule ^(?!public/).*$ index.php [NC]
 </ifmodule>
