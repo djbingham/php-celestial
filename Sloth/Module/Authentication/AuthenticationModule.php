@@ -305,8 +305,6 @@ class AuthenticationModule
 
 	protected function saveAuthenticationCookie(AuthenticationCookie $cookie, $userId, $previousIdentifier = null)
 	{
-		$expiryString = $cookie->getExpires()->format('Y-m-d H:i:s');
-
 		/*
 			The cookie data includes an identifier, token and expiry date.
 			The identifier is used to lookup the user and a hash of their token in the database.
@@ -326,7 +324,7 @@ class AuthenticationModule
 			'identifier' => $cookie->getIdentifier(),
 			'userId' => $userId,
 			'token' => $this->hashingModule->secureHash($cookie->getToken()),
-			'expires' => $expiryString
+			'expires' => $cookieData['expires']
 		);
 
 		$this->cookieModule->set($this->cookieName, json_encode($cookieData), $cookie->getExpires()->getTimestamp());

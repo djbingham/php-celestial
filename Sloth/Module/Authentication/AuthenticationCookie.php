@@ -23,6 +23,7 @@ class AuthenticationCookie
 	public function __construct(array $properties)
 	{
 		$this->validateProperties($properties);
+		$properties = $this->formatProperties($properties);
 
 		foreach ($properties as $propertyName => $propertyValue) {
 			$this->$propertyName = $propertyValue;
@@ -61,7 +62,7 @@ class AuthenticationCookie
 		return array(
 			'identifier' => $this->identifier,
 			'token' => $this->token,
-			'expires' => $this->expires
+			'expires' => $this->expires->format('Y-m-d H:i:s')
 		);
 	}
 
@@ -83,5 +84,14 @@ class AuthenticationCookie
 				'Unexpected properties passed to AuthenticationCookie: ' . implode(', ', $unexpected)
 			);
 		}
+	}
+
+	private function formatProperties(array $properties)
+	{
+		if (!($properties['expires'] instanceof \DateTime)) {
+			$properties['expires'] = new \DateTime($properties['expires']);
+		}
+
+		return $properties;
 	}
 }

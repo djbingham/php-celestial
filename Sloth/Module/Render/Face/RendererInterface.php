@@ -28,6 +28,25 @@ interface RendererInterface
 	public function getViewFactory();
 
 	/**
+	 * @param string $viewName
+	 * @return string
+	 */
+	public function viewExists($viewName);
+
+	/**
+	 * @param string $viewName
+	 * @return string
+	 */
+	public function getView($viewName);
+
+	/**
+	 * @param string $viewName
+	 * @param array $params
+	 * @return string
+	 */
+	public function renderNamedView($viewName, array $params = array());
+
+	/**
 	 * @param ViewInterface $view
 	 * @param array $params
 	 * @return string

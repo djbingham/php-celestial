@@ -1,0 +1,7 @@
+{{#authenticated}}
+	<p>You are currently authenticated as {{user.username}}.</p>
+{{/authenticated}}
+{{^authenticated}}
+	<p>You are not currently authenticated.</p>
+	<p><a href="/auth/login">Login</a></p>
+{{/authenticated}}

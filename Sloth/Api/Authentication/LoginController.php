@@ -8,7 +8,7 @@ use Sloth\Module\Render\RenderModule;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Authentication\AuthenticationModule;
 
-class AuthenticationController extends Controller
+class LoginController extends Controller
 {
 	public function execute(RoutedRequestInterface $request)
 	{
@@ -16,7 +16,7 @@ class AuthenticationController extends Controller
 
 		if (!method_exists($this, $method)) {
 			throw new InvalidRequestException(
-				sprintf('Invalid request method (%s) to AuthenticationController. Allowed: get, post', $method)
+				sprintf('Invalid request method (%s) to LoginController. Allowed: get, post', $method)
 			);
 		}
 
@@ -25,12 +25,7 @@ class AuthenticationController extends Controller
 
 	protected function handleGet(RoutedRequestInterface $request)
 	{
-		$renderer = $this->getRenderModule();
-
-		$viewName = 'authentication/loginForm';
-		$view = $renderer->getViewFactory()->getByName($viewName);
-
-		return $renderer->render($view);
+		return $this->getRenderModule()->renderNamedView('authentication/loginForm');
 	}
 
 	protected function handlePost(RoutedRequestInterface $request)
@@ -48,12 +43,22 @@ class AuthenticationController extends Controller
 		$password = $parameters['password'];
 		$remember = array_key_exists('remember', $parameters) ? $parameters['remember'] : false;
 
-		$authentication->authenticateCredentials($username, $password, $remember);
+		$previouslyAuthenticated = $authentication->isAuthenticated();
+		$newlyAuthenticated = $authentication->authenticateCredentials($username, $password, $remember);
 
-		if ($authentication->isAuthenticated()) {
+		if ($newlyAuthenticated) {
 			$viewName = 'authentication/loginSucceeded';
 			$parameters = array(
-				'user' => $authentication->getAuthenticatedUser()->getAttributes()
+					'user' => $authentication->getAuthenticatedUser()->getAttributes()
+			);
+		} elseif ($previouslyAuthenticated) {
+			$previousUser = $authentication->getAuthenticatedUser();
+			$authentication->unauthenticate();
+
+			$viewName = 'authentication/loginRedundant';
+			$parameters = array(
+				'username' => $username,
+				'previousUsername' => $previousUser->getAttribute('username')
 			);
 		} else {
 			$viewName = 'authentication/loginFailed';
@@ -62,9 +67,7 @@ class AuthenticationController extends Controller
 			);
 		}
 
-		$view = $renderer->getViewFactory()->getByName($viewName);
-
-		return $renderer->render($view, $parameters);
+		return $renderer->renderNamedView($viewName, $parameters);
 	}
 
 	/**

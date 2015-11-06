@@ -51,18 +51,24 @@ class RenderModule implements RendererInterface
 		return $this->viewFactory->getByName($viewName);
 	}
 
-	public function render(ViewInterface $view, array $params = array())
+	public function renderNamedView($viewName, array $parameters = array())
+	{
+		$view = $this->getView($viewName);
+		return $this->render($view, $parameters);
+	}
+
+	public function render(ViewInterface $view, array $parameters = array())
 	{
 		$engine = $view->getEngine();
 
-		if (!array_key_exists('app', $params)) {
-			$params['app'] = $this->app;
+		if (!array_key_exists('app', $parameters)) {
+			$parameters['app'] = $this->app;
 		}
-		if (!array_key_exists('data', $params)) {
-			$params['data'] = $this->getViewData($view);
+		if (!array_key_exists('data', $parameters)) {
+			$parameters['data'] = $this->getViewData($view);
 		}
 
-		return $engine->render($view->getPath(), $params);
+		return $engine->render($view->getPath(), $parameters);
 	}
 
 	protected function getViewData(ViewInterface $view)

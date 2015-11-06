@@ -6,7 +6,7 @@ use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Authentication\AuthenticationModule;
 use Sloth\Module\Render\Face\RendererInterface;
 
-class UnauthenticationController extends Controller
+class LogoutController extends Controller
 {
 	public function execute(RoutedRequestInterface $request)
 	{

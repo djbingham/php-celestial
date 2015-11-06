@@ -11,8 +11,16 @@
 		"engine": "mustache",
 		"path": "Authentication/loginFailed.html"
 	},
+	"loginRedundant": {
+		"engine": "mustache",
+		"path": "Authentication/loginRedundant.html"
+	},
 	"logoutResult": {
 		"engine": "mustache",
 		"path": "Authentication/logoutResult.html"
+	},
+	"status": {
+		"engine": "mustache",
+		"path": "Authentication/status.html"
 	}
 }

@@ -120,11 +120,8 @@ class Config extends BaseConfig
 				'factoryClass' => 'Sloth\\Module\\Router\\Factory',
 				'options' => array(
 					'routes' => new BaseConfig\Routes(array(
-						'login' => array(
-							'controller' => 'Sloth\\Api\\Authentication\\AuthenticationController'
-						),
-						'logout' => array(
-							'controller' => 'Sloth\\Api\\Authentication\\UnauthenticationController'
+						'auth' => array(
+							'namespace' => 'Sloth\\Api\\Authentication'
 						),
 						'resource' => array(
 							'namespace' => 'Sloth\\Api\\Rest\\Controller'
