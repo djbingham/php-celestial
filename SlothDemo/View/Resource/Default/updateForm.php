@@ -9,7 +9,7 @@ use \Sloth\Module\Resource\Definition\Table;
 /** @var Sloth\Module\Resource\Definition\Resource $resourceDefinition */
 $resourceDefinition = $data['resourceDefinition'];
 
-/** @var Sloth\Module\Resource\Resource $resource */
+/** @var array $resource */
 $resource = $data['resource'];
 
 $resourceName = lcfirst($resourceDefinition->name);
@@ -22,8 +22,8 @@ $resourceName = lcfirst($resourceDefinition->name);
 	&nbsp;|&nbsp;
 	<a href="<?= $app->createUrl(array('resource', 'search', $resourceName)) ?>"><?= ucfirst($resourceName) ?> Search</a>
 </p>
-<form action="<?= $app->createUrl(array('resource', 'update', $resourceName, $resource->getAttribute($resourceDefinition->primaryAttribute))) ?>" method="post">
-	<?= renderAttributeListInputs($resourceDefinition->attributes, $resourceDefinition->table, $resource->getAttributes()) ?>
+<form action="<?= $app->createUrl(array('resource', 'update', $resourceName, $resource[$resourceDefinition->primaryAttribute])) ?>" method="post">
+	<?= renderAttributeListInputs($resourceDefinition->attributes, $resourceDefinition->table, $resource) ?>
 	<button type="submit">Update</button>
 </form>
 

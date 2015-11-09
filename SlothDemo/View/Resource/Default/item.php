@@ -4,7 +4,7 @@
  * @var array $data
  */
 
-/** @var Sloth\Module\Resource\Resource $resource */
+/** @var array $resource */
 $resource = $data['resource'];
 
 /** @var Sloth\Module\Resource\Definition\Resource $resourceDefinition */
