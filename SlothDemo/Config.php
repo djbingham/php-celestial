@@ -134,6 +134,23 @@ class Config extends BaseConfig
 			'session' => array(
 				'factoryClass' => 'Sloth\\Module\\Session\\Factory',
 				'options' => array()
+			),
+			'validation' => array(
+				'factoryClass' => 'Sloth\\Module\\Validation\\Factory',
+				'options' => array(
+					'validators' => array(
+						'comparison.notEqual' => 'Sloth\\Module\\Validation\\Validator\\Comparison\\NotEqualValidator',
+						'number.greaterThan' => 'Sloth\\Module\\Validation\\Validator\\Number\\GreaterThanValidator',
+						'number.integer' => 'Sloth\\Module\\Validation\\Validator\\Number\\IntegerValidator',
+						'number.isNumeric' => 'Sloth\\Module\\Validation\\Validator\\Number\\IsNumericValidator',
+						'number.lessThan' => 'Sloth\\Module\\Validation\\Validator\\Number\\LessThanValidator',
+						'number.maxDecimalPlaces' => 'Sloth\\Module\\Validation\\Validator\\Number\\MaxDecimalPlacesValidator',
+						'number.maxDigits' => 'Sloth\\Module\\Validation\\Validator\\Number\\MaxDigitsValidator',
+						'text.isText' => 'Sloth\\Module\\Validation\\Validator\\Text\\IsTextValidator',
+						'text.maximumLength' => 'Sloth\\Module\\Validation\\Validator\\Text\\MaximumLengthValidator',
+						'text.minimumLength' => 'Sloth\\Module\\Validation\\Validator\\Text\\MinimumLengthValidator'
+					)
+				)
 			)
         ));
     }
