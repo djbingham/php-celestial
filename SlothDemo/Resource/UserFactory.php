@@ -1,7 +1,7 @@
 <?php
 namespace SlothDemo\Resource;
 
-use Sloth\Module\Resource\Definition\AttributeList;
+use Sloth\Module\Resource\Definition\Resource\AttributeList;
 use Sloth\Module\Resource\ResourceFactory;
 
 class UserFactory extends ResourceFactory

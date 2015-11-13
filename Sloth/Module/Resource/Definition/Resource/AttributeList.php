@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\Resource\Definition;
+namespace Sloth\Module\Resource\Definition\Resource;
 
 use Helper\Face\ObjectListInterface;
 use Sloth\Helper\ObjectListTrait;

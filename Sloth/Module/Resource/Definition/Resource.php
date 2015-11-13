@@ -2,6 +2,8 @@
 namespace Sloth\Module\Resource\Definition;
 
 use Sloth\Module\Resource\Definition;
+use Sloth\Module\Resource\Definition\Resource\AttributeList;
+use Sloth\Module\Resource\Definition\Resource\ValidatorList;
 
 class Resource
 {
@@ -26,7 +28,7 @@ class Resource
 	public $primaryAttribute;
 
 	/**
-	 * @var Definition\ValidatorList
+	 * @var ValidatorList
 	 */
 	public $validators;
 }

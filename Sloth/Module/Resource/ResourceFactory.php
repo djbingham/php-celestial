@@ -2,7 +2,7 @@
 namespace Sloth\Module\Resource;
 
 use Sloth\Exception\InvalidRequestException;
-use Sloth\Module\Resource\Definition\AttributeList;
+use Sloth\Module\Resource\Definition\Resource\AttributeList;
 use Sloth\Module\Resource\Definition\Table\Field;
 use Sloth\Module\Resource\Definition\Table\Join;
 

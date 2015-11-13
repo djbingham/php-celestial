@@ -1,6 +1,7 @@
 <?php
 namespace Sloth\Module\Resource\Definition;
 
+use Sloth\Module\Resource\Definition\Resource\ValidatorList;
 use Sloth\Module\Resource\Definition\Table\FieldList;
 use Sloth\Module\Resource\Definition\Table\Join;
 use Sloth\Module\Resource\Definition\Table\JoinList;

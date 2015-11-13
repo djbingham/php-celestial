@@ -1,7 +1,7 @@
 <?php
 use Sloth\Module\Resource\Definition\Table;
-use Sloth\Module\Resource\Definition\Attribute;
-use Sloth\Module\Resource\Definition\AttributeList;
+use Sloth\Module\Resource\Definition\Resource\Attribute;
+use Sloth\Module\Resource\Definition\Resource\AttributeList;
 
 /**
  * @var Sloth\App $app

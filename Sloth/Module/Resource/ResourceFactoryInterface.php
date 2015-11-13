@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Resource;
 
-use Sloth\Module\Resource\Definition\AttributeList;
+use Sloth\Module\Resource\Definition\Resource\AttributeList;
 use Sloth\Module\Resource\Resource as ResourceModel;
 
 interface ResourceFactoryInterface

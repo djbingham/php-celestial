@@ -7,13 +7,13 @@ class AttributeListBuilder
 {
 	public function build(Definition\Resource $resource, \stdClass $attributesManifest)
 	{
-		$attributes = new Definition\AttributeList();
+		$attributes = new Definition\Resource\AttributeList();
 
 		foreach ($attributesManifest as $attributeName => $attributeManifest) {
 			if ($attributeManifest instanceof \stdClass) {
 				$attribute = $this->build($resource, $attributeManifest);
 			} else {
-				$attribute = new Definition\Attribute();
+				$attribute = new Definition\Resource\Attribute();
 			}
 
 			$attribute->name = $attributeName;

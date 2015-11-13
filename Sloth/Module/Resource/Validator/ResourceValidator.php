@@ -22,7 +22,7 @@ class ResourceValidator implements ResourceValidatorInterface
 	{
 		$isValid = true;
 
-		/** @var Definition\Validator $validatorDefinition */
+		/** @var Definition\Resource\Validator $validatorDefinition */
 		foreach ($resourceDefinition->validators as $validatorDefinition) {
 			$validator = $this->validationModule->getValidator($validatorDefinition->rule);
 

@@ -7,10 +7,10 @@ class ValidatorListBuilder
 {
 	public function build(array $validatorListManifest)
 	{
-		$validatorList = new Definition\ValidatorList();
+		$validatorList = new Definition\Resource\ValidatorList();
 
 		foreach ($validatorListManifest as $validatorManifest) {
-			$validator = new Definition\Validator();
+			$validator = new Definition\Resource\Validator();
 			$validator->rule = $validatorManifest->rule;
 			$validator->attributes = $validatorManifest->attributes;
 

@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\Resource\Definition;
+namespace Sloth\Module\Resource\Definition\Resource;
 
 use Sloth\Helper\ObjectList;
 

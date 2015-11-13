@@ -2,7 +2,7 @@
 namespace Sloth\Module\Resource\Definition\Table;
 
 use Sloth\Module\Resource\Definition\Table;
-use Sloth\Module\Resource\Definition\ValidatorList;
+use Sloth\Module\Resource\Definition\Resource\ValidatorList;
 
 class Field
 {
