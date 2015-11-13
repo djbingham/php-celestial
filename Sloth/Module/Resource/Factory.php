@@ -73,7 +73,8 @@ class Factory extends AbstractModuleFactory
 			$this->setCached('dataValidator', new DataValidator(array(
 				'resourceAttributesValidator' => new Validator\ResourceAttributesValidator($this->app->module('validation')),
 				'tableFieldsValidator' => new Validator\TableFieldsValidator($this->app->module('validation')),
-				'tablesValidator' => new Validator\TablesValidator($this->app->module('validation')),
+				'tablesInsertValidator' => new Validator\TablesInsertValidator($this->app->module('validation')),
+				'tablesUpdateValidator' => new Validator\TablesUpdateValidator($this->app->module('validation')),
 				'resourceValidator' => new Validator\ResourceValidator($this->app->module('validation'))
 			)));
 		}

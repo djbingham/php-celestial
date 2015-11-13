@@ -133,7 +133,6 @@ class ResourceModule
 		$tableBuilder->setSubBuilders(array(
 			'tableFieldListBuilder' => new TableFieldListBuilder($tableFieldBuilder),
 			'linkListBuilder' => new LinkListBuilder($tableBuilder),
-			'validatorListBuilder' => $validatorListBuilder,
 			'validatorListBuilder' => $tableValidatorListBuilder
 		));
 

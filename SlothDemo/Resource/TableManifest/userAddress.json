@@ -21,6 +21,22 @@
 			"validators": []
 		}
 	},
+	"validators": [
+		{
+			"rule": "text.minimumLength",
+			"fields": "houseName",
+			"options": {
+				"compareTo": 1
+			}
+		},
+		{
+			"rule": "text.maximumLength",
+			"fields": "houseName",
+			"options": {
+				"compareTo": 50
+			}
+		}
+	],
 	"links": {
 		"landlord": {
 			"type": "oneToOne",

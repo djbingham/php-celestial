@@ -140,6 +140,7 @@ class Config extends BaseConfig
 				'options' => array(
 					'validators' => array(
 						'comparison.contains' => 'Sloth\\Module\\Validation\\Validator\\Comparison\\ContainsValidator',
+						'comparison.equal' => 'Sloth\\Module\\Validation\\Validator\\Comparison\\EqualValidator',
 						'comparison.unique' => 'Sloth\\Module\\Validation\\Validator\\Comparison\\UniqueValidator',
 						'number.greaterThan' => 'Sloth\\Module\\Validation\\Validator\\Number\\GreaterThanValidator',
 						'number.integer' => 'Sloth\\Module\\Validation\\Validator\\Number\\IntegerValidator',

@@ -55,8 +55,12 @@
 	},
 	"validators": [
 		{
-			"rule": "comparison.notEqual",
-			"fields": ["username", "password"],
+			"rule": "comparison.equal",
+			"negate": true,
+			"fields": {
+				"0": "username",
+				"1": "password"
+			},
 			"options": {
 				"strict": false
 			}

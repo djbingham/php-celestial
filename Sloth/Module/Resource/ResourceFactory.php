@@ -52,7 +52,7 @@ class ResourceFactory implements ResourceFactoryInterface
 	public function create(array $attributes)
 	{
 		$attributes = $this->encodeAttributes($attributes);
-		if ($this->dataValidator->validate($this->resourceDefinition, $attributes)) {
+		if ($this->dataValidator->validateInsertData($this->resourceDefinition, $attributes)) {
 			$data = $this->querySetFactory->insert()->execute($this->resourceDefinition->table, array(), $attributes);
 			$resource = $this->instantiateResource($data);
 		} else {
@@ -65,7 +65,7 @@ class ResourceFactory implements ResourceFactoryInterface
 	public function update(array $filters, array $attributes)
 	{
 		$attributes = $this->encodeAttributes($attributes);
-		if ($this->dataValidator->validate($this->resourceDefinition, $attributes)) {
+		if ($this->dataValidator->validateUpdateData($this->resourceDefinition, $attributes)) {
 			$data = $this->querySetFactory->update()->execute($this->resourceDefinition->table, $filters, $attributes);
 			$resource = $this->instantiateResource($data);
 		} else {
