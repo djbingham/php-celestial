@@ -15,38 +15,38 @@ class LinkListBuilder
 		$this->tableBuilder = $tableBuilder;
 	}
 
-	public function build(Definition\Table $table, array $linksManifest)
+	public function build(Definition\Table $table, \stdClass $linksManifest)
 	{
 		$links = new Definition\Table\JoinList();
 		foreach ($linksManifest as $name => $linkManifest) {
 			$link = new Definition\Table\Join($this->tableBuilder);
 			$link->name = $name;
-			if (array_key_exists('via', $linkManifest)) {
-				$link->intermediaryTables = $this->buildIntermediaryTables($linkManifest['via']);
+			if (property_exists($linkManifest, 'via')) {
+				$link->intermediaryTables = $this->buildIntermediaryTables($linkManifest->via);
 			}
-			$link->type = $linkManifest['type'];
-			if (array_key_exists('onInsert', $linkManifest)) {
-				$link->onInsert = $linkManifest['onInsert'];
+			$link->type = $linkManifest->type;
+			if (property_exists($linkManifest, 'onInsert')) {
+				$link->onInsert = $linkManifest->onInsert;
 			}
-			if (array_key_exists('onUpdate', $linkManifest)) {
-				$link->onUpdate = $linkManifest['onUpdate'];
+			if (property_exists($linkManifest, 'onUpdate')) {
+				$link->onUpdate = $linkManifest->onUpdate;
 			}
-			if (array_key_exists('onDelete', $linkManifest)) {
-				$link->onDelete = $linkManifest['onDelete'];
+			if (property_exists($linkManifest, 'onDelete')) {
+				$link->onDelete = $linkManifest->onDelete;
 			}
 			$link->parentTable = $table;
-			$link->childTableName = $linkManifest['table'];
-			$link->joinManifest = $linkManifest['joins'];
+			$link->childTableName = $linkManifest->table;
+			$link->joinManifest = $linkManifest->joins;
 			$links->push($link);
 		}
 		return $links;
 	}
 
-	private function buildIntermediaryTables(array $manifest)
+	private function buildIntermediaryTables(\stdClass $manifest)
 	{
 		$tables = new Definition\TableList();
 		foreach ($manifest as $alias => $tableName) {
-			$tableManifest = array(
+			$tableManifest = (object)array(
 				'name' => $tableName
 			);
 			$table = $this->tableBuilder->buildFromManifest($tableManifest, $alias);

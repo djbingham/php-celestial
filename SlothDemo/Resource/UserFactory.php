@@ -1,37 +1,38 @@
 <?php
 namespace SlothDemo\Resource;
 
+use Sloth\Module\Resource\Definition\AttributeList;
 use Sloth\Module\Resource\ResourceFactory;
 
 class UserFactory extends ResourceFactory
 {
-    public function getBy(array $attributes, array $filters = array())
+    public function getBy(AttributeList $attributes, array $filters = array())
     {
-        echo "CUSTOM RESOURCE FACTORY :: getBy";
+        echo "<p>CUSTOM RESOURCE FACTORY :: getBy</p>";
         return parent::getBy($attributes, $filters);
     }
 
-    public function search(array $attributesToInclude, array $filters)
+    public function search(AttributeList $attributesToInclude, array $filters)
     {
-        echo "CUSTOM RESOURCE FACTORY :: search";
+        echo "<p>CUSTOM RESOURCE FACTORY :: search</p>";
         return parent::search($attributesToInclude, $filters);
     }
 
     public function create(array $attributes)
     {
-        echo "CUSTOM RESOURCE FACTORY :: create";
+        echo "<p>CUSTOM RESOURCE FACTORY :: create</p>";
         return parent::create($attributes);
     }
 
     public function update(array $filters, array $attributes)
     {
-        echo "CUSTOM RESOURCE FACTORY :: update";
+        echo "<p>CUSTOM RESOURCE FACTORY :: update</p>";
         return parent::update($filters, $attributes);
     }
 
     public function delete(array $filters)
     {
-        echo "CUSTOM RESOURCE FACTORY :: delete";
+        echo "<p>CUSTOM RESOURCE FACTORY :: delete</p>";
         return parent::delete($filters);
     }
 }

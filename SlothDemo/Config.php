@@ -139,7 +139,8 @@ class Config extends BaseConfig
 				'factoryClass' => 'Sloth\\Module\\Validation\\Factory',
 				'options' => array(
 					'validators' => array(
-						'comparison.notEqual' => 'Sloth\\Module\\Validation\\Validator\\Comparison\\NotEqualValidator',
+						'comparison.contains' => 'Sloth\\Module\\Validation\\Validator\\Comparison\\ContainsValidator',
+						'comparison.unique' => 'Sloth\\Module\\Validation\\Validator\\Comparison\\UniqueValidator',
 						'number.greaterThan' => 'Sloth\\Module\\Validation\\Validator\\Number\\GreaterThanValidator',
 						'number.integer' => 'Sloth\\Module\\Validation\\Validator\\Number\\IntegerValidator',
 						'number.isNumeric' => 'Sloth\\Module\\Validation\\Validator\\Number\\IsNumericValidator',

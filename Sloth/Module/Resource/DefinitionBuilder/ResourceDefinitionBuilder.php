@@ -28,7 +28,7 @@ class ResourceDefinitionBuilder
 	private $validatorListBuilder;
 
 	/**
-	 * @var TableFieldListBuilder
+	 * @var AttributeListBuilder
 	 */
 	private $attributeListBuilder;
 
@@ -76,22 +76,22 @@ class ResourceDefinitionBuilder
 		$this->assertManifestFileExists($filePath);
 		$fileContents = file_get_contents($filePath);
 		$fileName = basename($filePath, '.json');
-		$manifest = json_decode($fileContents, true);
-		$manifest['name'] = ucfirst($fileName);
+		$manifest = json_decode($fileContents);
+		$manifest->name = ucfirst($fileName);
 		return $this->buildFromManifest($manifest);
 	}
 
-	public function buildFromManifest(array $manifest)
+	public function buildFromManifest(\stdClass $manifest)
 	{
 		$manifest = $this->padManifest($manifest);
 		$this->assertManifestIsValid($manifest);
 
 		$resource = new Resource();
-		$resource->name = $manifest['name'];
-		$resource->attributes = $manifest['attributes'];
-		$resource->primaryAttribute = $manifest['primaryAttribute'];
-		$resource->table = $this->tableBuilder->buildFromName($manifest['table']);
-		$resource->validators = $this->validatorListBuilder->build($manifest['validators']);
+		$resource->name = $manifest->name;
+		$resource->attributes = $this->attributeListBuilder->build($resource, $manifest->attributes);
+		$resource->primaryAttribute = $manifest->primaryAttribute;
+		$resource->table = $this->tableBuilder->buildFromName($manifest->table);
+		$resource->validators = $this->validatorListBuilder->build($manifest->validators);
 
 		return $resource;
 	}
@@ -103,7 +103,7 @@ class ResourceDefinitionBuilder
 		}
 	}
 
-	private function assertManifestIsValid(array $manifest)
+	private function assertManifestIsValid(\stdClass $manifest)
 	{
 		if (!$this->manifestValidator->validate($manifest)) {
 			$errorString = implode('; ', $this->manifestValidator->getErrors());
@@ -111,10 +111,10 @@ class ResourceDefinitionBuilder
 		}
 	}
 
-	private function padManifest(array $manifest)
+	private function padManifest(\stdClass $manifest)
 	{
-		if (!array_key_exists('validators', $manifest)) {
-			$manifest['validators'] = array();
+		if (!property_exists($manifest, 'validators')) {
+			$manifest->validators = array();
 		}
 		return $manifest;
 	}

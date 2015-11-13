@@ -20,18 +20,18 @@ class TableFieldBuilder
 		$this->validatorListBuilder = $validatorListBuilder;
 	}
 
-	public function build(Definition\Table $table, array $fieldManifest)
+	public function build(Definition\Table $table, \stdClass $fieldManifest)
 	{
-		$field = $this->getCachedField($table->alias, $fieldManifest['name']);
+		$field = $this->getCachedField($table->alias, $fieldManifest->name);
 		if (is_null($field)) {
 			$field = new Definition\Table\Field();
 			$field->table = $table;
-			$field->name = $fieldManifest['name'];
-			$field->alias = sprintf('%s.%s', $table->getAlias(), $fieldManifest['field']);
-			$field->autoIncrement = array_key_exists('autoIncrement', $fieldManifest) ? $fieldManifest['autoIncrement'] : false;
-			$field->type = $fieldManifest['type'];
-			$validatorManifest = array_key_exists('validators', $fieldManifest) ? $fieldManifest['validators'] : array();
-			$field->validators = $this->validatorListBuilder->build($validatorManifest);
+			$field->name = $fieldManifest->name;
+			$field->alias = sprintf('%s.%s', $table->getAlias(), $fieldManifest->field);
+			$field->autoIncrement = property_exists($fieldManifest, 'autoIncrement') ? $fieldManifest->autoIncrement : false;
+			$field->type = $fieldManifest->type;
+//			$validatorManifest = array_key_exists('validators', $fieldManifest) ? $fieldManifest->validators : array();
+//			$field->validators = $this->validatorListBuilder->build($validatorManifest);
 			$this->cacheField($field);
 		}
 		return $field;

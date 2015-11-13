@@ -16,7 +16,7 @@ class Resource
 	public $table;
 
 	/**
-	 * @var array
+	 * @var AttributeList
 	 */
 	public $attributes;
 

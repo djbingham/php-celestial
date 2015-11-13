@@ -2,6 +2,7 @@
 namespace Sloth\Module\Resource;
 
 use Sloth\Exception\InvalidRequestException;
+use Sloth\Module\Resource\DefinitionBuilder\AttributeListBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\TableFieldBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\TableFieldListBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\LinkListBuilder;
@@ -48,6 +49,11 @@ class ResourceModule
 	 */
 	private $resourceNamespace;
 
+	/**
+	 * @var DataValidator
+	 */
+	private $dataValidator;
+
 	public function __construct(App $app)
 	{
 		$this->app = $app;
@@ -59,15 +65,14 @@ class ResourceModule
 		return $this;
 	}
 
+	public function getDatabaseWrapper()
+	{
+		return $this->databaseWrapper;
+	}
+
 	public function setResourceManifestValidator(ResourceManifestValidator $resourceManifestValidator)
 	{
 		$this->resourceManifestValidator = $resourceManifestValidator;
-		return $this;
-	}
-
-	public function setTableManifestValidator(TableManifestValidator $tableManifestValidator)
-	{
-		$this->tableManifestValidator = $tableManifestValidator;
 		return $this;
 	}
 
@@ -77,14 +82,15 @@ class ResourceModule
 		return $this;
 	}
 
-	public function getDatabaseWrapper()
-	{
-		return $this->databaseWrapper;
-	}
-
 	public function getTableManifestDirectory()
 	{
 		return $this->tableManifestDirectory;
+	}
+
+	public function setTableManifestValidator(TableManifestValidator $tableManifestValidator)
+	{
+		$this->tableManifestValidator = $tableManifestValidator;
+		return $this;
 	}
 
 	public function setResourceManifestDirectory($directory)
@@ -109,10 +115,16 @@ class ResourceModule
 		return $this->resourceNamespace;
 	}
 
+	public function setDataValidator(DataValidator $validator)
+	{
+		$this->dataValidator = $validator;
+		return $this;
+	}
+
 	public function resourceDefinitionBuilder()
 	{
 		$validatorListBuilder = new ValidatorListBuilder();
-		$attributeListBuilder = null;
+		$attributeListBuilder = new AttributeListBuilder();
 		$tableFieldBuilder = new TableFieldBuilder($validatorListBuilder);
 
 		$tableBuilder = new TableDefinitionBuilder($this->tableManifestValidator, $this->tableManifestDirectory);
@@ -127,9 +139,9 @@ class ResourceModule
 			->setManifestDirectory($this->resourceManifestDirectory)
 			->setManifestValidator($this->resourceManifestValidator)
 			->setSubBuilders(array(
+				'attributeListBuilder' => $attributeListBuilder,
 				'tableBuilder' => $tableBuilder,
-				'validatorListBuilder' => $validatorListBuilder,
-				'attributeListBuilder' => $attributeListBuilder
+				'validatorListBuilder' => $validatorListBuilder
 			));
 
 		return $resourceBuilder;
@@ -172,7 +184,7 @@ class ResourceModule
 			$resourceDefinition = null;
 		}
 
-		$factory = new $factoryClass($resourceDefinition, $this->getQuerySetFactory());
+		$factory = new $factoryClass($resourceDefinition, $this->getQuerySetFactory(), $this->dataValidator);
 
 		return $factory;
 	}

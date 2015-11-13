@@ -15,11 +15,11 @@ class TableFieldListBuilder
         $this->fieldBuilder = $fieldBuilder;
     }
 
-    public function build(Definition\Table $table, array $fieldsManifest)
+    public function build(Definition\Table $table, \stdClass $fieldsManifest)
     {
         $fields = new Definition\Table\FieldList();
         foreach ($fieldsManifest as $fieldName => $fieldManifest) {
-            $fieldManifest['name'] = $fieldName;
+            $fieldManifest->name = $fieldName;
             $fields->push($this->fieldBuilder->build($table, $fieldManifest));
         }
         return $fields;

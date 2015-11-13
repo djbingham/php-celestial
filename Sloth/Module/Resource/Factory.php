@@ -16,6 +16,7 @@ class Factory extends AbstractModuleFactory
 			->setDatabaseWrapper($this->getDatabaseWrapper())
 			->setTableManifestValidator($this->getTableManifestValidator())
 			->setResourceManifestValidator($this->getResourceManifestValidator())
+			->setDataValidator($this->getDataValidator())
 			->setTableManifestDirectory($this->options['tableManifestDirectory'])
 			->setResourceManifestDirectory($this->options['resourceManifestDirectory'])
 			->setResourceNamespace($this->options['resourceNamespace']);
@@ -64,5 +65,18 @@ class Factory extends AbstractModuleFactory
 			$this->setCached('resourceManifestValidator', new ResourceManifestValidator());
 		}
 		return $this->getCached('resourceManifestValidator');
+	}
+
+	protected function getDataValidator()
+	{
+		if (!$this->isCached('dataValidator')) {
+			$this->setCached('dataValidator', new DataValidator(array(
+				'resourceAttributesValidator' => new Validator\ResourceAttributesValidator($this->app->module('validation')),
+				'tableFieldsValidator' => new Validator\TableFieldsValidator($this->app->module('validation')),
+				'tablesValidator' => new Validator\TablesValidator($this->app->module('validation')),
+				'resourceValidator' => new Validator\ResourceValidator($this->app->module('validation'))
+			)));
+		}
+		return $this->getCached('dataValidator');
 	}
 }

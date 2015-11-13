@@ -113,6 +113,7 @@ class UpdateComposer extends Base\AbstractComposer
 			->setQuery($query)
 			->setChildLinks($childLinks)
 			->setData($tableData);
+
 		if ($parentLink instanceof QueryLinkInterface && $parentLink->getJoinDefinition() !== null) {
 			$queryWrapper->setParentLink($parentLink);
 		}

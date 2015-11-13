@@ -1,4 +1,7 @@
 <?php
+use \Sloth\Module\Resource\Definition\Attribute;
+use \Sloth\Module\Resource\Definition\AttributeList;
+
 /**
  * @var Sloth\App $app
  * @var array $data
@@ -24,33 +27,33 @@ $resourceName = lcfirst($resourceDefinition->name);
 </form>
 
 <?php
-function renderAttributes(array $attributes, array $ancestors = array())
+function renderAttributes(AttributeList $attributes, array $ancestors = array())
 {
 	$html = "";
-	foreach ($attributes as $attributeName => $include) {
-		if ($include === true) {
-			$html .= renderAttribute($attributeName);
-		} elseif (is_array($include)) {
-			$html .= renderAttributeSubList($attributeName, $include, $ancestors);
+	foreach ($attributes as $attribute) {
+		if ($attribute instanceof AttributeList) {
+			$html .= renderAttributeSubList($attribute, $ancestors);
+		} else {
+			$html .= renderAttribute($attribute);
 		}
 	}
 	return $html;
 }
 
-function renderAttribute($attributeName)
+function renderAttribute(Attribute $attribute)
 {
-	return sprintf('<li>%s</li>', $attributeName);
+	return sprintf('<li>%s</li>', $attribute->name);
 }
 
-function renderAttributeSubList($ancestorName, array $attributes, array $ancestors)
+function renderAttributeSubList(AttributeList $attributes, array $ancestors)
 {
-	$sectionTitle = $ancestorName;
+	$sectionTitle = $attributes->name;
 	if (count($ancestors) > 0) {
 		foreach ($ancestors as $ancestor) {
 			$sectionTitle .= sprintf(' of %s', $ancestor);
 		}
 	}
-	$ancestors[] = $ancestorName;
+	$ancestors[] = $attributes->name;
 	$html = sprintf('<h3>%s</h3>', $sectionTitle);
 	$html .= sprintf('<ul>%s</ul>', renderAttributes($attributes, $ancestors));
 	return $html;

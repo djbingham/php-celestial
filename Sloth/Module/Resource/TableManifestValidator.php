@@ -5,7 +5,7 @@ class TableManifestValidator
 {
     private $errors = array();
 
-	public function validate(array $manifest)
+	public function validate(\stdClass $manifest)
     {
         return true;
     }

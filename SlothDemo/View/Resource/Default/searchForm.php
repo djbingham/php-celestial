@@ -1,4 +1,7 @@
 <?php
+use \Sloth\Module\Resource\Definition\Attribute;
+use \Sloth\Module\Resource\Definition\AttributeList;
+
 /**
  * @var Sloth\App $app
  * @var array $data
@@ -23,21 +26,22 @@ $resourceName = lcfirst($resourceDefinition->name);
 </form>
 
 <?php
-function renderAttributeListInputs(array $attributes, array $ancestors = array(), &$index = 1)
+function renderAttributeListInputs(AttributeList $attributes, array $ancestors = array(), &$index = 1)
 {
 	$html = "";
-	foreach ($attributes as $attributeName => $include) {
-		if ($include === true) {
-			$html .= renderAttributeInput($attributeName, $ancestors, $index);
+	/** @var Attribute|AttributeList $attribute */
+	foreach ($attributes as $attribute) {
+		if ($attribute instanceof AttributeList) {
+			$html .= renderAttributeSubListInputs($attribute->name, $attribute, $ancestors, $index);
+		} else {
+			$html .= renderAttributeInput($attribute->name, $ancestors, $index);
 			$index++;
-		} elseif (is_array($include)) {
-			$html .= renderAttributeSubListInputs($attributeName, $include, $ancestors, $index);
 		}
 	}
 	return $html;
 }
 
-function renderAttributeInput($attributeName, $ancestors, $index)
+function renderAttributeInput($attributeName, array $ancestors, $index)
 {
 	if (!empty($ancestors)) {
 		$inputName = '';
@@ -70,7 +74,7 @@ EOT;
 	return $inputHtml;
 }
 
-function renderAttributeSubListInputs($ancestorName, array $attributes, array $ancestors, &$index)
+function renderAttributeSubListInputs($ancestorName, AttributeList $attributes, array $ancestors, &$index)
 {
 	$sectionTitle = $ancestorName;
 	if (count($ancestors) > 0) {

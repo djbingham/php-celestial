@@ -1,4 +1,6 @@
 <?php
+use \Sloth\Module\Resource\Definition\Attribute;
+use \Sloth\Module\Resource\Definition\AttributeList;
 use \Sloth\Module\Resource\Definition\Table;
 
 /**
@@ -28,19 +30,20 @@ $resourceName = lcfirst($resourceDefinition->name);
 </form>
 
 <?php
-function renderAttributeListInputs(array $attributes, Table $tableDefinition, array $data, array $ancestors = array())
+function renderAttributeListInputs(AttributeList $attributes, Table $tableDefinition, array $data, array $ancestors = array())
 {
 	$html = "";
-	foreach ($attributes as $attributeName => $include) {
-		if ($include === true) {
-			$html .= renderAttributeInput($attributeName, $data, $ancestors);
-		} elseif (is_array($include)) {
-			$childLink = $tableDefinition->links->getByName($attributeName);
+	/** @var AttributeList|Attribute $attribute */
+	foreach ($attributes as $attribute) {
+		if ($attribute instanceof AttributeList) {
+			$childLink = $tableDefinition->links->getByName($attribute->name);
 			if (!in_array($childLink->onUpdate, array(Sloth\Module\Resource\Definition\Table\Join::ACTION_IGNORE, Sloth\Module\Resource\Definition\Table\Join::ACTION_REJECT))) {
 				$subListAncestors = $ancestors;
-				array_push($subListAncestors, $attributeName);
-				$html .= renderAttributeSubListInputs($include, $childLink, $data[$attributeName], $subListAncestors);
+				array_push($subListAncestors, $attribute->name);
+				$html .= renderAttributeSubListInputs($attribute, $childLink, $data[$attribute->name], $subListAncestors);
 			}
+		} else {
+			$html .= renderAttributeInput($attribute->name, $data, $ancestors);
 		}
 	}
 	return sprintf('<fieldset>%s</fieldset>', $html);
@@ -63,7 +66,7 @@ function renderAttributeInput($attributeName, array $data, $ancestors)
 	return sprintf($htmlTemplate, $attributeName, $inputName, $attributeValue);
 }
 
-function renderAttributeSubListInputs(array $attributes, Table\Join $tableLink, array $data, array $ancestors)
+function renderAttributeSubListInputs(AttributeList $attributes, Table\Join $tableLink, array $data, array $ancestors)
 {
 	$parentName = array_pop($ancestors);
 	$sectionTitle = $parentName;
@@ -84,18 +87,21 @@ function renderAttributeSubListInputs(array $attributes, Table\Join $tableLink, 
 		}
 	} elseif ($tableLink->type === Table\Join::MANY_TO_MANY) {
 		$linkFields = $tableLink->getLinkedFields();
-		$editableAttributes = array(
-			$linkFields['child']->name => $attributes[$linkFields['child']->name]
-		);
+		$childFieldName = $linkFields['child']->name;
+
+		$editableAttributes = new AttributeList();
+		$editableAttributes->push($attributes->getByProperty('name', $childFieldName));
 
 		foreach ($data as $rowIndex => $row) {
 			$ancestors[$lastAncestorIndex] = $rowIndex;
+
 			/** @var Table\Join $childLink */
 			foreach ($tableLink->getChildTable()->links as $childLink) {
-				if (array_key_exists($childLink->name, $attributes)) {
-					$editableAttributes[$childLink->name] = $attributes[$childLink->name];
+				if ($attributes->indexOfPropertyValue('name', $childLink->name) !== -1) {
+					$editableAttributes->push($attributes->getByProperty('name', $childLink->name));
 				}
 			}
+
 			$html .= renderAttributeListInputs($editableAttributes, $tableLink->getChildTable(), $row, $ancestors);
 		}
 	} else {

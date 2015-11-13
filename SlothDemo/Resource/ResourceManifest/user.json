@@ -8,6 +8,7 @@
 		"password": true,
 		"forename": true,
 		"surname": true,
+		"age": true,
 		"address": {
 			"userId": true,
 			"houseName": true,
@@ -30,5 +31,27 @@
 				"surname": true
 			}
 		}
-	}
+	},
+	"validators": [
+		{
+			"rule": "comparison.contains",
+			"negate": true,
+			"attributes": {
+				"needle": "id",
+				"haystack": ["friends.id"]
+			},
+			"options": {
+				"strict": false
+			}
+		},
+		{
+			"rule": "comparison.unique",
+			"attributes": "friends.id"
+		},
+		{
+			"rule": "text.isText",
+			"attributes": ["username", "password", "forename", "surname", "address.postcode"],
+			"independent": true
+		}
+	]
 }

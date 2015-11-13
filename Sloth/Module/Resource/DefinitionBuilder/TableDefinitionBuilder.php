@@ -62,12 +62,12 @@ class TableDefinitionBuilder
 		$this->assertManifestFileExists($filePath);
 		$fileContents = file_get_contents($filePath);
 		$fileName = basename($filePath, '.json');
-		$manifest = json_decode($fileContents, true);
-		$manifest['name'] = ucfirst($fileName);
+		$manifest = json_decode($fileContents);
+		$manifest->name = ucfirst($fileName);
 		return $this->buildFromManifest($manifest, $alias);
 	}
 
-	public function buildFromManifest(array $manifest, $alias = null)
+	public function buildFromManifest(\stdClass $manifest, $alias = null)
 	{
 		$manifest = $this->padManifest($manifest);
 		$this->assertManifestIsValid($manifest);
@@ -76,12 +76,13 @@ class TableDefinitionBuilder
 		if (!is_null($alias)) {
 			$table->alias = $alias;
 		} else {
-			$table->alias = $manifest['name'];
+			$table->alias = $manifest->name;
 		}
-		$table->name = $manifest['name'];
-		$table->fields = $this->tableFieldListBuilder->build($table, $manifest['fields']);
-		$table->links = $this->linkListBuilder->build($table, $manifest['links']);
-		$table->validators = $this->validatorListBuilder->build($manifest['validators']);
+
+		$table->name = $manifest->name;
+		$table->fields = $this->tableFieldListBuilder->build($table, $manifest->fields);
+		$table->links = $this->linkListBuilder->build($table, $manifest->links);
+//		$table->validators = $this->validatorListBuilder->build($manifest->validators);
 
 		return $table;
 	}
@@ -93,7 +94,7 @@ class TableDefinitionBuilder
 		}
 	}
 
-	private function assertManifestIsValid(array $manifest)
+	private function assertManifestIsValid(\stdClass $manifest)
 	{
 		if (!$this->manifestValidator->validate($manifest)) {
 			$errorString = implode('; ', $this->manifestValidator->getErrors());
@@ -101,16 +102,16 @@ class TableDefinitionBuilder
 		}
 	}
 
-	private function padManifest(array $manifest)
+	private function padManifest(\stdClass $manifest)
 	{
-		if (!array_key_exists('fields', $manifest)) {
-			$manifest['fields'] = array();
+		if (!property_exists($manifest, 'fields')) {
+			$manifest->fields = new \stdClass();
 		}
-		if (!array_key_exists('links', $manifest)) {
-			$manifest['links'] = array();
+		if (!property_exists($manifest, 'links')) {
+			$manifest->links = new \stdClass();
 		}
-		if (!array_key_exists('validators', $manifest)) {
-			$manifest['validators'] = array();
+		if (!property_exists($manifest, 'validators')) {
+			$manifest->validators = array();
 		}
 		return $manifest;
 	}

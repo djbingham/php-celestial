@@ -1,5 +1,7 @@
 <?php
 use Sloth\Module\Resource\Definition\Table;
+use Sloth\Module\Resource\Definition\Attribute;
+use Sloth\Module\Resource\Definition\AttributeList;
 
 /**
  * @var Sloth\App $app
@@ -24,21 +26,22 @@ $resourceName = lcfirst($resourceDefinition->name);
 </form>
 
 <?php
-function renderAttributeListInputs(array $attributes, Table $tableDefinition, array $ancestors = array(), $index = null)
+function renderAttributeListInputs(AttributeList $attributes, Table $tableDefinition, array $ancestors = array(), $index = null)
 {
 	$html = "";
-	foreach ($attributes as $attributeName => $include) {
-		if ($include === true) {
-			$tableField = $tableDefinition->fields->getByName($attributeName);
-			if ($tableField->autoIncrement === false) {
-				$html .= renderAttributeInput($attributeName, $ancestors, $index);
-			}
-		} elseif (is_array($include)) {
+	/** @var Attribute|AttributeList $attribute */
+	foreach ($attributes as $attribute) {
+		if ($attribute instanceof AttributeList) {
 			$subListAncestors = $ancestors;
-			array_unshift($subListAncestors, $attributeName);
-			$join = $tableDefinition->links->getByName($attributeName);
+			array_unshift($subListAncestors, $attribute->name);
+			$join = $tableDefinition->links->getByName($attribute->name);
 			if (in_array($join->onInsert, array(Table\Join::ACTION_INSERT))) {
-				$html .= renderAttributeSubListInputs($include, $subListAncestors, $join);
+				$html .= renderAttributeSubListInputs($attribute, $subListAncestors, $join);
+			}
+		} else {
+			$tableField = $tableDefinition->fields->getByName($attribute->name);
+			if ($tableField->autoIncrement === false) {
+				$html .= renderAttributeInput($attribute->name, $ancestors, $index);
 			}
 		}
 	}
@@ -66,14 +69,14 @@ function renderAttributeInput($attributeName, $ancestors, $index = false)
 	return sprintf('<label>%s</label> <input name="%s"><br><br>', $attributeName, $inputName);
 }
 
-function renderAttributeSubListInputs(array $attributes, array $ancestors, Table\Join $join)
+function renderAttributeSubListInputs(AttributeList $attributes, array $ancestors, Table\Join $join)
 {
 	$childTable = $join->getChildTable();
 
 	/** @var Table\Join\Constraint $constraint */
 	foreach ($join->getConstraints() as $constraint) {
 		$childFieldName = $constraint->childField->name;
-		if (array_key_exists($childFieldName, $attributes)) {
+		if (property_exists($attributes, $childFieldName)) {
 			unset($attributes[$childFieldName]);
 		}
 	}

@@ -70,19 +70,23 @@ class Orchestrator
 		if ($this->filterParser !== null) {
 			$filters = $this->filterParser->parse($tableDefinition, $filters);
 		}
+
 		$querySet = $this->composer
 			->setDatabase($this->database)
 			->setTable($tableDefinition)
 			->setFilters($filters)
 			->setData($data)
 			->compose();
+
 		$data = $this->conductor
 			->setDatabase($this->database)
 			->setDataParser($this->dataParser)
 			->setQuerySet($querySet)
 			->setData($data)
 			->conduct();
+
 		$resourceData = $this->dataParser->formatResourceData($data, $tableDefinition, $filters);
+
 		return $resourceData;
 	}
 }

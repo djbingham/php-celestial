@@ -1,6 +1,8 @@
 <?php
 namespace Sloth\Module\Resource;
 
+use Sloth\Exception\InvalidRequestException;
+use Sloth\Module\Resource\Definition\AttributeList;
 use Sloth\Module\Resource\Definition\Table\Field;
 use Sloth\Module\Resource\Definition\Table\Join;
 
@@ -16,10 +18,16 @@ class ResourceFactory implements ResourceFactoryInterface
 	 */
 	protected $querySetFactory;
 
-	public function __construct(Definition\Resource $definition, QuerySetFactory $querySetFactory)
+	/**
+	 * @var DataValidator
+	 */
+	private $dataValidator;
+
+	public function __construct(Definition\Resource $definition, QuerySetFactory $querySetFactory, DataValidator $dataValidator)
 	{
 		$this->resourceDefinition = $definition;
 		$this->querySetFactory = $querySetFactory;
+		$this->dataValidator = $dataValidator;
 	}
 
 	public function getResourceDefinition()
@@ -27,14 +35,14 @@ class ResourceFactory implements ResourceFactoryInterface
 		return $this->resourceDefinition;
 	}
 
-	public function getBy(array $attributesToInclude, array $filters)
+	public function getBy(AttributeList $attributesToInclude, array $filters)
 	{
 		$tableDefinition = $this->filterTableFields($this->resourceDefinition->table, $attributesToInclude);
 		$data = $this->querySetFactory->getBy()->execute($tableDefinition, $filters);
         return $this->instantiateResourceList($data);
 	}
 
-	public function search(array $attributesToInclude, array $filters)
+	public function search(AttributeList $attributesToInclude, array $filters)
 	{
 		$tableDefinition = $this->filterTableFields($this->resourceDefinition->table, $attributesToInclude);
 		$data = $this->querySetFactory->search()->execute($tableDefinition, $filters);
@@ -44,15 +52,27 @@ class ResourceFactory implements ResourceFactoryInterface
 	public function create(array $attributes)
 	{
 		$attributes = $this->encodeAttributes($attributes);
-		$data = $this->querySetFactory->insert()->execute($this->resourceDefinition->table, array(), $attributes);
-		return $this->instantiateResource($data);
+		if ($this->dataValidator->validate($this->resourceDefinition, $attributes)) {
+			$data = $this->querySetFactory->insert()->execute($this->resourceDefinition->table, array(), $attributes);
+			$resource = $this->instantiateResource($data);
+		} else {
+			throw new InvalidRequestException('Invalid attribute values given to create resource.');
+		}
+
+		return $resource;
 	}
 
 	public function update(array $filters, array $attributes)
 	{
 		$attributes = $this->encodeAttributes($attributes);
-		$data = $this->querySetFactory->update()->execute($this->resourceDefinition->table, $filters, $attributes);
-		return $this->instantiateResource($data);
+		if ($this->dataValidator->validate($this->resourceDefinition, $attributes)) {
+			$data = $this->querySetFactory->update()->execute($this->resourceDefinition->table, $filters, $attributes);
+			$resource = $this->instantiateResource($data);
+		} else {
+			throw new InvalidRequestException('Invalid attribute values given to update resource.');
+		}
+
+		return $resource;
 	}
 
 	public function delete(array $filters)
@@ -102,12 +122,12 @@ class ResourceFactory implements ResourceFactoryInterface
 		return $attributes;
 	}
 
-    private function filterTableFields(Definition\Table $tableDefinition, array $attributeMap)
+    private function filterTableFields(Definition\Table $tableDefinition, AttributeList $attributes)
     {
-		if (!empty($attributeMap)) {
+		if (!empty($attributes)) {
 			/** @var Field $field */
 			foreach ($tableDefinition->fields as $attributeIndex => $field) {
-				if (!array_key_exists($field->name, $attributeMap)) {
+				if ($attributes->indexOfPropertyValue('name', $field->name) === -1) {
 					$tableDefinition->fields->removeByIndex($attributeIndex);
 				}
 			}
@@ -115,11 +135,11 @@ class ResourceFactory implements ResourceFactoryInterface
 			for ($joinIndex = 0; $joinIndex < $tableDefinition->links->length(); $joinIndex++) {
 				/** @var \Sloth\Module\Resource\Definition\Table\Join $join */
 				$join = $tableDefinition->links->getByIndex($joinIndex);
-				if (array_key_exists($join->name, $attributeMap)) {
-					$this->filterTableFields($join->getChildTable(), $attributeMap[$join->name]);
-				} else {
+				if ($attributes->indexOfPropertyValue('name', $join->name) === -1) {
 					$tableDefinition->links->removeByIndex($joinIndex);
 					$joinIndex--;
+				} else {
+					$this->filterTableFields($join->getChildTable(), $attributes->getByProperty('name', $join->name));
 				}
 			}
 		}

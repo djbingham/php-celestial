@@ -1,4 +1,7 @@
 <?php
+use \Sloth\Module\Resource\Definition\Attribute;
+use \Sloth\Module\Resource\Definition\AttributeList;
+
 /**
  * @var Sloth\App $app
  * @var array $data
@@ -23,14 +26,15 @@ $resourceName = lcfirst($resourceDefinition->name);
 </form>
 
 <?php
-function renderAttributeListInputs(array $attributes, array $ancestors = array())
+function renderAttributeListInputs(AttributeList $attributes, array $ancestors = array())
 {
 	$html = "";
-	foreach ($attributes as $attributeName => $include) {
-		if ($include === true) {
-			$html .= renderAttributeInput($attributeName, $ancestors);
-		} elseif (is_array($include)) {
-			$html .= renderAttributeSubListInputs($attributeName, $include, $ancestors);
+	/** @var Attribute $attribute */
+	foreach ($attributes as $attribute) {
+		if ($attribute instanceof AttributeList) {
+			$html .= renderAttributeSubListInputs($attribute->name, $attribute, $ancestors);
+		} else {
+			$html .= renderAttributeInput($attribute->name, $ancestors);
 		}
 	}
 	return $html;
@@ -51,7 +55,7 @@ function renderAttributeInput($attributeName, $ancestors)
 	return sprintf('<label>%s</label> <input name="%s"><br><br>', $attributeName, $inputName);
 }
 
-function renderAttributeSubListInputs($ancestorName, array $attributes, array $ancestors)
+function renderAttributeSubListInputs($ancestorName, AttributeList $attributes, array $ancestors)
 {
 	$sectionTitle = $ancestorName;
 	if (count($ancestors) > 0) {
