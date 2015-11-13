@@ -32,7 +32,5 @@
 				"this.landlordId": "landlord.id"
 			}
 		}
-	},
-	"views": {},
-	"validators": {}
+	}
 }

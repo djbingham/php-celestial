@@ -82,7 +82,7 @@ class TableDefinitionBuilder
 		$table->name = $manifest->name;
 		$table->fields = $this->tableFieldListBuilder->build($table, $manifest->fields);
 		$table->links = $this->linkListBuilder->build($table, $manifest->links);
-//		$table->validators = $this->validatorListBuilder->build($manifest->validators);
+		$table->validators = $this->validatorListBuilder->build($manifest->validators);
 
 		return $table;
 	}

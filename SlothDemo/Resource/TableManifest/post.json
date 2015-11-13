@@ -38,7 +38,5 @@
 				"this.id": "comments.postId"
 			}
 		}
-	},
-	"views": {},
-	"validators": {}
+	}
 }

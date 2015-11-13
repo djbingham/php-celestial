@@ -9,24 +9,59 @@
 		"username": {
 			"type": "text(50)",
 			"field": "username",
-			"validators": []
+			"validators": {
+				"text.isText": true,
+				"text.minimumLength": 2,
+				"text.maximumLength": 50
+			}
 		},
 		"password": {
 			"type": "text(50)",
 			"field": "password",
-			"validators": []
+			"validators": {
+				"text.isText": true,
+				"text.minimumLength": 2,
+				"text.maximumLength": 50
+			}
 		},
 		"forename": {
 			"type": "text(50)",
 			"field": "forename",
-			"validators": []
+			"validators": {
+				"text.isText": true,
+				"text.minimumLength": 2,
+				"text.maximumLength": 50
+			}
 		},
 		"surname": {
-			"type": "text(100)",
+			"type": "text(50)",
 			"field": "surname",
-			"validators": []
+			"validators": {
+				"text.isText": true,
+				"text.minimumLength": 2,
+				"text.maximumLength": 50
+			}
+		},
+		"age": {
+			"type": "number(3)",
+			"field": "age",
+			"validators": {
+				"number.isNumber": true,
+				"number.integer": 0,
+				"number.greaterThan": 10,
+				"number.maxDigits": 3
+			}
 		}
 	},
+	"validators": [
+		{
+			"rule": "comparison.notEqual",
+			"fields": ["username", "password"],
+			"options": {
+				"strict": false
+			}
+		}
+	],
 	"links": {
 		"friends": {
 			"type": "manyToMany",
@@ -62,7 +97,5 @@
 				"this.id": "address.userId"
 			}
 		}
-	},
-	"views": {},
-	"validators": {}
+	}
 }

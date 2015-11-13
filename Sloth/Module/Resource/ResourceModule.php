@@ -8,6 +8,7 @@ use Sloth\Module\Resource\DefinitionBuilder\TableFieldListBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\LinkListBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\ResourceDefinitionBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\TableDefinitionBuilder;
+use Sloth\Module\Resource\DefinitionBuilder\TableValidatorListBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\ValidatorListBuilder;
 use Sloth\App;
 use SlothMySql\DatabaseWrapper;
@@ -123,15 +124,17 @@ class ResourceModule
 
 	public function resourceDefinitionBuilder()
 	{
-		$validatorListBuilder = new ValidatorListBuilder();
 		$attributeListBuilder = new AttributeListBuilder();
+		$validatorListBuilder = new ValidatorListBuilder();
 		$tableFieldBuilder = new TableFieldBuilder($validatorListBuilder);
+		$tableValidatorListBuilder = new TableValidatorListBuilder();
 
 		$tableBuilder = new TableDefinitionBuilder($this->tableManifestValidator, $this->tableManifestDirectory);
 		$tableBuilder->setSubBuilders(array(
 			'tableFieldListBuilder' => new TableFieldListBuilder($tableFieldBuilder),
 			'linkListBuilder' => new LinkListBuilder($tableBuilder),
-			'validatorListBuilder' => $validatorListBuilder
+			'validatorListBuilder' => $validatorListBuilder,
+			'validatorListBuilder' => $tableValidatorListBuilder
 		));
 
 		$resourceBuilder = new ResourceDefinitionBuilder();

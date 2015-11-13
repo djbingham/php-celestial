@@ -1,5 +1,5 @@
 <?php
-namespace Sloth\Module\Resource\Definition\Resource;
+namespace Sloth\Module\Resource\Definition\Table;
 
 class Validator
 {
@@ -9,9 +9,9 @@ class Validator
 	public $rule;
 
 	/**
-	 * @var AttributeList
+	 * @var FieldList
 	 */
-	public $attributes;
+	public $fields;
 
 	/**
 	 * @var boolean
