@@ -126,10 +126,11 @@ class ResourceModule
 	{
 		$attributeListBuilder = new AttributeListBuilder();
 		$validatorListBuilder = new ValidatorListBuilder();
-		$tableFieldBuilder = new TableFieldBuilder($validatorListBuilder);
 		$tableValidatorListBuilder = new TableValidatorListBuilder();
 
+		$tableFieldBuilder = new TableFieldBuilder($tableValidatorListBuilder);
 		$tableBuilder = new TableDefinitionBuilder($this->tableManifestValidator, $this->tableManifestDirectory);
+
 		$tableBuilder->setSubBuilders(array(
 			'tableFieldListBuilder' => new TableFieldListBuilder($tableFieldBuilder),
 			'linkListBuilder' => new LinkListBuilder($tableBuilder),

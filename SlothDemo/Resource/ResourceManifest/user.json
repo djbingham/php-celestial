@@ -49,7 +49,7 @@
 			"attributes": "friends.id"
 		},
 		{
-			"rule": "text.isText",
+			"rule": "text.text",
 			"attributes": ["username", "password", "forename", "surname", "address.postcode"],
 			"independent": true
 		}

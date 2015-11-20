@@ -4,13 +4,17 @@
 			"type": "integer(11)",
 			"field": "id",
 			"autoIncrement": true,
-			"validators": []
+			"validators": {
+				"number.number": true,
+				"number.integer": true,
+				"number.maximumDigits": 11
+			}
 		},
 		"username": {
 			"type": "text(50)",
 			"field": "username",
 			"validators": {
-				"text.isText": true,
+				"text.text": true,
 				"text.minimumLength": 2,
 				"text.maximumLength": 50
 			}
@@ -19,7 +23,7 @@
 			"type": "text(50)",
 			"field": "password",
 			"validators": {
-				"text.isText": true,
+				"text.text": true,
 				"text.minimumLength": 2,
 				"text.maximumLength": 50
 			}
@@ -28,7 +32,7 @@
 			"type": "text(50)",
 			"field": "forename",
 			"validators": {
-				"text.isText": true,
+				"text.text": true,
 				"text.minimumLength": 2,
 				"text.maximumLength": 50
 			}
@@ -37,7 +41,7 @@
 			"type": "text(50)",
 			"field": "surname",
 			"validators": {
-				"text.isText": true,
+				"text.text": true,
 				"text.minimumLength": 2,
 				"text.maximumLength": 50
 			}
@@ -46,10 +50,10 @@
 			"type": "number(3)",
 			"field": "age",
 			"validators": {
-				"number.isNumber": true,
+				"number.number": true,
 				"number.integer": 0,
 				"number.greaterThan": 10,
-				"number.maxDigits": 3
+				"number.maximumDigits": 3
 			}
 		}
 	},

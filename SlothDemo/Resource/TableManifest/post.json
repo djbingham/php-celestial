@@ -4,17 +4,17 @@
 			"type": "integer(11)",
 			"field": "id",
 			"autoIncrement": true,
-			"validators": []
+			"validators": {}
 		},
 		"authorId": {
 			"type": "integer(11)",
 			"field": "authorId",
-			"validators": []
+			"validators": {}
 		},
 		"content": {
 			"type": "text",
 			"field": "content",
-			"validators": []
+			"validators": {}
 		}
 	},
 	"links": {

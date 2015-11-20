@@ -1,11 +1,11 @@
 <?php
 namespace Sloth\Module\Resource\Validator\Base;
-use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Resource\Definition;
 use Sloth\Module\Resource\Face\ResourceValidatorInterface;
+use Sloth\Module\Resource\Validator\InvalidRequestException;
 use Sloth\Module\Validation\ValidationModule;
 
-abstract class TablesValidator implements ResourceValidatorInterface
+abstract class TableFieldsValidator implements ResourceValidatorInterface
 {
 	/**
 	 * @var ValidationModule
@@ -18,6 +18,12 @@ abstract class TablesValidator implements ResourceValidatorInterface
 	 */
 	abstract protected function joinRequiresValidation(Definition\Table\Join $tableJoin);
 
+	/**
+	 * @param Definition\Table\Join $tableJoin
+	 * @return boolean
+	 */
+	abstract protected function joinRequiresLinkValidation(Definition\Table\Join $tableJoin);
+
 	public function __construct(ValidationModule $validationModule)
 	{
 		$this->validationModule = $validationModule;
@@ -25,7 +31,9 @@ abstract class TablesValidator implements ResourceValidatorInterface
 
 	public function validate(Definition\Resource $resourceDefinition, array $data)
 	{
-		return $this->validateTableAndChildren($resourceDefinition->table, $data);
+		$isValid = $this->validateTableAndChildren($resourceDefinition->table, $data);
+
+		return $isValid;
 	}
 
 	protected function validateTableAndChildren(Definition\Table $table, array $data)
@@ -42,11 +50,27 @@ abstract class TablesValidator implements ResourceValidatorInterface
 	{
 		$isValid = true;
 
-		/** @var Definition\Table\Validator $validatorDefinition */
-		foreach ($table->validators as $validatorDefinition) {
-			$validator = $this->validationModule->getValidator($validatorDefinition->rule);
+		/** @var Definition\Table\Field $field */
+		foreach ($table->fields as $field) {
+			$fieldPassed = $this->validateField($field, $data);
 
-			$dataToValidate = $this->getFieldsData($validatorDefinition->fields, $data);
+			if ($fieldPassed !== true) {
+				$isValid = false;
+				break(2);
+			}
+		}
+
+		return $isValid;
+	}
+
+	protected function validateField(Definition\Table\Field $field, array $tableData)
+	{
+		$isValid = true;
+
+		/** @var Definition\Table\Validator $validatorDefinition */
+		foreach ($field->validators as $validatorDefinition) {
+			$validator = $this->validationModule->getValidator($validatorDefinition->rule);
+			$dataToValidate = $this->getFieldsData($validatorDefinition->fields, $tableData);
 
 			foreach ($dataToValidate as $dataSet) {
 				$validatorPassed = $validator->validate($dataSet, (array)$validatorDefinition->options);
@@ -75,22 +99,53 @@ abstract class TablesValidator implements ResourceValidatorInterface
 				if ($this->joinRequiresValidation($join)) {
 					if (in_array($join->type, array(Definition\Table\Join::ONE_TO_MANY, Definition\Table\Join::MANY_TO_MANY))) {
 						foreach ($data[$join->name] as $subRow) {
-							$validatorPassed = $this->validateTableAndChildren($join->getChildTable(), $subRow);
+							$tablePassed = $this->validateTableAndChildren($join->getChildTable(), $subRow);
 
-							if ($validatorPassed !== true) {
+							if ($tablePassed !== true) {
 								$isValid = false;
 								break(2);
 							}
 						}
 					} else {
-						$validatorPassed = $this->validateTableAndChildren($join->getChildTable(), $data[$join->name]);
+						$tablePassed = $this->validateTableAndChildren($join->getChildTable(), $data[$join->name]);
 
-						if ($validatorPassed !== true) {
+						if ($tablePassed !== true) {
 							$isValid = false;
 							break;
 						}
 					}
+				} elseif ($this->joinRequiresLinkValidation($join)) {
+					$joinPassed = $this->validateJoinData($join, $data[$join->name]);
+
+					if ($joinPassed !== true) {
+						$isValid = false;
+						break;
+					}
 				}
+			}
+		}
+
+		return $isValid;
+	}
+
+	private function validateJoinData(Definition\Table\Join $join, array $data)
+	{
+		$isValid = true;
+
+		foreach ($data as $subRow) {
+			/** @var Definition\Table\Join\Constraint $constraint */
+			foreach ($join->getConstraints() as $constraint) {
+				$childField = $constraint->childField;
+
+				if (array_key_exists($childField->name, $subRow)) {
+					$fieldPassed = $this->validateField($childField, $subRow);
+
+					if ($fieldPassed !== true) {
+						$isValid = false;
+						break(2);
+					}
+				}
+
 			}
 		}
 

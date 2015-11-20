@@ -8,6 +8,7 @@ use Sloth\Module\Resource\DefinitionBuilder\TableFieldBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\TableFieldListBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\LinkListBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\TableDefinitionBuilder;
+use Sloth\Module\Resource\DefinitionBuilder\TableValidatorListBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\ValidatorListBuilder;
 use Sloth\Module\Resource\DefinitionBuilder\ViewListBuilder;
 use Sloth\Module\Resource\TableManifestValidator;
@@ -45,7 +46,7 @@ abstract class UnitTest extends \PHPUnit_Framework_TestCase
 		$manifestDirectory = __DIR__ . '/sample/tableManifest';
 		$tableDefinitionBuilder = new TableDefinitionBuilder($manifestValidator, $manifestDirectory);
 
-		$validatorListBuilder = new ValidatorListBuilder();
+		$validatorListBuilder = new TableValidatorListBuilder();
 		$attributeBuilder = new TableFieldBuilder($validatorListBuilder);
 		$tableDefinitionBuilder->setSubBuilders(array(
 			'tableFieldListBuilder' => new TableFieldListBuilder($attributeBuilder),

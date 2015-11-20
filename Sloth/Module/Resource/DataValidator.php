@@ -15,7 +15,12 @@ class DataValidator
 	/**
 	 * @var ResourceValidatorInterface
 	 */
-	private $tableFieldsValidator;
+	private $tableFieldsInsertValidator;
+
+	/**
+	 * @var ResourceValidatorInterface
+	 */
+	private $tableFieldsUpdateValidator;
 
 	/**
 	 * @var ResourceValidatorInterface
@@ -35,7 +40,8 @@ class DataValidator
 	public function __construct(array $subValidators)
 	{
 		$this->resourceAttributesValidator = $subValidators['resourceAttributesValidator'];
-		$this->tableFieldsValidator = $subValidators['tableFieldsValidator'];
+		$this->tableFieldsInsertValidator = $subValidators['tableFieldsInsertValidator'];
+		$this->tableFieldsUpdateValidator = $subValidators['tableFieldsUpdateValidator'];
 		$this->resourceValidator = $subValidators['resourceValidator'];
 		$this->tablesInsertValidator = $subValidators['tablesInsertValidator'];
 		$this->tablesUpdateValidator = $subValidators['tablesUpdateValidator'];
@@ -43,7 +49,7 @@ class DataValidator
 
 	public function validateInsertData(Definition\Resource $resourceDefinition, array $attributes)
 	{
-		return $this->tableFieldsValidator->validate($resourceDefinition, $attributes)
+		return $this->tableFieldsInsertValidator->validate($resourceDefinition, $attributes)
 			&& $this->resourceAttributesValidator->validate($resourceDefinition, $attributes)
 			&& $this->tablesInsertValidator->validate($resourceDefinition, $attributes)
 			&& $this->resourceValidator->validate($resourceDefinition, $attributes);
@@ -51,9 +57,9 @@ class DataValidator
 
 	public function validateUpdateData(Definition\Resource $resourceDefinition, array $attributes)
 	{
-		return $this->tableFieldsValidator->validate($resourceDefinition, $attributes)
-		&& $this->resourceAttributesValidator->validate($resourceDefinition, $attributes)
-		&& $this->tablesUpdateValidator->validate($resourceDefinition, $attributes)
-		&& $this->resourceValidator->validate($resourceDefinition, $attributes);
+		return $this->tableFieldsUpdateValidator->validate($resourceDefinition, $attributes)
+			&& $this->resourceAttributesValidator->validate($resourceDefinition, $attributes)
+			&& $this->tablesUpdateValidator->validate($resourceDefinition, $attributes)
+			&& $this->resourceValidator->validate($resourceDefinition, $attributes);
 	}
 }

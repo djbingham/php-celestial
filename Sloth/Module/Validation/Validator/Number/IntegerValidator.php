@@ -7,6 +7,6 @@ class IntegerValidator implements ValidatorInterface
 {
 	public function validate($value, array $options = array())
 	{
-		return is_int($value);
+		return (floatval($value) == intval($value));
 	}
 }

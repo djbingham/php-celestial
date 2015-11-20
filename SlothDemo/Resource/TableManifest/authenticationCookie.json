@@ -3,22 +3,22 @@
 		"identifier": {
 			"type": "text(32)",
 			"field": "identifier",
-			"validators": []
+			"validators": {}
 		},
 		"userId": {
 			"type": "integer(11)",
 			"field": "userId",
-			"validators": []
+			"validators": {}
 		},
 		"token": {
 			"type": "text(32)",
 			"field": "token",
-			"validators": []
+			"validators": {}
 		},
 		"expires": {
 			"type": "timestamp",
 			"field": "expires",
-			"validators": []
+			"validators": {}
 		}
 	}
 }

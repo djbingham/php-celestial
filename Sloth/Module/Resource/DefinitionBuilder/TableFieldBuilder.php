@@ -6,7 +6,7 @@ use Sloth\Module\Resource\Definition;
 class TableFieldBuilder
 {
 	/**
-	 * @var ValidatorListBuilder
+	 * @var TableValidatorListBuilder
 	 */
 	private $validatorListBuilder;
 
@@ -15,7 +15,7 @@ class TableFieldBuilder
 	 */
 	private $cache = array();
 
-	public function __construct(ValidatorListBuilder $validatorListBuilder)
+	public function __construct(TableValidatorListBuilder $validatorListBuilder)
 	{
 		$this->validatorListBuilder = $validatorListBuilder;
 	}
@@ -30,8 +30,7 @@ class TableFieldBuilder
 			$field->alias = sprintf('%s.%s', $table->getAlias(), $fieldManifest->field);
 			$field->autoIncrement = property_exists($fieldManifest, 'autoIncrement') ? $fieldManifest->autoIncrement : false;
 			$field->type = $fieldManifest->type;
-//			$validatorManifest = array_key_exists('validators', $fieldManifest) ? $fieldManifest->validators : array();
-//			$field->validators = $this->validatorListBuilder->build($validatorManifest);
+			$field->validators = $this->buildFieldValidators($fieldManifest);
 			$this->cacheField($field);
 		}
 		return $field;
@@ -58,5 +57,30 @@ class TableFieldBuilder
 			return null;
 		}
 		return $this->cache[$tableName][$fieldName];
+	}
+
+	private function buildFieldValidators(\stdClass $fieldManifest)
+	{
+		$fieldName = $fieldManifest->name;
+		$validatorListManifest = property_exists($fieldManifest, 'validators') ? $fieldManifest->validators : array();
+
+		$formattedManifest = array();
+
+		foreach ($validatorListManifest as $validatorType => $validatorValue) {
+			$formattedManifest[] = $this->buildValidatorManifest($fieldName, $validatorType, $validatorValue);
+		}
+
+		return $this->validatorListBuilder->build($formattedManifest);
+	}
+
+	private function buildValidatorManifest($fieldName, $validatorType, $validatorValue)
+	{
+		return (object)array(
+			'fields' => array($fieldName),
+			'rule' => $validatorType,
+			'options' => array(
+				'compareTo' => $validatorValue
+			)
+		);
 	}
 }

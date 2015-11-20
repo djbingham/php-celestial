@@ -3,22 +3,22 @@
 		"userId": {
 			"type": "integer(11)",
 			"field": "userId",
-			"validators": []
+			"validators": {}
 		},
 		"houseName": {
 			"type": "text(50)",
 			"field": "houseName",
-			"validators": []
+			"validators": {}
 		},
 		"postcode": {
 			"type": "text(50)",
 			"field": "postcode",
-			"validators": []
+			"validators": {}
 		},
 		"landlordId": {
 			"type": "integer(11)",
 			"field": "landlordId",
-			"validators": []
+			"validators": {}
 		}
 	},
 	"validators": [

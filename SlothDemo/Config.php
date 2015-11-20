@@ -144,11 +144,11 @@ class Config extends BaseConfig
 						'comparison.unique' => 'Sloth\\Module\\Validation\\Validator\\Comparison\\UniqueValidator',
 						'number.greaterThan' => 'Sloth\\Module\\Validation\\Validator\\Number\\GreaterThanValidator',
 						'number.integer' => 'Sloth\\Module\\Validation\\Validator\\Number\\IntegerValidator',
-						'number.isNumeric' => 'Sloth\\Module\\Validation\\Validator\\Number\\IsNumericValidator',
+						'number.number' => 'Sloth\\Module\\Validation\\Validator\\Number\\NumberValidator',
 						'number.lessThan' => 'Sloth\\Module\\Validation\\Validator\\Number\\LessThanValidator',
-						'number.maxDecimalPlaces' => 'Sloth\\Module\\Validation\\Validator\\Number\\MaxDecimalPlacesValidator',
-						'number.maxDigits' => 'Sloth\\Module\\Validation\\Validator\\Number\\MaxDigitsValidator',
-						'text.isText' => 'Sloth\\Module\\Validation\\Validator\\Text\\IsTextValidator',
+						'number.maximumDecimalPlaces' => 'Sloth\\Module\\Validation\\Validator\\Number\\MaximumDecimalPlacesValidator',
+						'number.maximumDigits' => 'Sloth\\Module\\Validation\\Validator\\Number\\MaximumDigitsValidator',
+						'text.text' => 'Sloth\\Module\\Validation\\Validator\\Text\\TextValidator',
 						'text.maximumLength' => 'Sloth\\Module\\Validation\\Validator\\Text\\MaximumLengthValidator',
 						'text.minimumLength' => 'Sloth\\Module\\Validation\\Validator\\Text\\MinimumLengthValidator'
 					)

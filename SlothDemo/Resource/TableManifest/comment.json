@@ -4,27 +4,27 @@
 			"type": "integer(11)",
 			"field": "id",
 			"autoIncrement": true,
-			"validators": []
+			"validators": {}
 		},
 		"postId": {
 			"type": "integer(11)",
 			"field": "postId",
-			"validators": []
+			"validators": {}
 		},
 		"parentId": {
 			"type": "integer(11)",
 			"field": "parentId",
-			"validators": []
+			"validators": {}
 		},
 		"authorId": {
 			"type": "integer(11)",
 			"field": "authorId",
-			"validators": []
+			"validators": {}
 		},
 		"content": {
 			"type": "text",
 			"field": "content",
-			"validators": []
+			"validators": {}
 		}
 	},
 	"links": {
