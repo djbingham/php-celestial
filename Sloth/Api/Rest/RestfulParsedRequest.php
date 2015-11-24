@@ -30,7 +30,7 @@ class RestfulParsedRequest extends Request implements Face\RestfulParsedRequestI
 	protected $extension;
 
 	/**
-	 * @var ResourceModule\ResourceFactoryInterface
+	 * @var \Sloth\Module\Resource\Face\ResourceFactoryInterface
 	 */
 	protected $resourceFactory;
 
@@ -99,7 +99,7 @@ class RestfulParsedRequest extends Request implements Face\RestfulParsedRequestI
 			throw new InvalidArgumentException('Invalid (non-string) extension value given to RestfulParsedRequest');
 		}
 
-		if (!($properties['resourceFactory'] instanceof ResourceModule\ResourceFactoryInterface)) {
+		if (!($properties['resourceFactory'] instanceof ResourceModule\Face\ResourceFactoryInterface)) {
 			throw new InvalidArgumentException('Invalid resource factory given to RestfulParsedRequest');
 		}
 

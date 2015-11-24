@@ -12,21 +12,20 @@ class Factory extends AbstractModuleFactory
 	public function initialise()
 	{
 		$module = new ResourceModule($this->app);
-		$module
-			->setDatabaseWrapper($this->getDatabaseWrapper())
-			->setTableManifestValidator($this->getTableManifestValidator())
+
+		$module->setResourceManifestDirectory($this->options['resourceManifestDirectory'])
 			->setResourceManifestValidator($this->getResourceManifestValidator())
-			->setDataValidator($this->getDataValidator())
-			->setTableManifestDirectory($this->options['tableManifestDirectory'])
-			->setResourceManifestDirectory($this->options['resourceManifestDirectory'])
-			->setResourceNamespace($this->options['resourceNamespace']);
+			->setResourceNamespace($this->options['resourceNamespace'])
+			->setTableModule($this->getTableModule())
+			->setTableQueryModule($this->getTableQueryModule())
+			->setDataValidator($this->getResourceDataValidator());
+
 		return $module;
 	}
 
 	protected function validateOptions()
 	{
 		$required = array(
-			'tableManifestDirectory',
 			'resourceManifestDirectory',
 			'resourceNamespace'
 		);
@@ -38,11 +37,8 @@ class Factory extends AbstractModuleFactory
 			);
 		}
 
-		if (!is_dir($this->options['tableManifestDirectory'])) {
-			throw new InvalidArgumentException('Invalid table directory given in options for Render module');
-		}
 		if (!is_dir($this->options['resourceManifestDirectory'])) {
-			throw new InvalidArgumentException('Invalid resource directory given in options for Render module');
+			throw new InvalidArgumentException('Invalid resource directory given in options for Resource module');
 		}
 	}
 
@@ -51,12 +47,19 @@ class Factory extends AbstractModuleFactory
 		return $this->app->module('mysql');
 	}
 
-	protected function getTableManifestValidator()
+	protected function getTableModule()
 	{
-		if (!$this->isCached('tableManifestValidator')) {
-			$this->setCached('tableManifestValidator', new TableManifestValidator());
-		}
-		return $this->getCached('tableManifestValidator');
+		return $this->app->module('dataTable');
+	}
+
+	protected function getTableQueryModule()
+	{
+		return $this->app->module('dataTableQuery');
+	}
+
+	protected function getResourceDataValidator()
+	{
+		return $this->app->module('data.resourceDataValidator');
 	}
 
 	protected function getResourceManifestValidator()
@@ -65,20 +68,5 @@ class Factory extends AbstractModuleFactory
 			$this->setCached('resourceManifestValidator', new ResourceManifestValidator());
 		}
 		return $this->getCached('resourceManifestValidator');
-	}
-
-	protected function getDataValidator()
-	{
-		if (!$this->isCached('dataValidator')) {
-			$this->setCached('dataValidator', new DataValidator(array(
-				'tableFieldsInsertValidator' => new Validator\TableFieldsInsertValidator($this->app->module('validation')),
-				'tableFieldsUpdateValidator' => new Validator\TableFieldsUpdateValidator($this->app->module('validation')),
-				'resourceAttributesValidator' => new Validator\ResourceAttributesValidator($this->app->module('validation')),
-				'tablesInsertValidator' => new Validator\TablesInsertValidator($this->app->module('validation')),
-				'tablesUpdateValidator' => new Validator\TablesUpdateValidator($this->app->module('validation')),
-				'resourceValidator' => new Validator\ResourceValidator($this->app->module('validation'))
-			)));
-		}
-		return $this->getCached('dataValidator');
 	}
 }

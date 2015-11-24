@@ -1,29 +1,25 @@
 <?php
-namespace Sloth\Module\Resource\Test;
+namespace Sloth\Module\Resource\Test\Unit;
 
 require_once dirname(__DIR__) . '/UnitTest.php';
 
+use Sloth\App;
 use Sloth\Module\Resource\ResourceModule;
 use Sloth\Module\Resource\ResourceManifestValidator;
-use DemoResource\Test\UnitTest;
-use Sloth\App;
-use Sloth\Module\Resource\TableManifestValidator;
+use Sloth\Module\Resource\Test\Assertions;
+use Sloth\Module\Resource\Test\UnitTest;
 
-class IntegrationTest extends UnitTest
+class ResourceDefinitionBuilderTest extends UnitTest
 {
-	use Assertions\ResourceBuilderAssertions;
+	use Assertions\TableDefinitionAssertions;
 
 	public function testTableCanBeBuiltFromNamedManifestFileUsingDefaultSubBuilders()
 	{
 		$factory = new ResourceModule($this->mockApp());
 		$resourceManifestValidator = new ResourceManifestValidator();
 		$resourceManifestDirectory = dirname(__DIR__) . '/sample/resourceManifest';
-		$tableManifestValidator = new TableManifestValidator();
-		$tableManifestDirectory = dirname(__DIR__) . '/sample/tableManifest';
 		$factory->setResourceManifestValidator($resourceManifestValidator)
-			->setResourceManifestDirectory($resourceManifestDirectory)
-			->setTableManifestValidator($tableManifestValidator)
-			->setTableManifestDirectory($tableManifestDirectory);
+			->setResourceManifestDirectory($resourceManifestDirectory);
 		$resourceBuilder = $factory->resourceDefinitionBuilder();
 
 		$resource = $resourceBuilder->buildFromName('user');
@@ -40,12 +36,8 @@ class IntegrationTest extends UnitTest
 		$factory = new ResourceModule($this->mockApp());
 		$resourceManifestValidator = new ResourceManifestValidator();
 		$resourceManifestDirectory = dirname(__DIR__) . '/sample/resourceManifest';
-		$tableManifestValidator = new TableManifestValidator();
-		$tableManifestDirectory = dirname(__DIR__) . '/sample/tableManifest';
 		$factory->setResourceManifestValidator($resourceManifestValidator)
-			->setResourceManifestDirectory($resourceManifestDirectory)
-			->setTableManifestValidator($tableManifestValidator)
-			->setTableManifestDirectory($tableManifestDirectory);
+			->setResourceManifestDirectory($resourceManifestDirectory);
 		$resourceBuilder = $factory->resourceDefinitionBuilder();
 
 		$resource = $resourceBuilder->buildFromName('user');

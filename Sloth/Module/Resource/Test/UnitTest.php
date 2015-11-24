@@ -1,17 +1,15 @@
 <?php
 
-namespace DemoResource\Test;
+namespace Sloth\Module\Resource\Test;
 
 require_once __DIR__ . '/bootstrap.php';
 
-use Sloth\Module\Resource\DefinitionBuilder\TableFieldBuilder;
-use Sloth\Module\Resource\DefinitionBuilder\TableFieldListBuilder;
-use Sloth\Module\Resource\DefinitionBuilder\LinkListBuilder;
-use Sloth\Module\Resource\DefinitionBuilder\TableDefinitionBuilder;
-use Sloth\Module\Resource\DefinitionBuilder\TableValidatorListBuilder;
-use Sloth\Module\Resource\DefinitionBuilder\ValidatorListBuilder;
-use Sloth\Module\Resource\DefinitionBuilder\ViewListBuilder;
-use Sloth\Module\Resource\TableManifestValidator;
+use Sloth\Module\DataTable\DefinitionBuilder\LinkListBuilder;
+use Sloth\Module\DataTable\DefinitionBuilder\TableBuilder;
+use Sloth\Module\DataTable\DefinitionBuilder\TableFieldBuilder;
+use Sloth\Module\DataTable\DefinitionBuilder\TableFieldListBuilder;
+use Sloth\Module\DataTable\DefinitionBuilder\ValidatorListBuilder;
+use Sloth\Module\DataTable\TableManifestValidator;
 use Sloth\Module\Resource\Test\Mock\Connection;
 use Sloth\Module\Resource\Test\Mock\DatabaseWrapper;
 
@@ -44,9 +42,9 @@ abstract class UnitTest extends \PHPUnit_Framework_TestCase
 	{
 		$manifestValidator = new TableManifestValidator();
 		$manifestDirectory = __DIR__ . '/sample/tableManifest';
-		$tableDefinitionBuilder = new TableDefinitionBuilder($manifestValidator, $manifestDirectory);
+		$tableDefinitionBuilder = new TableBuilder($manifestValidator, $manifestDirectory);
 
-		$validatorListBuilder = new TableValidatorListBuilder();
+		$validatorListBuilder = new ValidatorListBuilder();
 		$attributeBuilder = new TableFieldBuilder($validatorListBuilder);
 		$tableDefinitionBuilder->setSubBuilders(array(
 			'tableFieldListBuilder' => new TableFieldListBuilder($attributeBuilder),

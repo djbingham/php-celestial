@@ -1,6 +1,7 @@
 <?php
 namespace Sloth\Module\Resource\DefinitionBuilder;
 
+use Sloth\Module\DataTable\DataTableModule;
 use Sloth\Module\Resource\Definition\Resource;
 use Sloth\Module\Resource\Definition;
 use Sloth\Module\Resource\ResourceManifestValidator;
@@ -8,9 +9,9 @@ use Sloth\Module\Resource\ResourceManifestValidator;
 class ResourceDefinitionBuilder
 {
 	/**
-	 * @var TableDefinitionBuilder
+	 * @var DataTableModule
 	 */
-	private $tableBuilder;
+	private $tableModule;
 
 	/**
 	 * @var ResourceManifestValidator
@@ -44,9 +45,14 @@ class ResourceDefinitionBuilder
 		return $this;
 	}
 
+	public function setTableModule(DataTableModule $tableModule)
+	{
+		$this->tableModule = $tableModule;
+		return $this;
+	}
+
 	public function setSubBuilders(array $builders)
 	{
-		$this->tableBuilder = $builders['tableBuilder'];
 		$this->validatorListBuilder = $builders['validatorListBuilder'];
 		$this->attributeListBuilder = $builders['attributeListBuilder'];
 		return $this;
@@ -90,7 +96,7 @@ class ResourceDefinitionBuilder
 		$resource->name = $manifest->name;
 		$resource->attributes = $this->attributeListBuilder->build($resource, $manifest->attributes);
 		$resource->primaryAttribute = $manifest->primaryAttribute;
-		$resource->table = $this->tableBuilder->buildFromName($manifest->table);
+		$resource->table = $this->tableModule->get($manifest->table);
 		$resource->validators = $this->validatorListBuilder->build($manifest->validators);
 
 		return $resource;

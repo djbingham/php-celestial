@@ -4,7 +4,7 @@ namespace Sloth\Module\DataProvider\Provider;
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Module\Authentication\AuthenticationModule;
 use Sloth\Module\DataProvider\Base\AbstractDataProvider;
-use Sloth\Module\Resource\ResourceInterface;
+use Sloth\Module\Resource\Face\ResourceInterface;
 
 class AuthenticationDataProvider extends AbstractDataProvider
 {

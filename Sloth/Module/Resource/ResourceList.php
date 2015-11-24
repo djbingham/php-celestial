@@ -1,6 +1,9 @@
 <?php
 namespace Sloth\Module\Resource;
 
+use Sloth\Module\Resource\Face\ResourceFactoryInterface;
+use Sloth\Module\Resource\Face\ResourceInterface;
+use Sloth\Module\Resource\Face\ResourceListInterface;
 use Sloth\Module\Resource\Resource as MyResource;
 
 class ResourceList implements ResourceListInterface

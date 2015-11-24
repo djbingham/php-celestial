@@ -1,7 +1,7 @@
 <?php
 use Sloth\Module\Resource\Definition\Resource\Attribute;
 use Sloth\Module\Resource\Definition\Resource\AttributeList;
-use \Sloth\Module\Resource\Definition\Table;
+use Sloth\Module\DataTable\Definition\Table;
 
 /**
  * @var Sloth\App $app
@@ -37,7 +37,7 @@ function renderAttributeListInputs(AttributeList $attributes, Table $tableDefini
 	foreach ($attributes as $attribute) {
 		if ($attribute instanceof AttributeList) {
 			$childLink = $tableDefinition->links->getByName($attribute->name);
-			if (!in_array($childLink->onUpdate, array(Sloth\Module\Resource\Definition\Table\Join::ACTION_IGNORE, Sloth\Module\Resource\Definition\Table\Join::ACTION_REJECT))) {
+			if (!in_array($childLink->onUpdate, array(Sloth\Module\DataTable\Definition\Table\Join::ACTION_IGNORE, Sloth\Module\DataTable\Definition\Table\Join::ACTION_REJECT))) {
 				$subListAncestors = $ancestors;
 				array_push($subListAncestors, $attribute->name);
 				$html .= renderAttributeSubListInputs($attribute, $childLink, $data[$attribute->name], $subListAncestors);

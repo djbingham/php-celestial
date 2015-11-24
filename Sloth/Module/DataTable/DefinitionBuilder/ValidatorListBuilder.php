@@ -1,0 +1,29 @@
+<?php
+namespace Sloth\Module\DataTable\DefinitionBuilder;
+
+use Sloth\Module\DataTable\Definition;
+
+class ValidatorListBuilder
+{
+	public function build(array $validatorListManifest)
+	{
+		$validatorList = new Definition\Table\ValidatorList();
+
+		foreach ($validatorListManifest as $validatorManifest) {
+			$validator = new Definition\Table\Validator();
+			$validator->rule = $validatorManifest->rule;
+			$validator->fields = $validatorManifest->fields;
+
+			if (property_exists($validatorManifest, 'negate')) {
+				$validator->negate = $validatorManifest->negate;
+			}
+			if (property_exists($validatorManifest, 'options')) {
+				$validator->options = $validatorManifest->options;
+			}
+
+			$validatorList->push($validator);
+		}
+
+		return $validatorList;
+	}
+}

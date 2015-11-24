@@ -67,6 +67,24 @@ class Config extends BaseConfig
 					)
 				)
 			),
+			'dataTable' => array(
+				'factoryClass' => 'Sloth\\Module\\DataTable\\Factory',
+				'options' => array(
+					'tableManifestDirectory' => $this->rootDirectory() . '/Resource/TableManifest'
+				)
+			),
+			'dataTableQuery' => array(
+				'factoryClass' => 'Sloth\\Module\\DataTableQuery\\Factory',
+				'options' => array()
+			),
+			'data.tableDataValidator' => array(
+				'factoryClass' => 'Sloth\\Module\\Data\\TableDataValidator\\Factory',
+				'options' => array()
+			),
+			'data.resourceDataValidator' => array(
+				'factoryClass' => 'Sloth\\Module\\Data\\ResourceDataValidator\\Factory',
+				'options' => array()
+			),
 			'hashing' => array(
 				'factoryClass' => 'Sloth\\Module\\Hashing\\Factory',
 				'options' => array(
@@ -97,8 +115,7 @@ class Config extends BaseConfig
 				'factoryClass' => 'Sloth\\Module\\Resource\\Factory',
 				'options' => array(
 					'resourceManifestDirectory' => $this->rootDirectory() . '/Resource/ResourceManifest',
-					'resourceNamespace' => 'SlothDemo\\Resource',
-					'tableManifestDirectory' => $this->rootDirectory() . '/Resource/TableManifest'
+					'resourceNamespace' => 'SlothDemo\\Resource'
 				)
 			),
 			'restRender' => array(

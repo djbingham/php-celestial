@@ -4,6 +4,8 @@ namespace Sloth\Api\Rest\Controller;
 use Sloth\Api\Rest\Base\RestfulController;
 use Sloth\Api\Rest\Face\RestfulParsedRequestInterface;
 use Sloth\Exception\InvalidRequestException;
+use Sloth\Module\DataTable\Face\JoinInterface;
+use Sloth\Module\DataTable\Face\TableInterface;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Resource as ResourceModule;
@@ -131,14 +133,14 @@ class UpdateController extends RestfulController
 		return $filters;
 	}
 
-	protected function getLinkDataFromTableDefinitionTree(array $data, ResourceModule\Definition\Table $tableDefinition)
+	protected function getLinkDataFromTableDefinitionTree(array $data, TableInterface $tableDefinition)
 	{
 		$linkData = array();
-		/** @var ResourceModule\Definition\Table\Join $join */
+		/** @var JoinInterface $join */
 		foreach ($tableDefinition->links as $join) {
 			$linkedFields = $join->getLinkedFields();
 			$childField = $linkedFields['child'];
-			if (in_array($join->type, array(ResourceModule\Definition\Table\Join::ONE_TO_MANY, ResourceModule\Definition\Table\Join::MANY_TO_MANY))) {
+			if (in_array($join->type, array(JoinInterface::ONE_TO_MANY, JoinInterface::MANY_TO_MANY))) {
 				foreach ($data[$join->name] as $rowIndex => $rowData) {
 					$linkData[$join->name][$rowIndex][$childField->name] = $rowData[$childField->name];
 				}

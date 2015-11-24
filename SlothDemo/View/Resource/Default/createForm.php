@@ -1,5 +1,5 @@
 <?php
-use Sloth\Module\Resource\Definition\Table;
+use Sloth\Module\DataTable\Definition\Table;
 use Sloth\Module\Resource\Definition\Resource\Attribute;
 use Sloth\Module\Resource\Definition\Resource\AttributeList;
 
@@ -76,9 +76,7 @@ function renderAttributeSubListInputs(AttributeList $attributes, array $ancestor
 	/** @var Table\Join\Constraint $constraint */
 	foreach ($join->getConstraints() as $constraint) {
 		$childFieldName = $constraint->childField->name;
-		if (property_exists($attributes, $childFieldName)) {
-			unset($attributes[$childFieldName]);
-		}
+		$attributes->removeByPropertyValue('name', $childFieldName);
 	}
 
 	$parentName = array_pop($ancestors);

@@ -2,6 +2,8 @@
 namespace Sloth\Module\Resource;
 
 use Sloth\Exception\InvalidArgumentException;
+use Sloth\Module\Resource\Face\ResourceFactoryInterface;
+use Sloth\Module\Resource\Face\ResourceInterface;
 
 class Resource implements ResourceInterface
 {

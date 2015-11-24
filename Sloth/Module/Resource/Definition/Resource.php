@@ -1,11 +1,12 @@
 <?php
 namespace Sloth\Module\Resource\Definition;
 
-use Sloth\Module\Resource\Definition;
+use Sloth\Module\DataTable\Face\TableInterface;
 use Sloth\Module\Resource\Definition\Resource\AttributeList;
 use Sloth\Module\Resource\Definition\Resource\ValidatorList;
+use Sloth\Module\Resource\Face\Definition\ResourceInterface;
 
-class Resource
+class Resource implements ResourceInterface
 {
 	/**
 	 * @var string
@@ -13,7 +14,7 @@ class Resource
 	public $name;
 
 	/**
-	 * @var Definition\Table;
+	 * @var TableInterface;
 	 */
 	public $table;
 

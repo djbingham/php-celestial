@@ -2,31 +2,39 @@
 namespace Sloth\Module\Resource;
 
 use Sloth\Exception\InvalidRequestException;
+use Sloth\Module\Data\ResourceDataValidator\ResourceDataValidatorModule;
+use Sloth\Module\DataTable\Face\FieldInterface;
+use Sloth\Module\DataTable\Face\JoinInterface;
+use Sloth\Module\DataTable\Face\TableInterface;
+use Sloth\Module\DataTableQuery\DataTableQueryModule;
 use Sloth\Module\Resource\Definition\Resource\AttributeList;
-use Sloth\Module\Resource\Definition\Table\Field;
-use Sloth\Module\Resource\Definition\Table\Join;
+use Sloth\Module\Resource\Face\ResourceFactoryInterface;
+use Sloth\Module\Resource\Face\Definition\ResourceInterface;
 
 class ResourceFactory implements ResourceFactoryInterface
 {
 	/**
-	 * @var Definition\Resource
+	 * @var ResourceInterface
 	 */
 	protected $resourceDefinition;
 
 	/**
-	 * @var QuerySetFactory
+	 * @var DataTableQueryModule
 	 */
-	protected $querySetFactory;
+	protected $tableQueryModule;
 
 	/**
-	 * @var DataValidator
+	 * @var ResourceDataValidatorModule
 	 */
 	private $dataValidator;
 
-	public function __construct(Definition\Resource $definition, QuerySetFactory $querySetFactory, DataValidator $dataValidator)
-	{
+	public function __construct(
+		ResourceInterface $definition,
+		DataTableQueryModule $tableQueryModule,
+		ResourceDataValidatorModule $dataValidator
+	) {
 		$this->resourceDefinition = $definition;
-		$this->querySetFactory = $querySetFactory;
+		$this->tableQueryModule = $tableQueryModule;
 		$this->dataValidator = $dataValidator;
 	}
 
@@ -38,14 +46,14 @@ class ResourceFactory implements ResourceFactoryInterface
 	public function getBy(AttributeList $attributesToInclude, array $filters)
 	{
 		$tableDefinition = $this->filterTableFields($this->resourceDefinition->table, $attributesToInclude);
-		$data = $this->querySetFactory->getBy()->execute($tableDefinition, $filters);
+		$data = $this->tableQueryModule->getBy()->execute($tableDefinition, $filters);
         return $this->instantiateResourceList($data);
 	}
 
 	public function search(AttributeList $attributesToInclude, array $filters)
 	{
 		$tableDefinition = $this->filterTableFields($this->resourceDefinition->table, $attributesToInclude);
-		$data = $this->querySetFactory->search()->execute($tableDefinition, $filters);
+		$data = $this->tableQueryModule->search()->execute($tableDefinition, $filters);
 		return $this->instantiateResourceList($data);
 	}
 
@@ -53,8 +61,8 @@ class ResourceFactory implements ResourceFactoryInterface
 	{
 		$attributes = $this->encodeAttributes($attributes);
 		if ($this->dataValidator->validateInsertData($this->resourceDefinition, $attributes)) {
-			$data = $this->querySetFactory->insert()->execute($this->resourceDefinition->table, array(), $attributes);
-			$resource = $this->instantiateResource($data);
+			$data = $this->tableQueryModule->insert()->execute($this->resourceDefinition->table, array(), $attributes);
+			$resource = $this->instantiateResource($data[0]);
 		} else {
 			throw new InvalidRequestException('Invalid attribute values given to create resource.');
 		}
@@ -66,7 +74,7 @@ class ResourceFactory implements ResourceFactoryInterface
 	{
 		$attributes = $this->encodeAttributes($attributes);
 		if ($this->dataValidator->validateUpdateData($this->resourceDefinition, $attributes)) {
-			$data = $this->querySetFactory->update()->execute($this->resourceDefinition->table, $filters, $attributes);
+			$data = $this->tableQueryModule->update()->execute($this->resourceDefinition->table, $filters, $attributes);
 			$resource = $this->instantiateResource($data);
 		} else {
 			throw new InvalidRequestException('Invalid attribute values given to update resource.');
@@ -77,7 +85,7 @@ class ResourceFactory implements ResourceFactoryInterface
 
 	public function delete(array $filters)
 	{
-		$data = $this->querySetFactory->delete()->execute($this->resourceDefinition->table, $filters);
+		$data = $this->tableQueryModule->delete()->execute($this->resourceDefinition->table, $filters);
 		return $this->instantiateResource($data);
 	}
 
@@ -122,10 +130,10 @@ class ResourceFactory implements ResourceFactoryInterface
 		return $attributes;
 	}
 
-    private function filterTableFields(Definition\Table $tableDefinition, AttributeList $attributes)
+    private function filterTableFields(TableInterface $tableDefinition, AttributeList $attributes)
     {
 		if (!empty($attributes)) {
-			/** @var Field $field */
+			/** @var FieldInterface $field */
 			foreach ($tableDefinition->fields as $attributeIndex => $field) {
 				if ($attributes->indexOfPropertyValue('name', $field->name) === -1) {
 					$tableDefinition->fields->removeByIndex($attributeIndex);
@@ -133,7 +141,7 @@ class ResourceFactory implements ResourceFactoryInterface
 			}
 
 			for ($joinIndex = 0; $joinIndex < $tableDefinition->links->length(); $joinIndex++) {
-				/** @var \Sloth\Module\Resource\Definition\Table\Join $join */
+				/** @var JoinInterface $join */
 				$join = $tableDefinition->links->getByIndex($joinIndex);
 				if ($attributes->indexOfPropertyValue('name', $join->name) === -1) {
 					$tableDefinition->links->removeByIndex($joinIndex);
