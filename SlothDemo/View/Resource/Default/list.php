@@ -4,10 +4,10 @@
  * @var array $data
  */
 
-/** @var Sloth\Module\Resource\ResourceList $resources */
+/** @var Sloth\Module\Data\Resource\ResourceList $resources */
 $resources = $data['resources'];
 
-/** @var Sloth\Module\Resource\Definition\Resource $resourceDefinition */
+/** @var Sloth\Module\Data\Resource\Definition\Resource $resourceDefinition */
 $resourceDefinition = $data['resourceDefinition'];
 
 $resourceName = lcfirst($resourceDefinition->name);
@@ -24,7 +24,7 @@ $resourceName = lcfirst($resourceDefinition->name);
 </p>
 <dl>
 	<?php
-		/** @var Sloth\Module\Resource\Resource $resource */
+		/** @var Sloth\Module\Data\Resource\Resource $resource */
 		foreach ($resources as $index => $resource):
 	?>
 

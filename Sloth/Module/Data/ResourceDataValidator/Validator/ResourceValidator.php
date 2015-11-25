@@ -2,8 +2,8 @@
 namespace Sloth\Module\Data\ResourceDataValidator\Validator;
 
 use Sloth\Exception\InvalidRequestException;
-use Sloth\Module\Resource\Face\Definition\ResourceInterface;
-use Sloth\Module\Resource\Face\ResourceValidatorInterface;
+use Sloth\Module\Data\Resource\Face\Definition\ResourceInterface;
+use Sloth\Module\Data\Resource\Face\ResourceValidatorInterface;
 use Sloth\Module\Validation\ValidationModule;
 
 class ResourceValidator implements ResourceValidatorInterface

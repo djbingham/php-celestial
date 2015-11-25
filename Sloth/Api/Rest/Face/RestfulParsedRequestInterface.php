@@ -3,8 +3,8 @@ namespace Sloth\Api\Rest\Face;
 
 use Sloth\Module\Request\Face\ParsedRequestInterface;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
-use Sloth\Module\Resource\Definition\Resource as ResourceDefinition;
-use Sloth\Module\Resource\Face\ResourceFactoryInterface;
+use Sloth\Module\Data\Resource\Definition\Resource as ResourceDefinition;
+use Sloth\Module\Data\Resource\Face\ResourceFactoryInterface;
 
 interface RestfulParsedRequestInterface extends ParsedRequestInterface
 {

@@ -1,14 +1,14 @@
 <?php
-use Sloth\Module\Resource\Definition\Resource\Attribute;
-use Sloth\Module\Resource\Definition\Resource\AttributeList;
-use Sloth\Module\DataTable\Definition\Table;
+use Sloth\Module\Data\Resource\Definition\Resource\Attribute;
+use Sloth\Module\Data\Resource\Definition\Resource\AttributeList;
+use Sloth\Module\Data\Table\Definition\Table;
 
 /**
  * @var Sloth\App $app
  * @var array $data
  */
 
-/** @var Sloth\Module\Resource\Definition\Resource $resourceDefinition */
+/** @var Sloth\Module\Data\Resource\Definition\Resource $resourceDefinition */
 $resourceDefinition = $data['resourceDefinition'];
 
 /** @var array $resource */
@@ -37,7 +37,7 @@ function renderAttributeListInputs(AttributeList $attributes, Table $tableDefini
 	foreach ($attributes as $attribute) {
 		if ($attribute instanceof AttributeList) {
 			$childLink = $tableDefinition->links->getByName($attribute->name);
-			if (!in_array($childLink->onUpdate, array(Sloth\Module\DataTable\Definition\Table\Join::ACTION_IGNORE, Sloth\Module\DataTable\Definition\Table\Join::ACTION_REJECT))) {
+			if (!in_array($childLink->onUpdate, array(Sloth\Module\Data\Table\Definition\Table\Join::ACTION_IGNORE, Sloth\Module\Data\Table\Definition\Table\Join::ACTION_REJECT))) {
 				$subListAncestors = $ancestors;
 				array_push($subListAncestors, $attribute->name);
 				$html .= renderAttributeSubListInputs($attribute, $childLink, $data[$attribute->name], $subListAncestors);

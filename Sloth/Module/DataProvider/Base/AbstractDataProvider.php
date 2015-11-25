@@ -4,7 +4,7 @@ namespace Sloth\Module\DataProvider\Base;
 use Sloth\Module\Authentication\AuthenticationModule;
 use Sloth\Module\DataProvider\DataProviderModule;
 use Sloth\Module\DataProvider\Face\DataProviderInterface;
-use Sloth\Module\Resource\ResourceModule;
+use Sloth\Module\Data\Resource\ResourceModule;
 use Sloth\Module\Session\SessionModule;
 
 abstract class AbstractDataProvider implements DataProviderInterface

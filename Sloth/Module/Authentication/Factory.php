@@ -5,7 +5,7 @@ use Sloth\Base\AbstractModuleFactory;
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Module\Cookie\CookieModule;
 use Sloth\Module\Hashing\HashingModule;
-use Sloth\Module\Resource\ResourceModule;
+use Sloth\Module\Data\Resource\ResourceModule;
 use Sloth\Module\Session\SessionModule;
 
 class Factory extends AbstractModuleFactory
@@ -75,7 +75,7 @@ class Factory extends AbstractModuleFactory
 	 */
 	protected function getResourceModule()
 	{
-		return $this->app->module('resource');
+		return $this->app->module('data.resource');
 	}
 
 	/**

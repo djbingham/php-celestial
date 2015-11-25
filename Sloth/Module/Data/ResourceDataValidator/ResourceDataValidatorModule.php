@@ -2,8 +2,8 @@
 namespace Sloth\Module\Data\ResourceDataValidator;
 
 use Sloth\Module\Data\TableDataValidator\TableDataValidatorModule;
-use Sloth\Module\Resource\Face\Definition\ResourceInterface;
-use Sloth\Module\Resource\Face\ResourceValidatorInterface;
+use Sloth\Module\Data\Resource\Face\Definition\ResourceInterface;
+use Sloth\Module\Data\Resource\Face\ResourceValidatorInterface;
 
 class ResourceDataValidatorModule
 {

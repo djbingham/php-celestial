@@ -10,6 +10,6 @@ class ModuleLoader
 
 	public function resource()
 	{
-		return new Module\Resource\Loader();
+		return new Module\Data\Resource\Loader();
 	}
 }

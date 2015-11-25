@@ -1,8 +1,8 @@
 <?php
 namespace Sloth\Module\Data\TableDataValidator;
 
-use Sloth\Module\DataTable\Face\TableInterface;
-use Sloth\Module\DataTableQuery\Face\TableValidatorInterface;
+use Sloth\Module\Data\Table\Face\TableInterface;
+use Sloth\Module\Data\TableQuery\Face\TableValidatorInterface;
 
 class TableDataValidatorModule
 {

@@ -4,11 +4,11 @@ namespace Sloth\Api\Rest\Controller;
 use Sloth\Api\Rest\Base\RestfulController;
 use Sloth\Api\Rest\Face\RestfulParsedRequestInterface;
 use Sloth\Exception\InvalidRequestException;
-use Sloth\Module\DataTable\Face\JoinInterface;
-use Sloth\Module\DataTable\Face\TableInterface;
+use Sloth\Module\Data\Table\Face\JoinInterface;
+use Sloth\Module\Data\Table\Face\TableInterface;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
-use Sloth\Module\Resource as ResourceModule;
+use Sloth\Module\Data\Resource as ResourceModule;
 use Sloth\Api\Rest\RestfulRequestParser;
 
 class UpdateController extends RestfulController

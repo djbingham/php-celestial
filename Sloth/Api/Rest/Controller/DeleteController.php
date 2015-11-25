@@ -5,7 +5,7 @@ use Sloth\Api\Rest\Base\RestfulController;
 use Sloth\Api\Rest\Face\RestfulParsedRequestInterface;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
-use Sloth\Module\Resource\ResourceModule;
+use Sloth\Module\Data\Resource\ResourceModule;
 use Sloth\Api\Rest\RestfulRequestParser;
 
 class DeleteController extends RestfulController

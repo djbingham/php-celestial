@@ -2,10 +2,10 @@
 namespace Sloth\Module\Data\TableDataValidator\Validator\Base;
 
 use Sloth\Exception\InvalidRequestException;
-use Sloth\Module\DataTable\Face\JoinInterface;
-use Sloth\Module\DataTable\Face\TableInterface;
-use Sloth\Module\DataTable\Face\ValidatorInterface;
-use Sloth\Module\DataTableQuery\Face\TableValidatorInterface;
+use Sloth\Module\Data\Table\Face\JoinInterface;
+use Sloth\Module\Data\Table\Face\TableInterface;
+use Sloth\Module\Data\Table\Face\ValidatorInterface;
+use Sloth\Module\Data\TableQuery\Face\TableValidatorInterface;
 use Sloth\Module\Validation\ValidationModule;
 
 abstract class TablesValidator implements TableValidatorInterface

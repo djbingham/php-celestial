@@ -5,8 +5,8 @@ use Sloth\Exception\AuthenticationException;
 use Sloth\Exception\InvalidConfigurationException;
 use Sloth\Module\Cookie\CookieModule;
 use Sloth\Module\Hashing\HashingModule;
-use Sloth\Module\Resource\Resource;
-use Sloth\Module\Resource\ResourceModule;
+use Sloth\Module\Data\Resource\Resource;
+use Sloth\Module\Data\Resource\ResourceModule;
 use Sloth\Module\Session\SessionModule;
 
 class AuthenticationModule

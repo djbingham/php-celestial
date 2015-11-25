@@ -1,13 +1,13 @@
 <?php
-use Sloth\Module\Resource\Definition\Resource\Attribute;
-use Sloth\Module\Resource\Definition\Resource\AttributeList;
+use Sloth\Module\Data\Resource\Definition\Resource\Attribute;
+use Sloth\Module\Data\Resource\Definition\Resource\AttributeList;
 
 /**
  * @var Sloth\App $app
  * @var array $data
  */
 
-/** @var Sloth\Module\Resource\Definition\Resource $resourceDefinition */
+/** @var Sloth\Module\Data\Resource\Definition\Resource $resourceDefinition */
 $resourceDefinition = $data['resourceDefinition'];
 
 $resourceName = lcfirst($resourceDefinition->name);

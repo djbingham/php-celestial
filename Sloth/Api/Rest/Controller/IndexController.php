@@ -5,7 +5,7 @@ use Sloth\Base\Controller;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
-use Sloth\Module\Resource\ResourceModule;
+use Sloth\Module\Data\Resource\ResourceModule;
 
 class IndexController extends Controller
 {

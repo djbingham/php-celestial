@@ -43,7 +43,7 @@ class Factory extends AbstractModuleFactory
 
 	protected function getResourceModule()
 	{
-		return $this->app->module('resource');
+		return $this->app->module('data.resource');
 	}
 
 	protected function getSessionModule()

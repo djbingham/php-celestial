@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Data\TableDataValidator\Validator;
 
-use Sloth\Module\DataTable\Face\JoinInterface;
+use Sloth\Module\Data\Table\Face\JoinInterface;
 
 class TablesInsertValidator extends Base\TablesValidator
 {

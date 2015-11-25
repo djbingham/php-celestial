@@ -55,6 +55,31 @@ class Config extends BaseConfig
 				'factoryClass' => 'Sloth\\Module\\Cookie\\Factory',
 				'options' => array()
 			),
+			'data.resource' => array(
+				'factoryClass' => 'Sloth\\Module\\Data\\Resource\\Factory',
+				'options' => array(
+					'resourceManifestDirectory' => $this->rootDirectory() . '/Resource/ResourceManifest',
+					'resourceNamespace' => $this->rootNamespace() . '\\Resource'
+				)
+			),
+			'data.resourceDataValidator' => array(
+				'factoryClass' => 'Sloth\\Module\\Data\\ResourceDataValidator\\Factory',
+				'options' => array()
+			),
+			'data.table' => array(
+				'factoryClass' => 'Sloth\\Module\\Data\\Table\\Factory',
+				'options' => array(
+					'tableManifestDirectory' => $this->rootDirectory() . '/Resource/TableManifest'
+				)
+			),
+			'data.tableDataValidator' => array(
+				'factoryClass' => 'Sloth\\Module\\Data\\TableDataValidator\\Factory',
+				'options' => array()
+			),
+			'data.tableQuery' => array(
+				'factoryClass' => 'Sloth\\Module\\Data\\TableQuery\\Factory',
+				'options' => array()
+			),
 			'dataProvider' => array(
 				'factoryClass' => 'Sloth\\Module\\DataProvider\\Factory',
 				'options' => array(
@@ -66,24 +91,6 @@ class Config extends BaseConfig
 						'static' => 'Sloth\\Module\\DataProvider\\Provider\\StaticDataProvider'
 					)
 				)
-			),
-			'dataTable' => array(
-				'factoryClass' => 'Sloth\\Module\\DataTable\\Factory',
-				'options' => array(
-					'tableManifestDirectory' => $this->rootDirectory() . '/Resource/TableManifest'
-				)
-			),
-			'dataTableQuery' => array(
-				'factoryClass' => 'Sloth\\Module\\DataTableQuery\\Factory',
-				'options' => array()
-			),
-			'data.tableDataValidator' => array(
-				'factoryClass' => 'Sloth\\Module\\Data\\TableDataValidator\\Factory',
-				'options' => array()
-			),
-			'data.resourceDataValidator' => array(
-				'factoryClass' => 'Sloth\\Module\\Data\\ResourceDataValidator\\Factory',
-				'options' => array()
 			),
 			'hashing' => array(
 				'factoryClass' => 'Sloth\\Module\\Hashing\\Factory',
@@ -111,13 +118,6 @@ class Config extends BaseConfig
 				'factoryClass' => 'Sloth\\Module\\Request\\Factory',
 				'options' => array()
 			),
-			'resource' => array(
-				'factoryClass' => 'Sloth\\Module\\Resource\\Factory',
-				'options' => array(
-					'resourceManifestDirectory' => $this->rootDirectory() . '/Resource/ResourceManifest',
-					'resourceNamespace' => 'SlothDemo\\Resource'
-				)
-			),
 			'restRender' => array(
 				'factoryClass' => 'Sloth\\Module\\Render\\Factory',
 				'options' => array(
@@ -126,10 +126,10 @@ class Config extends BaseConfig
 				)
 			),
 			'restResource' => array(
-				'factoryClass' => 'Sloth\\Module\\Resource\\Factory',
+				'factoryClass' => 'Sloth\\Module\\Data\\Resource\\Factory',
 				'options' => array(
 					'resourceManifestDirectory' => $this->rootDirectory() . '/Resource/ResourceManifest',
-					'resourceNamespace' => 'SlothDemo\\Resource',
+					'resourceNamespace' => $this->rootNamespace() . '\\Resource',
 					'tableManifestDirectory' => $this->rootDirectory() . '/Resource/TableManifest'
 				)
 			),

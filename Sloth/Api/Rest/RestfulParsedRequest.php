@@ -3,7 +3,7 @@ namespace Sloth\Api\Rest;
 
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
-use Sloth\Module\Resource as ResourceModule;
+use Sloth\Module\Data\Resource as ResourceModule;
 use Sloth\Module\Render as RenderModule;
 use Sloth\Module\Request\Request;
 
@@ -30,7 +30,7 @@ class RestfulParsedRequest extends Request implements Face\RestfulParsedRequestI
 	protected $extension;
 
 	/**
-	 * @var \Sloth\Module\Resource\Face\ResourceFactoryInterface
+	 * @var \Sloth\Module\Data\Resource\Face\ResourceFactoryInterface
 	 */
 	protected $resourceFactory;
 

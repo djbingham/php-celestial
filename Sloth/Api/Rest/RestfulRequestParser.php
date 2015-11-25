@@ -3,7 +3,7 @@ namespace Sloth\Api\Rest;
 
 use Sloth\Module\Request\Face\RequestParserInterface;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
-use Sloth\Module\Resource as ResourceModule;
+use Sloth\Module\Data\Resource as ResourceModule;
 use Sloth\Module\Render as RenderModule;
 use Sloth\Exception;
 

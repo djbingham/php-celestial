@@ -1,8 +1,8 @@
 <?php
 namespace Sloth\Module\Data\ResourceDataValidator\Validator;
 
-use Sloth\Module\Resource\Face\Definition\ResourceInterface;
-use Sloth\Module\Resource\Face\ResourceValidatorInterface;
+use Sloth\Module\Data\Resource\Face\Definition\ResourceInterface;
+use Sloth\Module\Data\Resource\Face\ResourceValidatorInterface;
 use Sloth\Module\Validation\ValidationModule;
 
 class ResourceAttributesValidator implements ResourceValidatorInterface
