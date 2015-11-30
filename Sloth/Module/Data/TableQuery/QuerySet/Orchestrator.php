@@ -87,7 +87,6 @@ class Orchestrator
 
 		$resourceData = $this->dataParser->formatResourceData($data, $tableDefinition, $filters);
 
-
 		return $resourceData;
 	}
 }
