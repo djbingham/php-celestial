@@ -111,6 +111,8 @@ class ResourceFactory implements ResourceFactoryInterface
 		foreach ($attributes as $name => $value) {
 			if (is_array($value)) {
 				$attributes[$name] = $this->encodeAttributes($value);
+			} elseif ($value === null) {
+				$attributes[$name] = null;
 			} else {
 				$attributes[$name] = utf8_encode($value);
 			}
@@ -123,6 +125,8 @@ class ResourceFactory implements ResourceFactoryInterface
 		foreach ($attributes as $name => $value) {
 			if (is_array($value)) {
 				$attributes[$name] = $this->decodeAttributes($value);
+			} elseif ($value === null) {
+				$attributes[$name] = null;
 			} else {
 				$attributes[$name] = utf8_decode($value);
 			}
