@@ -56,7 +56,7 @@ EOT;
 			->setDataParser($dataParser);
 
 		$output = $conductor->conduct();
-		$this->assertNull($output);
+		$this->assertEquals(array(), $output);
 
 		$dbConnection->assertNotExpectingQueries();
 	}
@@ -120,7 +120,7 @@ EOT;
 			->setDataParser($dataParser);
 
 		$output = $conductor->conduct();
-		$this->assertNull($output);
+		$this->assertEquals(array(), $output);
 
 		$dbConnection->assertNotExpectingQueries();
 	}
@@ -193,7 +193,7 @@ EOT;
 			->setDataParser($dataParser);
 
 		$output = $conductor->conduct();
-		$this->assertNull($output);
+		$this->assertEquals(array(), $output);
 
 		$dbConnection->assertNotExpectingQueries();
 	}
@@ -273,7 +273,7 @@ EOT;
 			->setDataParser($dataParser);
 
 		$output = $conductor->conduct();
-		$this->assertNull($output);
+		$this->assertEquals(array(), $output);
 
 		$dbConnection->assertNotExpectingQueries();
 	}
@@ -364,7 +364,7 @@ EOT;
 			->setDataParser($dataParser);
 
 		$output = $conductor->conduct();
-		$this->assertNull($output);
+		$this->assertEquals(array(), $output);
 
 		$dbConnection->assertNotExpectingQueries();
 	}
@@ -471,7 +471,7 @@ EOT;
 			->setDataParser($dataParser);
 
 		$output = $conductor->conduct();
-		$this->assertNull($output);
+		$this->assertEquals(array(), $output);
 
 		$dbConnection->assertNotExpectingQueries();
 	}
@@ -551,7 +551,7 @@ EOT;
 			->setDataParser($dataParser);
 
 		$output = $conductor->conduct();
-		$this->assertNull($output);
+		$this->assertEquals(array(), $output);
 
 		$dbConnection->assertNotExpectingQueries();
 	}

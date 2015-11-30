@@ -14,6 +14,6 @@ class DeleteConductor extends Base\AbstractConductor
 			$this->database->execute($query);
 		}
 
-		return null;
+		return array();
 	}
 }
