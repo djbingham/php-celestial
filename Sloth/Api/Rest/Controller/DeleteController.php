@@ -40,10 +40,10 @@ class DeleteController extends RestfulController
 		$resourceId = $request->getResourceId();
 		$urlExtension = $request->getExtension();
 
-		$resource = $resourceFactory->getBy($resourceDefinition->attributes, array($primaryAttribute => $resourceId));
-		$resource->delete();
+		$resources = $resourceFactory->getBy($resourceDefinition->attributes, array($primaryAttribute => $resourceId));
+		$resources->delete();
 
-		$redirectUrl = $this->app->createUrl(array('resource/view', $resourceDefinition->name, $resourceId));
+		$redirectUrl = $this->app->createUrl(array('resource/view', $resourceDefinition->name));
 		if ($urlExtension !== null) {
 			$redirectUrl .= '.' . $urlExtension;
 		}
@@ -56,6 +56,6 @@ class DeleteController extends RestfulController
 	 */
 	private function getResourceModule()
 	{
-		return $this->module('restRender');
+		return $this->module('data.resource');
 	}
 }

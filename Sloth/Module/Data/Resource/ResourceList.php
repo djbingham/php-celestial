@@ -4,7 +4,6 @@ namespace Sloth\Module\Data\Resource;
 use Sloth\Module\Data\Resource\Face\ResourceFactoryInterface;
 use Sloth\Module\Data\Resource\Face\ResourceInterface;
 use Sloth\Module\Data\Resource\Face\ResourceListInterface;
-use Sloth\Module\Data\Resource\Resource as MyResource;
 
 class ResourceList implements ResourceListInterface
 {
@@ -67,7 +66,7 @@ class ResourceList implements ResourceListInterface
 
 	/**
 	 * @param int $index
-	 * @return MyResource
+	 * @return ResourceInterface
 	 */
 	public function getByIndex($index)
 	{
@@ -80,7 +79,7 @@ class ResourceList implements ResourceListInterface
 
 	public function save()
 	{
-		/** @var MyResource $resource */
+		/** @var ResourceInterface $resource */
 		foreach ($this->resources as $resource) {
 			$resource->save();
 		}
@@ -89,8 +88,9 @@ class ResourceList implements ResourceListInterface
 
 	public function delete()
 	{
+		/** @var ResourceInterface $resource */
 		foreach ($this->resources as $resource) {
-			$this->factory->delete($resource);
+			$this->factory->delete($resource->getAttributes());
 		}
 		return $this;
 	}

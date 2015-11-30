@@ -21,6 +21,8 @@ $resourceId = $resource[$primaryAttribute];
 	<a href="<?= $app->createUrl(array('resource', 'view', $resourceName)) ?>"><?= ucfirst($resourceName) ?> List</a>
 	&nbsp;|&nbsp;
 	<a href="<?= $app->createUrl(array('resource', 'update', $resourceName, $resourceId)) ?>">Update</a>
+	&nbsp;|&nbsp;
+	<a href="<?= $app->createUrl(array('resource', 'delete', $resourceName, $resourceId)) ?>">Delete</a>
 </p>
 <dl>
 	<?= renderAttributeList($resource); ?>

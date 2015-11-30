@@ -34,6 +34,9 @@ $resourceName = lcfirst($resourceDefinition->name);
 			</a>
 		</dt>
 		<dd>
+			<a href="<?= $app->createUrl(array('resource', 'delete', $resourceName, $resource[$resourceDefinition->primaryAttribute])) ?>">
+				Delete
+			</a>
 			<?= renderAttributeList($resource); ?>
 		</dd>
 
