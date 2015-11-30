@@ -25,6 +25,7 @@ class DeleteComposer extends Base\AbstractComposer
 	protected function validateFilters(array $filters, TableInterface $tableDefinition, JoinInterface $joinDefinition = null)
 	{
 		$this->validateFiltersForTable($filters, $tableDefinition, $joinDefinition);
+
 		foreach ($filters as $fieldName => $filterValue) {
 			if ($tableDefinition->links->indexOfName($fieldName) !== -1) {
 				$join = $tableDefinition->links->getByName($fieldName);
@@ -34,31 +35,37 @@ class DeleteComposer extends Base\AbstractComposer
 				$this->validateFilters($filterValue, $childTable, $join);
 			}
 		}
+
 		return $this;
 	}
 
 	protected function validateFiltersForTable(array $filters, TableInterface $tableDefinition, JoinInterface $joinDefinition = null)
 	{
-		$foundFieldFilter = false;
+		$isValid = true;
+
 		if ($joinDefinition instanceof JoinInterface && in_array($joinDefinition->type, array(JoinInterface::ONE_TO_MANY, JoinInterface::MANY_TO_MANY))) {
 			foreach ($filters as $rowFilters) {
-				$this->validateFiltersForTable($rowFilters, $tableDefinition);
-				$foundFieldFilter = true;
+				$isValid = $isValid && $this->validateFiltersForTable($rowFilters, $tableDefinition);
 			}
 		} else {
 			/** @var FieldInterface $tableField */
-			foreach ($tableDefinition->fields as $tableField) {
-				if (array_key_exists($tableField->name, $filters)) {
-					$foundFieldFilter = true;
+			foreach ($filters as $fieldName => $filterValue) {
+				if (
+					$tableDefinition->fields->indexOfName($fieldName) === -1
+					&& $tableDefinition->links->indexOfName($fieldName) === -1
+				) {
+					$isValid = false;
 					break;
 				}
 			}
 		}
-		if (!$foundFieldFilter) {
+
+		if (!$isValid) {
 			throw new InvalidRequestException(
-				'No filters given for table: ' . $tableDefinition->getAlias()
+				'Invalid filters given for table: ' . $tableDefinition->getAlias()
 			);
 		}
+
 		return $this;
 	}
 
