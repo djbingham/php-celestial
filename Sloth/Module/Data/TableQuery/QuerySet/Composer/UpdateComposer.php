@@ -8,7 +8,6 @@ use Sloth\Module\Data\Table\Face\SubJoinInterface;
 use Sloth\Module\Data\Table\Face\TableInterface;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Data\TableQuery\QuerySet\Base;
-use Sloth\Module\Data\TableQuery\Definition;
 use Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkInterface;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\MultiQueryWrapper;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLink;
