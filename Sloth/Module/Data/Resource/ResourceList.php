@@ -90,7 +90,7 @@ class ResourceList implements ResourceListInterface
 	{
 		/** @var ResourceInterface $resource */
 		foreach ($this->resources as $resource) {
-			$this->factory->delete($resource->getAttributes());
+			$resource->delete();
 		}
 		return $this;
 	}
