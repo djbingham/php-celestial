@@ -3,6 +3,7 @@
 		"identifier": {
 			"type": "text(32)",
 			"field": "identifier",
+			"isUnique": true,
 			"validators": {}
 		},
 		"userId": {

@@ -29,6 +29,7 @@ class TableFieldBuilder
 			$field->name = $fieldManifest->name;
 			$field->alias = sprintf('%s.%s', $table->getAlias(), $fieldManifest->field);
 			$field->autoIncrement = property_exists($fieldManifest, 'autoIncrement') ? $fieldManifest->autoIncrement : false;
+			$field->isUnique = property_exists($fieldManifest, 'isUnique') ? $fieldManifest->isUnique : false;
 			$field->type = $fieldManifest->type;
 			$field->validators = $this->buildFieldValidators($fieldManifest);
 			$this->cacheField($field);

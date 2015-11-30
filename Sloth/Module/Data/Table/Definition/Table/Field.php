@@ -29,7 +29,12 @@ class Field implements FieldInterface
 	/**
 	 * @var boolean
 	 */
-	public $autoIncrement;
+	public $autoIncrement = false;
+
+	/**
+	 * @var boolean
+	 */
+	public $isUnique = false;
 
 	/**
 	 * @var ValidatorList

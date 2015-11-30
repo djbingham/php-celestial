@@ -3,6 +3,7 @@
 		"userId": {
 			"type": "integer(11)",
 			"field": "userId",
+			"isUnique": true,
 			"validators": {}
 		},
 		"houseName": {

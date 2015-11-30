@@ -4,6 +4,7 @@
 			"type": "integer(11)",
 			"field": "id",
 			"autoIncrement": true,
+			"isUnique": true,
 			"validators": {}
 		},
 		"authorId": {
