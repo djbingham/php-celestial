@@ -2,10 +2,11 @@
 namespace Sloth\Module\Data\Resource\DefinitionBuilder;
 
 use Sloth\Module\Data\Resource\Definition;
+use Sloth\Module\Data\Resource\Face\Definition\ResourceInterface;
 
 class AttributeListBuilder
 {
-	public function build(Definition\Resource $resource, \stdClass $attributesManifest)
+	public function build(ResourceInterface $resource, \stdClass $attributesManifest)
 	{
 		$attributes = new Definition\Resource\AttributeList();
 
