@@ -10,6 +10,8 @@ class ContainsValidator implements ValidatorInterface
 	{
 		$this->validateValues($values);
 		$this->validateOptions($options);
+
+		$values = $this->padValues($values);
 		$options = $this->padOptions($options);
 
 		$isValid = false;
@@ -47,7 +49,7 @@ class ContainsValidator implements ValidatorInterface
 			throw new InvalidArgumentException('No "needle" value found in values given to ContainsValidator.');
 		}
 
-		if (!array_key_exists('haystack', $values)) {
+		if (array_key_exists('haystack', $values) && count($values['haystack']) === 0) {
 			throw new InvalidArgumentException('No "haystack" found in values given to ContainsValidator.');
 		}
 	}
@@ -65,6 +67,14 @@ class ContainsValidator implements ValidatorInterface
 				throw new InvalidArgumentException('Invalid value given for `negate` option in ContainsValidator.');
 			}
 		}
+	}
+
+	private function padValues(array $values) {
+		if (!array_key_exists('haystack', $values)) {
+			$values['haystack'] = array();
+		}
+
+		return $values;
 	}
 
 	private function padOptions(array $options)
