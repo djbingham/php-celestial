@@ -41,11 +41,12 @@ class DeleteComposer extends Base\AbstractComposer
 
 	protected function validateFiltersForTable(array $filters, TableInterface $tableDefinition, JoinInterface $joinDefinition = null)
 	{
-		$isValid = true;
+		$filtersHaveValidFields = true;
+		$filtersExistForTables = false;
 
 		if ($joinDefinition instanceof JoinInterface && in_array($joinDefinition->type, array(JoinInterface::ONE_TO_MANY, JoinInterface::MANY_TO_MANY))) {
 			foreach ($filters as $rowFilters) {
-				$isValid = $isValid && $this->validateFiltersForTable($rowFilters, $tableDefinition);
+				$filtersHaveValidFields = $filtersHaveValidFields && $this->validateFiltersForTable($rowFilters, $tableDefinition);
 			}
 		} else {
 			/** @var FieldInterface $tableField */
@@ -54,15 +55,27 @@ class DeleteComposer extends Base\AbstractComposer
 					$tableDefinition->fields->indexOfName($fieldName) === -1
 					&& $tableDefinition->links->indexOfName($fieldName) === -1
 				) {
-					$isValid = false;
+					$filtersHaveValidFields = false;
+					break;
+				}
+			}
+
+			/** @var FieldInterface $tableField */
+			foreach ($tableDefinition->fields as $tableField) {
+				if (array_key_exists($tableField->name, $filters)) {
+					$filtersExistForTables = true;
 					break;
 				}
 			}
 		}
 
-		if (!$isValid) {
+		if (!$filtersHaveValidFields) {
 			throw new InvalidRequestException(
 				'Invalid filters given for table: ' . $tableDefinition->getAlias()
+			);
+		} elseif (!$filtersExistForTables) {
+			throw new InvalidRequestException(
+				'No filters given for table: ' . $tableDefinition->getAlias()
 			);
 		}
 
@@ -156,8 +169,6 @@ class DeleteComposer extends Base\AbstractComposer
 
 					$sortedFilters = array_merge($sortedFilters, $sortedChildFilters);
 				} elseif ($join->onDelete === JoinInterface::ACTION_ASSOCIATE) {
-
-					// todo: Delete from link table where parent field is equal to parent value (ignoring child values)
 					/** @var ConstraintInterface $constraint */
 					foreach ($join->getConstraints() as $constraint) {
 						/** @var SubJoinInterface $subJoin */
