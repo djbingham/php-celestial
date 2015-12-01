@@ -22,7 +22,7 @@ class TableFieldBuilder
 
 	public function build(Definition\Table $table, \stdClass $fieldManifest)
 	{
-		$field = $this->getCachedField($table->alias, $fieldManifest->name);
+		$field = $this->getCachedField($table->getAlias(), $fieldManifest->name);
 		if (is_null($field)) {
 			$field = new Definition\Table\Field();
 			$field->table = $table;
@@ -39,7 +39,7 @@ class TableFieldBuilder
 
 	private function cacheField(Definition\Table\Field $field)
 	{
-		$tableName = $field->table->name;
+		$tableName = $field->table->getAlias();
 		$this->cache[$tableName][$field->name] = $field;
 		return $this;
 	}
