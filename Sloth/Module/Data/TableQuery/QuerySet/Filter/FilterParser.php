@@ -8,10 +8,10 @@ use Sloth\Module\Data\TableQuery\QuerySet\Face\FilterParserInterface;
 
 class FilterParser implements FilterParserInterface
 {
-	public function parse(TableInterface $resourceDefinition, array $filters)
+	public function parse(TableInterface $tableDefinition, array $filters)
 	{
 		$parsedFilters = array();
-		foreach ($resourceDefinition->fields as $field) {
+		foreach ($tableDefinition->fields as $field) {
 			/** @var FieldInterface $field */
 			if (array_key_exists($field->name, $filters)) {
 				$parsedFilters[$field->name] = new Filter();
@@ -22,7 +22,7 @@ class FilterParser implements FilterParserInterface
 				$parsedFilters[$field->name]->value = $filters[$field->name];
 			}
 		}
-		foreach ($resourceDefinition->links as $link) {
+		foreach ($tableDefinition->links as $link) {
 			/** @var JoinInterface $link */
 			if (array_key_exists($link->name, $filters)) {
 				$parsedFilters[$link->name] = $this->parse($link->getChildTable(), $filters[$link->name]);
