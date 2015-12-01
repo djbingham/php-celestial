@@ -4,6 +4,8 @@ namespace Sloth\Module\Authentication;
 use Sloth\Exception\AuthenticationException;
 use Sloth\Exception\InvalidConfigurationException;
 use Sloth\Module\Cookie\CookieModule;
+use Sloth\Module\Data\Resource\Definition\Resource\AttributeList;
+use Sloth\Module\Data\Resource\DefinitionBuilder\AttributeListBuilder;
 use Sloth\Module\Hashing\HashingModule;
 use Sloth\Module\Data\Resource\Resource;
 use Sloth\Module\Data\Resource\ResourceModule;
@@ -173,7 +175,14 @@ class AuthenticationModule
 	public function unauthenticate()
 	{
 		$this->sessionModule->remove($this->sessionKey);
-		$this->cookieModule->destroy($this->cookieName);
+
+		if ($this->cookieModule->exists($this->cookieName)) {
+			$cookie = $this->getAuthenticationCookie();
+			$cookieVerificationResource = $this->getCookieVerificationResource($cookie->getIdentifier());
+			$cookieVerificationResource->delete();
+			$this->cookieModule->destroy($this->cookieName);
+		}
+
 		return $this;
 	}
 
@@ -342,13 +351,10 @@ class AuthenticationModule
 	protected function getCookieVerificationResource($identifier)
 	{
 		$resourceFactory = $this->getCookieVerificationResourceFactory();
+		$resourceDefinition = $resourceFactory->getResourceDefinition();
+
 		$matchedResources = $resourceFactory->getBy(
-			array(
-				'identifier' => true,
-				'userId' => true,
-				'token' => true,
-				'expires' => true
-			),
+			$resourceDefinition->attributes,
 			array('identifier' => $identifier)
 		);
 
