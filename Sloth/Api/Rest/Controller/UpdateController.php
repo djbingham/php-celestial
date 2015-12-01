@@ -70,6 +70,7 @@ class UpdateController extends RestfulController
 
 	public function handlePut(RestfulParsedRequestInterface $request)
 	{
+		$getParams = $request->getParams()->get();
 		$attributes = $request->getParams()->post();
 		$resourceDefinition = $request->getResourceDefinition();
 		$resourceFactory = $request->getResourceFactory();
@@ -94,9 +95,13 @@ class UpdateController extends RestfulController
 
 		$resourceFactory->update($updateFilters, $attributes);
 
-		$redirectUrl = $this->app->createUrl(array('resource/view', lcfirst($resourceDefinition->name), $primaryAttributeValue));
-		if ($urlExtension !== null) {
-			$redirectUrl .= '.' . $urlExtension;
+		if (array_key_exists('redirect', $getParams)) {
+			$redirectUrl = $this->app->createUrl(explode('/', $getParams['redirect']));
+		} else {
+			$redirectUrl = $this->app->createUrl(array('resource/view', lcfirst($resourceDefinition->name), $primaryAttributeValue));
+			if ($urlExtension !== null) {
+				$redirectUrl .= '.' . $urlExtension;
+			}
 		}
 
 		$this->app->redirect($redirectUrl);

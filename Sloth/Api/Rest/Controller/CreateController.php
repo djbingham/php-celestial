@@ -42,6 +42,7 @@ class CreateController extends RestfulController
 
 	public function handlePost(RestfulParsedRequestInterface $request)
 	{
+		$getParams = $request->getParams()->get();
 		$attributes = $request->getParams()->post();
 		$resourceDefinition = $request->getResourceDefinition();
 		$resourceFactory = $request->getResourceFactory();
@@ -54,9 +55,13 @@ class CreateController extends RestfulController
 		$resource = $resourceFactory->create($attributes);
 		$resourceId = $resource->getAttribute($resourceDefinition->primaryAttribute);
 
-		$redirectUrl = $this->app->createUrl(array('resource/view', $resourceDefinition->name, $resourceId));
-		if ($urlExtension !== null) {
-			$redirectUrl .= '.' . $urlExtension;
+		if (array_key_exists('redirect', $getParams)) {
+			$redirectUrl = $this->app->createUrl(explode('/', $getParams['redirect']));
+		} else {
+			$redirectUrl = $this->app->createUrl(array('resource/view', lcfirst($resourceDefinition->name), $resourceId));
+			if ($urlExtension !== null) {
+				$redirectUrl .= '.' . $urlExtension;
+			}
 		}
 
 		$this->app->redirect($redirectUrl);

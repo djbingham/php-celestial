@@ -34,6 +34,7 @@ class DeleteController extends RestfulController
 
 	public function handleDelete(RestfulParsedRequestInterface $request)
 	{
+		$getParams = $request->getParams()->get();
 		$resourceDefinition = $request->getResourceDefinition();
 		$resourceFactory = $request->getResourceFactory();
 		$primaryAttribute = $resourceDefinition->primaryAttribute;
@@ -43,9 +44,13 @@ class DeleteController extends RestfulController
 		$resources = $resourceFactory->getBy($resourceDefinition->attributes, array($primaryAttribute => $resourceId));
 		$resources->delete();
 
-		$redirectUrl = $this->app->createUrl(array('resource/view', $resourceDefinition->name));
-		if ($urlExtension !== null) {
-			$redirectUrl .= '.' . $urlExtension;
+		if (array_key_exists('redirect', $getParams)) {
+			$redirectUrl = $this->app->createUrl(explode('/', $getParams['redirect']));
+		} else {
+			$redirectUrl = $this->app->createUrl(array('resource/view', lcfirst($resourceDefinition->name)));
+			if ($urlExtension !== null) {
+				$redirectUrl .= '.' . $urlExtension;
+			}
 		}
 
 		$this->app->redirect($redirectUrl);
