@@ -2,6 +2,7 @@
 namespace Sloth\Module\Data\Resource\Face;
 
 use Sloth\Module\Data\ResourceDataValidator\ResourceDataValidatorModule;
+use Sloth\Module\Data\TableDataValidator\Result\ExecutedValidatorList;
 use Sloth\Module\Data\TableQuery\TableQueryModule;
 use Sloth\Module\Data\Resource\Definition\Resource\AttributeList;
 use Sloth\Module\Data\Resource\Resource as ResourceModel;
@@ -42,11 +43,23 @@ interface ResourceFactoryInterface
 	public function search(AttributeList $attributesToInclude, array $filters);
 
 	/**
+	 * @param array $attributes
+	 * @return ExecutedValidatorList
+	 */
+	public function validateCreateData(array $attributes);
+
+	/**
 	 * Create a new Resource with supplied attribute values
 	 * @param array $attributes
 	 * @return ResourceModel
 	 */
 	public function create(array $attributes);
+
+	/**
+	 * @param array $attributes
+	 * @return ExecutedValidatorList
+	 */
+	public function validateUpdateData(array $attributes);
 
 	/**
 	 * Save updates to a given Resource

@@ -16,9 +16,9 @@ class Validator implements ValidatorInterface
 	public $fields;
 
 	/**
-	 * @var boolean
+	 * @var string
 	 */
-	public $negate = false;
+	public $message;
 
 	/**
 	 * @var array

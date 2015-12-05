@@ -5,6 +5,8 @@ use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Data\Table\Face\JoinInterface;
 use Sloth\Module\Data\Table\Face\TableInterface;
 use Sloth\Module\Data\Table\Face\ValidatorInterface;
+use Sloth\Module\Data\TableDataValidator\Result\ExecutedValidator;
+use Sloth\Module\Data\TableDataValidator\Result\ExecutedValidatorList;
 use Sloth\Module\Data\TableQuery\Face\TableValidatorInterface;
 use Sloth\Module\Validation\ValidationModule;
 
@@ -33,17 +35,25 @@ abstract class TablesValidator implements TableValidatorInterface
 
 	protected function validateTableAndChildren(TableInterface $table, array $data)
 	{
-		$isValid = true;
+		$tableResults = $this->validateTable($table, $data);
+		$joinedResults = $this->validateJoinedTables($table, $data);
 
-		$isValid = $isValid && $this->validateTable($table, $data);
-		$isValid = $isValid && $this->validateJoinedTables($table, $data);
+		$executedValidators = new ExecutedValidatorList();
 
-		return $isValid;
+		foreach ($tableResults as $result) {
+			$executedValidators->push($result);
+		}
+
+		foreach ($joinedResults as $result) {
+			$executedValidators->push($result);
+		}
+
+		return $executedValidators;
 	}
 
 	protected function validateTable(TableInterface $table, array $data)
 	{
-		$isValid = true;
+		$executedValidators = new ExecutedValidatorList();
 
 		/** @var ValidatorInterface $validatorDefinition */
 		foreach ($table->validators as $validatorDefinition) {
@@ -52,25 +62,23 @@ abstract class TablesValidator implements TableValidatorInterface
 			$dataToValidate = $this->getFieldsData($validatorDefinition->fields, $data);
 
 			foreach ($dataToValidate as $dataSet) {
-				$validatorPassed = $validator->validate($dataSet, (array)$validatorDefinition->options);
+				$validatorResult = $validator->validate($dataSet, (array)$validatorDefinition->options);
 
-				if ($validatorDefinition->negate === true) {
-					$validatorPassed = !$validatorPassed;
-				}
+				$executedValidator = new ExecutedValidator(array(
+					'definition' => $validatorDefinition,
+					'result' => $validatorResult
+				));
 
-				if ($validatorPassed !== true) {
-					$isValid = false;
-					break(2);
-				}
+				$executedValidators->push($executedValidator);
 			}
 		}
 
-		return $isValid;
+		return $executedValidators;
 	}
 
 	protected function validateJoinedTables(TableInterface $parentTable, array $data)
 	{
-		$isValid = true;
+		$executedValidators = new ExecutedValidatorList();
 
 		/** @var JoinInterface $join */
 		foreach ($parentTable->links as $join) {
@@ -78,26 +86,24 @@ abstract class TablesValidator implements TableValidatorInterface
 				if ($this->joinRequiresValidation($join)) {
 					if (in_array($join->type, array(JoinInterface::ONE_TO_MANY, JoinInterface::MANY_TO_MANY))) {
 						foreach ($data[$join->name] as $subRow) {
-							$validatorPassed = $this->validateTableAndChildren($join->getChildTable(), $subRow);
+							$childResults = $this->validateTableAndChildren($join->getChildTable(), $subRow);
 
-							if ($validatorPassed !== true) {
-								$isValid = false;
-								break(2);
+							foreach ($childResults as $executedValidator) {
+								$executedValidators->push($executedValidator);
 							}
 						}
 					} else {
-						$validatorPassed = $this->validateTableAndChildren($join->getChildTable(), $data[$join->name]);
+						$childResults = $this->validateTableAndChildren($join->getChildTable(), $data[$join->name]);
 
-						if ($validatorPassed !== true) {
-							$isValid = false;
-							break;
+						foreach ($childResults as $executedValidator) {
+							$executedValidators->push($executedValidator);
 						}
 					}
 				}
 			}
 		}
 
-		return $isValid;
+		return $executedValidators;
 	}
 
 	private function getFieldsData($fieldNames, array $data)

@@ -4,6 +4,8 @@ namespace Sloth\Module\Data\ResourceDataValidator\Validator;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Data\Resource\Face\Definition\ResourceInterface;
 use Sloth\Module\Data\Resource\Face\ResourceValidatorInterface;
+use Sloth\Module\Data\ResourceDataValidator\Result\ExecutedValidator;
+use Sloth\Module\Data\ResourceDataValidator\Result\ExecutedValidatorList;
 use Sloth\Module\Validation\ValidationModule;
 
 class ResourceValidator implements ResourceValidatorInterface
@@ -20,7 +22,7 @@ class ResourceValidator implements ResourceValidatorInterface
 
 	public function validate(ResourceInterface $resourceDefinition, array $attributeValues)
 	{
-		$isValid = true;
+		$executedValidators = new ExecutedValidatorList();
 
 		/** @var ResourceValidatorInterface $validatorDefinition */
 		foreach ($resourceDefinition->validators as $validatorDefinition) {
@@ -68,20 +70,18 @@ class ResourceValidator implements ResourceValidatorInterface
 			}
 
 			foreach ($attributesToTest as $attribute) {
-				$validatorPassed = $validator->validate($attribute, (array)$validatorDefinition->options);
+				$validatorResult = $validator->validate($attribute, (array)$validatorDefinition->options);
 
-				if ($validatorDefinition->negate === true) {
-					$validatorPassed = !$validatorPassed;
-				}
+				$executedValidator = new ExecutedValidator(array(
+					'definition' => $validatorDefinition,
+					'result' => $validatorResult
+				));
 
-				if ($validatorPassed !== true) {
-					$isValid = false;
-					break(2);
-				}
+				$executedValidators->push($executedValidator);
 			}
 		}
 
-		return $isValid;
+		return $executedValidators;
 	}
 
 	protected function getAttributeValue($flattenedAttributeName, $attributeValues)

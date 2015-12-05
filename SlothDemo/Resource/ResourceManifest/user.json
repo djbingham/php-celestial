@@ -35,18 +35,20 @@
 	"validators": [
 		{
 			"rule": "comparison.contains",
-			"negate": true,
 			"attributes": {
 				"needle": "id",
 				"haystack": ["friends.id"]
 			},
 			"options": {
+				"negate": true,
 				"strict": false
-			}
+			},
+			"message": "Users cannot be friends with themselves."
 		},
 		{
 			"rule": "comparison.unique",
-			"attributes": "friends.id"
+			"attributes": "friends.id",
+			"message": "A friendship should only be defined once."
 		},
 		{
 			"rule": "text.text",

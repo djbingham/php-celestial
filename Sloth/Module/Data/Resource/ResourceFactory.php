@@ -57,27 +57,45 @@ class ResourceFactory implements ResourceFactoryInterface
 		return $this->instantiateResourceList($data);
 	}
 
+	public function validateCreateData(array $attributes)
+	{
+		return $this->dataValidator->validateInsertData($this->resourceDefinition, $attributes);
+	}
+
 	public function create(array $attributes)
 	{
 		$attributes = $this->encodeAttributes($attributes);
-		if ($this->dataValidator->validateInsertData($this->resourceDefinition, $attributes)) {
+		$validation = $this->dataValidator->validateInsertData($this->resourceDefinition, $attributes);
+		if ($validation->isValid()) {
 			$data = $this->tableQueryModule->insert()->execute($this->resourceDefinition->table, array(), $attributes);
 			$resource = $this->instantiateResource($data[0]);
 		} else {
-			throw new InvalidRequestException('Invalid attribute values given to create resource.');
+			$errors = implode("\r\n", $validation->getErrors()->getMessages());
+			throw new InvalidRequestException(
+				sprintf('Invalid attribute values given to create resource. Errors: %s', $errors)
+			);
 		}
 
 		return $resource;
 	}
 
+	public function validateUpdateData(array $attributes)
+	{
+		return $this->dataValidator->validateUpdateData($this->resourceDefinition, $attributes);
+	}
+
 	public function update(array $filters, array $attributes)
 	{
 		$attributes = $this->encodeAttributes($attributes);
-		if ($this->dataValidator->validateUpdateData($this->resourceDefinition, $attributes)) {
+		$validation = $this->dataValidator->validateUpdateData($this->resourceDefinition, $attributes);
+		if ($validation->isValid()) {
 			$data = $this->tableQueryModule->update()->execute($this->resourceDefinition->table, $filters, $attributes);
 			$resource = $this->instantiateResource($data);
 		} else {
-			throw new InvalidRequestException('Invalid attribute values given to update resource.');
+			$errors = implode(" \r\n", $validation->getErrors()->getMessages());
+			throw new InvalidRequestException(
+				sprintf('Invalid attribute values given to update resource. Errors: %s', $errors)
+			);
 		}
 
 		return $resource;

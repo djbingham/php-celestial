@@ -7,6 +7,9 @@ use Sloth\Module\Data\Table\Face\FieldInterface;
 use Sloth\Module\Data\Table\Face\JoinInterface;
 use Sloth\Module\Data\Table\Face\TableInterface;
 use Sloth\Module\Data\Table\Face\ValidatorInterface;
+use Sloth\Module\Data\TableDataValidator\Result\ExecutedValidator;
+use Sloth\Module\Data\TableDataValidator\Result\ExecutedValidatorList;
+use Sloth\Module\Data\TableDataValidator\Result\Result;
 use Sloth\Module\Data\TableQuery\Face\TableValidatorInterface;
 use Sloth\Module\Validation\ValidationModule;
 
@@ -41,59 +44,64 @@ abstract class TableFieldsValidator implements TableValidatorInterface
 
 	protected function validateTableAndChildren(TableInterface $table, array $data)
 	{
-		$isValid = true;
+		$tableResults = $this->validateTable($table, $data);
+		$joinedResults = $this->validateJoinedTables($table, $data);
 
-		$isValid = $isValid && $this->validateTable($table, $data);
-		$isValid = $isValid && $this->validateJoinedTables($table, $data);
+		$executedValidators = new ExecutedValidatorList();
 
-		return $isValid;
+		foreach ($tableResults as $result) {
+			$executedValidators->push($result);
+		}
+
+		foreach ($joinedResults as $result) {
+			$executedValidators->push($result);
+		}
+
+		return $executedValidators;
 	}
 
 	protected function validateTable(TableInterface $table, array $data)
 	{
-		$isValid = true;
+		$executedValidators = new ExecutedValidatorList();
 
 		/** @var FieldInterface $field */
 		foreach ($table->fields as $field) {
-			$fieldPassed = $this->validateField($field, $data);
+			$fieldResultList = $this->validateField($field, $data);
 
-			if ($fieldPassed !== true) {
-				$isValid = false;
-				break;
+			foreach ($fieldResultList as $executedValidator) {
+				$executedValidators->push($executedValidator);
 			}
 		}
 
-		return $isValid;
+		return $executedValidators;
 	}
 
 	protected function validateField(FieldInterface $field, array $tableData)
 	{
-		$isValid = true;
+		$executedValidators = new ExecutedValidatorList();
 
 		/** @var ValidatorInterface $validatorDefinition */
 		foreach ($field->validators as $validatorDefinition) {
 			if (array_key_exists($field->name, $tableData)) {
 				$validator = $this->validationModule->getValidator($validatorDefinition->rule);
 
-				$validatorPassed = $validator->validate($tableData[$field->name], (array)$validatorDefinition->options);
+				$validatorResult = $validator->validate($tableData[$field->name], (array)$validatorDefinition->options);
 
-				if ($validatorDefinition->negate === true) {
-					$validatorPassed = !$validatorPassed;
-				}
+				$executedValidator = new ExecutedValidator(array(
+					'definition' => $validatorDefinition,
+					'result' => $validatorResult
+				));
 
-				if ($validatorPassed !== true) {
-					$isValid = false;
-					break;
-				}
+				$executedValidators->push($executedValidator);
 			}
 		}
 
-		return $isValid;
+		return $executedValidators;
 	}
 
 	protected function validateJoinedTables(TableInterface $parentTable, array $data)
 	{
-		$isValid = true;
+		$executedValidators = new ExecutedValidatorList();
 
 		/** @var JoinInterface $join */
 		foreach ($parentTable->links as $join) {
@@ -101,38 +109,35 @@ abstract class TableFieldsValidator implements TableValidatorInterface
 				if ($this->joinRequiresValidation($join)) {
 					if (in_array($join->type, array(JoinInterface::ONE_TO_MANY, JoinInterface::MANY_TO_MANY))) {
 						foreach ($data[$join->name] as $subRow) {
-							$tablePassed = $this->validateTableAndChildren($join->getChildTable(), $subRow);
+							$childResults = $this->validateTableAndChildren($join->getChildTable(), $subRow);
 
-							if ($tablePassed !== true) {
-								$isValid = false;
-								break(2);
+							foreach ($childResults as $executedValidator) {
+								$executedValidators->push($executedValidator);
 							}
 						}
 					} else {
-						$tablePassed = $this->validateTableAndChildren($join->getChildTable(), $data[$join->name]);
+						$childResults = $this->validateTableAndChildren($join->getChildTable(), $data[$join->name]);
 
-						if ($tablePassed !== true) {
-							$isValid = false;
-							break;
+						foreach ($childResults as $executedValidator) {
+							$executedValidators->push($executedValidator);
 						}
 					}
 				} elseif ($this->joinRequiresLinkValidation($join)) {
-					$joinPassed = $this->validateJoinData($join, $data[$join->name]);
+					$joinResults = $this->validateJoinData($join, $data[$join->name]);
 
-					if ($joinPassed !== true) {
-						$isValid = false;
-						break;
+					foreach ($joinResults as $executedValidator) {
+						$executedValidators->push($executedValidator);
 					}
 				}
 			}
 		}
 
-		return $isValid;
+		return $executedValidators;
 	}
 
 	private function validateJoinData(JoinInterface $join, array $data)
 	{
-		$isValid = true;
+		$executedValidators = new ExecutedValidatorList();
 
 		foreach ($data as $subRow) {
 			/** @var ConstraintInterface $constraint */
@@ -140,18 +145,17 @@ abstract class TableFieldsValidator implements TableValidatorInterface
 				$childField = $constraint->childField;
 
 				if (array_key_exists($childField->name, $subRow)) {
-					$fieldPassed = $this->validateField($childField, $subRow);
+					$fieldResults = $this->validateField($childField, $subRow);
 
-					if ($fieldPassed !== true) {
-						$isValid = false;
-						break(2);
+					foreach ($fieldResults as $result) {
+						$executedValidators->push($result);
 					}
 				}
 
 			}
 		}
 
-		return $isValid;
+		return $executedValidators;
 	}
 
 	protected function getFieldValue($flattenedFieldName, array $data)

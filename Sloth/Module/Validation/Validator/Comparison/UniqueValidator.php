@@ -2,9 +2,9 @@
 namespace Sloth\Module\Validation\Validator\Comparison;
 
 use Sloth\Exception\InvalidArgumentException;
-use Sloth\Module\Validation\Face\ValidatorInterface;
+use Sloth\Module\Validation\Base\AbstractValidator;
 
-class UniqueValidator implements ValidatorInterface
+class UniqueValidator extends AbstractValidator
 {
 	public function validate($values, array $options = array())
 	{
@@ -12,23 +12,31 @@ class UniqueValidator implements ValidatorInterface
 		$this->validateOptions($options);
 		$options = $this->padOptions($options);
 
-		$isValid = false;
+		$valuesAreUnique = count(array_unique($values)) === count($values);
+		$error = null;
 
-		if (count(array_unique($values)) === count($values)) {
-			$isValid = true;
+		if ($options['negate'] && $valuesAreUnique) {
+			$error = $this->buildError(
+				sprintf('Expected non-unique list, but all values are unique: %s.', json_encode($values))
+			);
+		} elseif (!$options['negate'] && !$valuesAreUnique) {
+			$error = $this->buildError(
+				sprintf('Expected unique list, but non-unique values found: %s.', json_encode($values))
+			);
 		}
 
-		if ($options['negate'] === true) {
-			$isValid = !$isValid;
+		$result = $this->buildResult();
+		if ($error !== null) {
+			$result->pushError($error);
 		}
 
-		return $isValid;
+		return $result;
 	}
 
 	private function validateValues($values)
 	{
 		if (!is_array($values)) {
-			throw new InvalidArgumentException('Invalid values given to UniqueValidator. Must be an array.');
+			throw new InvalidArgumentException('Invalid values given to Comparison\UniqueValidator. Must be an array.');
 		}
 	}
 
@@ -36,7 +44,7 @@ class UniqueValidator implements ValidatorInterface
 	{
 		if (array_key_exists('negate', $options)) {
 			if (!is_bool($options['negate'])) {
-				throw new InvalidArgumentException('Invalid value given for `negate` option in ContainsValidator.');
+				throw new InvalidArgumentException('Invalid value given for `negate` option in Comparison\UniqueValidator.');
 			}
 		}
 	}

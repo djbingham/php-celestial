@@ -2,6 +2,7 @@
 namespace Sloth\Module\Validation;
 
 use Sloth\Exception\InvalidArgumentException;
+use Sloth\Module\Validation\Face\ValidationResultFactoryInterface;
 use Sloth\Module\Validation\Face\ValidatorInterface;
 
 class ValidationModule
@@ -10,6 +11,21 @@ class ValidationModule
 	 * @var array
 	 */
 	private $validators = array();
+
+	/**
+	 * @var ValidationResultFactoryInterface
+	 */
+	private $resultFactory;
+
+	/**
+	 * @param ValidationResultFactoryInterface $resultFactory
+	 * @return $this
+	 */
+	public function setResultFactory(ValidationResultFactoryInterface $resultFactory)
+	{
+		$this->resultFactory = $resultFactory;
+		return $this;
+	}
 
 	/**
 	 * @param string $name
@@ -44,5 +60,25 @@ class ValidationModule
 			);
 		}
 		return $this->validators[$name];
+	}
+
+	public function buildValidationResultList(array $results = array())
+	{
+		return $this->resultFactory->buildResultList($results);
+	}
+
+	public function buildValidationResult(array $properties = array())
+	{
+		return $this->resultFactory->buildResult($properties);
+	}
+
+	public function buildValidationErrorList(array $errors = array())
+	{
+		return $this->resultFactory->buildErrorList($errors);
+	}
+
+	public function buildValidationError(array $properties = array())
+	{
+		return $this->resultFactory->buildError($properties);
 	}
 }

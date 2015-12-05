@@ -14,9 +14,10 @@ class ValidatorListBuilder
 			$validator->rule = $validatorManifest->rule;
 			$validator->attributes = $validatorManifest->attributes;
 
-			if (property_exists($validatorManifest, 'negate')) {
-				$validator->negate = $validatorManifest->negate;
+			if (property_exists($validatorManifest, 'message')) {
+				$validator->message = $validatorManifest->message;
 			}
+
 			if (property_exists($validatorManifest, 'options')) {
 				$validator->options = $validatorManifest->options;
 			}

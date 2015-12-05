@@ -14,9 +14,9 @@ class Validator
 	public $attributes;
 
 	/**
-	 * @var boolean
+	 * @var string
 	 */
-	public $negate = false;
+	public $message;
 
 	/**
 	 * @var array

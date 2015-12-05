@@ -2,38 +2,48 @@
 namespace Sloth\Module\Validation\Validator\Number;
 
 use Sloth\Exception\InvalidArgumentException;
-use Sloth\Module\Validation\Face\ValidatorInterface;
+use Sloth\Module\Validation\Base\AbstractValidator;
 
-class NumberValidator implements ValidatorInterface
+class NumberValidator extends AbstractValidator
 {
 	public function validate($value, array $options = array())
 	{
 		$this->validateOptions($options);
 		$options = $this->padOptions($options);
 
-		if ($options['compareTo'] === true) {
-			$isValid = is_numeric($value);
-		} else {
-			$isValid = !is_numeric($value);
+		$isNumeric = is_numeric($value);
+		$error = null;
+
+		if ($options['negate'] === true && $isNumeric) {
+			$error = $this->buildError(sprintf('`%s` is a number.', $value));
+		} elseif (!$options['negate'] && !$isNumeric) {
+			$error = $this->buildError(sprintf('`%s` is not a number.', $value));
 		}
 
-		return $isValid;
+		$result = $this->buildResult();
+
+		if ($error !== null) {
+			$result->pushError($error);
+		}
+
+		return $result;
 	}
 
 	private function validateOptions(array $options)
 	{
-		if (array_key_exists('compareTo', $options)) {
-			if (!is_null($options['compareTo']) && !is_bool($options['compareTo'])) {
-				throw new InvalidArgumentException('Invalid value given for `compareTo` option in Number\IsNumberValidator');
+		if (array_key_exists('negate', $options)) {
+			if (!is_bool($options['negate'])) {
+				throw new InvalidArgumentException('Invalid value given for `negate` option in Number\IsNumberValidator.');
 			}
 		}
 	}
 
 	private function padOptions(array $options)
 	{
-		if (!array_key_exists('compareTo', $options)) {
-			$options['compareTo'] = true;
+		if (!array_key_exists('negate', $options)) {
+			$options['negate'] = false;
 		}
+
 		return $options;
 	}
 }

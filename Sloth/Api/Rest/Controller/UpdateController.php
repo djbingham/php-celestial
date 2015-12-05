@@ -4,11 +4,12 @@ namespace Sloth\Api\Rest\Controller;
 use Sloth\Api\Rest\Base\RestfulController;
 use Sloth\Api\Rest\Face\RestfulParsedRequestInterface;
 use Sloth\Exception\InvalidRequestException;
+use Sloth\Module\Data\Resource as ResourceModule;
+use Sloth\Module\Data\Resource\Face\Definition\ResourceInterface;
 use Sloth\Module\Data\Table\Face\JoinInterface;
 use Sloth\Module\Data\Table\Face\TableInterface;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
-use Sloth\Module\Data\Resource as ResourceModule;
 use Sloth\Api\Rest\RestfulRequestParser;
 
 class UpdateController extends RestfulController
@@ -22,10 +23,7 @@ class UpdateController extends RestfulController
 
 	public function handleGet(RestfulParsedRequestInterface $request)
 	{
-		$renderer = $this->getRenderModule();
-
 		$resourceDefinition = $request->getResourceDefinition();
-		$primaryAttribute = $resourceDefinition->primaryAttribute;
 		$resourceId = $request->getResourceId();
 
 		if (strlen($resourceId) === 0) {
@@ -33,6 +31,99 @@ class UpdateController extends RestfulController
 				'Update form cannot be produced without specifying a resource ID'
 			);
 		}
+
+		return $this->renderUpdateForm($resourceDefinition, $resourceId);
+	}
+
+	public function handlePost(RestfulParsedRequestInterface $request)
+	{
+		return $this->handlePut($request);
+	}
+
+	public function handlePut(RestfulParsedRequestInterface $request)
+	{
+		$getParams = $request->getParams()->get();
+		$attributes = $request->getParams()->post();
+		$resourceDefinition = $request->getResourceDefinition();
+		$resourceFactory = $request->getResourceFactory();
+		$urlExtension = $request->getExtension();
+		$primaryAttributeName = $resourceDefinition->primaryAttribute;
+		$primaryAttributeValue = $attributes[$primaryAttributeName];
+
+		if (empty($attributes)) {
+			throw new InvalidRequestException('PUT request received with no parameters');
+		} elseif (!array_key_exists($primaryAttributeName, $attributes)) {
+			throw new InvalidRequestException(
+				sprintf('PUT request received with no value for primary attribute `%s`', $primaryAttributeName)
+			);
+		}
+
+		$validationResult = $resourceFactory->validateUpdateData($attributes);
+		$failedValidators = $validationResult->getFailedValidators();
+		$output = null;
+		$redirectUrl = null;
+
+		if ($failedValidators->length() === 0) {
+			$filters = array(
+					$primaryAttributeName => $primaryAttributeValue
+			);
+
+			$resource = $resourceFactory->getBy($resourceDefinition->attributes, $filters)->current();
+			$updateFilters = $this->getUpdateFiltersFromResource($resource->getAttributes(), $resourceDefinition);
+
+			$resourceFactory->update($updateFilters, $attributes);
+
+			if (array_key_exists('redirect', $getParams)) {
+				$redirectUrl = $this->app->createUrl(explode('/', $getParams['redirect']));
+			} else {
+				$redirectUrl = $this->app->createUrl(array('resource/view', lcfirst($resourceDefinition->name), $primaryAttributeValue));
+				if ($urlExtension !== null) {
+					$redirectUrl .= '.' . $urlExtension;
+				}
+			}
+		} elseif (array_key_exists('errorUrl', $getParams)) {
+			$redirectUrl = $this->app->createUrl(explode('/', $getParams['errorUrl']));
+		} else {
+			$viewParameters = array(
+				'attributes' => $attributes,
+				'failedValidators' => $failedValidators
+			);
+
+			$output = $this->renderUpdateForm($resourceDefinition, $primaryAttributeValue, $viewParameters);
+		}
+
+		if ($redirectUrl !== null) {
+			$this->app->redirect($redirectUrl);
+		}
+
+		return $output;
+	}
+
+	public function handleDelete(RestfulParsedRequestInterface $request)
+	{
+		throw new InvalidRequestException('Cannot delete from resource/create');
+	}
+
+	/**
+	 * @return RendererInterface
+	 */
+	private function getRenderModule()
+	{
+		return $this->module('restRender');
+	}
+
+	/**
+	 * @return ResourceModule\ResourceModule
+	 */
+	private function getResourceModule()
+	{
+		return $this->module('restResource');
+	}
+
+	private function renderUpdateForm(ResourceInterface $resourceDefinition, $resourceId, array $parameters = array())
+	{
+		$renderer = $this->getRenderModule();
+		$primaryAttribute = $resourceDefinition->primaryAttribute;
 
 		$view = $renderer->getViewFactory()->build(array(
 			'engine' => 'php',
@@ -60,75 +151,10 @@ class UpdateController extends RestfulController
 			)
 		));
 
-		return $renderer->render($view);
+		return $renderer->render($view, $parameters);
 	}
 
-	public function handlePost(RestfulParsedRequestInterface $request)
-	{
-		$this->handlePut($request);
-	}
-
-	public function handlePut(RestfulParsedRequestInterface $request)
-	{
-		$getParams = $request->getParams()->get();
-		$attributes = $request->getParams()->post();
-		$resourceDefinition = $request->getResourceDefinition();
-		$resourceFactory = $request->getResourceFactory();
-		$urlExtension = $request->getExtension();
-		$primaryAttributeName = $resourceDefinition->primaryAttribute;
-		$primaryAttributeValue = $attributes[$primaryAttributeName];
-
-		if (empty($attributes)) {
-			throw new InvalidRequestException('PUT request received with no parameters');
-		} elseif (!array_key_exists($primaryAttributeName, $attributes)) {
-			throw new InvalidRequestException(
-				sprintf('PUT request received with no value for primary attribute `%s`', $primaryAttributeName)
-			);
-		}
-
-		$filters = array(
-			$primaryAttributeName => $primaryAttributeValue
-		);
-
-		$resource = $resourceFactory->getBy($resourceDefinition->attributes, $filters)->current();
-		$updateFilters = $this->getUpdateFiltersFromResource($resource->getAttributes(), $resourceDefinition);
-
-		$resourceFactory->update($updateFilters, $attributes);
-
-		if (array_key_exists('redirect', $getParams)) {
-			$redirectUrl = $this->app->createUrl(explode('/', $getParams['redirect']));
-		} else {
-			$redirectUrl = $this->app->createUrl(array('resource/view', lcfirst($resourceDefinition->name), $primaryAttributeValue));
-			if ($urlExtension !== null) {
-				$redirectUrl .= '.' . $urlExtension;
-			}
-		}
-
-		$this->app->redirect($redirectUrl);
-	}
-
-	public function handleDelete(RestfulParsedRequestInterface $request)
-	{
-		throw new InvalidRequestException('Cannot delete from resource/create');
-	}
-
-	/**
-	 * @return RendererInterface
-	 */
-	private function getRenderModule()
-	{
-		return $this->module('restRender');
-	}
-
-	/**
-	 * @return ResourceModule\ResourceModule
-	 */
-	private function getResourceModule()
-	{
-		return $this->module('restResource');
-	}
-
-	private function getUpdateFiltersFromResource(array $attributes, ResourceModule\Definition\Resource $resourceDefinition)
+	private function getUpdateFiltersFromResource(array $attributes, ResourceInterface $resourceDefinition)
 	{
 		$primaryTableField = $resourceDefinition->table->fields->getByName($resourceDefinition->primaryAttribute);
 		$filters = array(

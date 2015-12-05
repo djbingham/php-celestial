@@ -4,6 +4,8 @@ namespace Sloth\Api\Rest\Controller;
 use Sloth\Api\Rest\Face\RestfulParsedRequestInterface;
 use Sloth\Api\Rest\Base\RestfulController;
 use Sloth\Exception\InvalidRequestException;
+use Sloth\Module\Data\Resource\Face\Definition\ResourceInterface;
+use Sloth\Module\Data\ResourceDataValidator\Result\ExecutedValidatorList;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Data\Resource\ResourceModule;
@@ -20,24 +22,9 @@ class CreateController extends RestfulController
 
 	public function handleGet(RestfulParsedRequestInterface $request)
 	{
-		$renderer = $this->getRenderModule();
-
 		$resourceDefinition = $request->getResourceDefinition();
 
-		$view = $renderer->getViewFactory()->build(array(
-			'engine' => 'php',
-			'path' => 'Default/createForm.php',
-			'dataProviders' => array(
-				'resourceDefinition' => array(
-					'engine' => 'static',
-					'options' => array(
-						'data' => $resourceDefinition
-					)
-				)
-			)
-		));
-
-		return $renderer->render($view);
+		return $this->renderCreateForm($resourceDefinition);
 	}
 
 	public function handlePost(RestfulParsedRequestInterface $request)
@@ -52,19 +39,40 @@ class CreateController extends RestfulController
 			throw new InvalidRequestException('POST request to resource/create received with no parameters');
 		}
 
-		$resource = $resourceFactory->create($attributes);
-		$resourceId = $resource->getAttribute($resourceDefinition->primaryAttribute);
+		$validationResult = $resourceFactory->validateCreateData($attributes);
+		$failedValidators = $validationResult->getFailedValidators();
+		$output = null;
+		$redirectUrl = null;
 
-		if (array_key_exists('redirect', $getParams)) {
-			$redirectUrl = $this->app->createUrl(explode('/', $getParams['redirect']));
-		} else {
-			$redirectUrl = $this->app->createUrl(array('resource/view', lcfirst($resourceDefinition->name), $resourceId));
-			if ($urlExtension !== null) {
-				$redirectUrl .= '.' . $urlExtension;
+		if ($failedValidators->length() === 0) {
+			$resource = $resourceFactory->create($attributes);
+			$resourceId = $resource->getAttribute($resourceDefinition->primaryAttribute);
+
+			if (array_key_exists('redirect', $getParams)) {
+				$redirectUrl = $this->app->createUrl(explode('/', $getParams['redirect']));
+			} else {
+				$redirectUrl = $this->app->createUrl(array('resource/view', lcfirst($resourceDefinition->name), $resourceId));
+				if ($urlExtension !== null) {
+					$redirectUrl .= '.' . $urlExtension;
+				}
 			}
+		} elseif (array_key_exists('errorUrl', $getParams)) {
+			$redirectUrl = $this->app->createUrl(explode('/', $getParams['errorUrl']));
+		} else {
+			$viewParameters = array(
+				'attributes' => $attributes,
+				'presetData' => $attributes,
+				'failedValidators' => $failedValidators
+			);
+
+			$output = $this->renderCreateForm($resourceDefinition, $viewParameters);
 		}
 
-		$this->app->redirect($redirectUrl);
+		if ($redirectUrl !== null) {
+			$this->app->redirect($redirectUrl);
+		}
+
+		return $output;
 	}
 
 	public function handlePut(RestfulParsedRequestInterface $request)
@@ -75,6 +83,34 @@ class CreateController extends RestfulController
 	public function handleDelete(RestfulParsedRequestInterface $request)
 	{
 		throw new InvalidRequestException('Cannot delete from resource/create');
+	}
+
+	private function renderCreateForm(ResourceInterface $resourceDefinition, $parameters = array())
+	{
+		$renderer = $this->getRenderModule();
+
+		if (!array_key_exists('failedValidators', $parameters)) {
+			$parameters['failedValidators'] = new ExecutedValidatorList();
+		}
+
+		if (!array_key_exists('presetData', $parameters)) {
+			$parameters['presetData'] = array();
+		}
+
+		$view = $renderer->getViewFactory()->build(array(
+			'engine' => 'php',
+			'path' => 'Default/createForm.php',
+			'dataProviders' => array(
+				'resourceDefinition' => array(
+					'engine' => 'static',
+					'options' => array(
+						'data' => $resourceDefinition
+					)
+				)
+			)
+		));
+
+		return $renderer->render($view, $parameters);
 	}
 
 	/**

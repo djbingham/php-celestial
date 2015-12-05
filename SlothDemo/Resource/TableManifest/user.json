@@ -61,12 +61,12 @@
 	"validators": [
 		{
 			"rule": "comparison.equal",
-			"negate": true,
 			"fields": {
 				"0": "username",
 				"1": "password"
 			},
 			"options": {
+				"negate": true,
 				"strict": false
 			}
 		}

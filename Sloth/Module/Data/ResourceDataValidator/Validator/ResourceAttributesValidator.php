@@ -19,6 +19,6 @@ class ResourceAttributesValidator implements ResourceValidatorInterface
 
 	public function validate(ResourceInterface $resourceDefinition, array $attributeValues)
 	{
-		return true;
+		return $this->validationModule->buildValidationResultList();
 	}
 }

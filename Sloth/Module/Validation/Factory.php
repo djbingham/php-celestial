@@ -11,8 +11,10 @@ class Factory extends AbstractModuleFactory
 	{
 		$module = new ValidationModule();
 
+		$module->setResultFactory($this->instantiateResultFactory());
+
 		foreach ($this->options['validators'] as $validatorName => $validatorClass) {
-			$validator = $this->instantiateValidator($validatorClass);
+			$validator = $this->instantiateValidator($validatorClass, $module);
 			$module->setValidator($validatorName, $validator);
 		}
 
@@ -35,12 +37,18 @@ class Factory extends AbstractModuleFactory
 		}
 	}
 
+	protected function instantiateResultFactory()
+	{
+		return new ResultFactory();
+	}
+
 	/**
 	 * @param string $validatorClass
+	 * @param ValidationModule $validationModule
 	 * @return ValidatorInterface
 	 */
-	protected function instantiateValidator($validatorClass)
+	protected function instantiateValidator($validatorClass, ValidationModule $validationModule)
 	{
-		return new $validatorClass();
+		return new $validatorClass($validationModule);
 	}
 }

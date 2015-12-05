@@ -1,11 +1,15 @@
 <?php
 use Sloth\Module\Data\Resource\Definition\Resource\Attribute;
 use Sloth\Module\Data\Resource\Definition\Resource\AttributeList;
-use Sloth\Module\Data\Table\Definition\Table;
+use Sloth\Module\Data\Table\Face\TableInterface;
+use Sloth\Module\Data\Table\Face\JoinInterface;
+use Sloth\Module\Data\ResourceDataValidator\Result\ExecutedValidator;
+use Sloth\Module\Data\ResourceDataValidator\Result\ExecutedValidatorList;
 
 /**
  * @var Sloth\App $app
  * @var array $data
+ * @var ExecutedValidatorList $failedValidators
  */
 
 /** @var Sloth\Module\Data\Resource\Definition\Resource $resourceDefinition */
@@ -17,6 +21,7 @@ $resource = $data['resource'];
 $resourceName = lcfirst($resourceDefinition->name);
 ?>
 <h2>Update Resource (<?= ucfirst($resourceName) ?>)</h2>
+
 <p>
 	<a href="<?= $app->createUrl(array('resource', 'definition', $resourceName)) ?>">Definition</a>
 	&nbsp;|&nbsp;
@@ -24,14 +29,20 @@ $resourceName = lcfirst($resourceDefinition->name);
 	&nbsp;|&nbsp;
 	<a href="<?= $app->createUrl(array('resource', 'search', $resourceName)) ?>"><?= ucfirst($resourceName) ?> Search</a>
 </p>
+
 <form action="<?= $app->createUrl(array('resource', 'update', $resourceName, $resource[$resourceDefinition->primaryAttribute])) ?>" method="post">
-	<?= renderAttributeListInputs($resourceDefinition->attributes, $resourceDefinition->table, $resource) ?>
+	<?= renderAttributeListInputs($resourceDefinition->attributes, $resourceDefinition->table, $resource, $failedValidators) ?>
 	<button type="submit">Update</button>
 </form>
 
 <?php
-function renderAttributeListInputs(AttributeList $attributes, Table $tableDefinition, array $data, array $ancestors = array())
-{
+function renderAttributeListInputs(
+	AttributeList $attributes,
+	TableInterface $tableDefinition,
+	array $data,
+	ExecutedValidatorList $failedValidators,
+	array $ancestors = array()
+) {
 	$html = "";
 	/** @var AttributeList|Attribute $attribute */
 	foreach ($attributes as $attribute) {
@@ -40,33 +51,54 @@ function renderAttributeListInputs(AttributeList $attributes, Table $tableDefini
 			if (!in_array($childLink->onUpdate, array(Sloth\Module\Data\Table\Definition\Table\Join::ACTION_IGNORE, Sloth\Module\Data\Table\Definition\Table\Join::ACTION_REJECT))) {
 				$subListAncestors = $ancestors;
 				array_push($subListAncestors, $attribute->name);
-				$html .= renderAttributeSubListInputs($attribute, $childLink, $data[$attribute->name], $subListAncestors);
+				$html .= renderAttributeSubListInputs($attribute, $childLink, $data[$attribute->name], $failedValidators, $subListAncestors);
 			}
 		} else {
-			$html .= renderAttributeInput($attribute->name, $data, $ancestors);
+			$html .= renderAttributeInput($attribute->name, $data, $failedValidators, $ancestors);
 		}
 	}
 	return sprintf('<fieldset>%s</fieldset>', $html);
 }
 
-function renderAttributeInput($attributeName, array $data, $ancestors)
+function renderAttributeInput($attributeName, array $data, ExecutedValidatorList $failedValidators, $ancestors)
 {
 	if (!empty($ancestors)) {
 		$inputName = '';
+		$validatorFieldName = '';
 		$inputName .= array_shift($ancestors);
+
 		foreach ($ancestors as $ancestor) {
 			$inputName .= sprintf('[%s]', $ancestor);
+			$validatorFieldName .= sprintf('.%s', $ancestor);
 		}
+
 		$inputName .= sprintf('[%s]', $attributeName);
+		$validatorFieldName .= sprintf('.%s', $attributeName);
 	} else {
 		$inputName = $attributeName;
+		$validatorFieldName = $attributeName;
 	}
+
 	$attributeValue = $data[$attributeName];
-	$htmlTemplate = '<label>%s</label> <input name="%s" value="%s"><br><br>';
-	return sprintf($htmlTemplate, $attributeName, $inputName, $attributeValue);
+
+	$errors = array();
+	/** @var ExecutedValidator $failedValidator */
+	foreach ($failedValidators->getByFieldName($validatorFieldName) as $failedValidator) {
+		$errors = array_merge($errors, $failedValidator->getResult()->getErrors()->getMessages());
+	}
+	$errorText = implode('</span><span class="error">', $errors);
+
+	$htmlTemplate = '<label>%s</label> <input name="%s" value="%s"> <span class="error">%s</span><br><br>';
+
+	return sprintf($htmlTemplate, $attributeName, $inputName, $attributeValue, $errorText);
 }
 
-function renderAttributeSubListInputs(AttributeList $attributes, Table\Join $tableLink, array $data, array $ancestors)
+function renderAttributeSubListInputs(
+	AttributeList $attributes,
+	JoinInterface $tableLink,
+	array $data,
+	ExecutedValidatorList $failedValidators,
+	array $ancestors)
 {
 	$parentName = array_pop($ancestors);
 	$sectionTitle = $parentName;
@@ -80,12 +112,12 @@ function renderAttributeSubListInputs(AttributeList $attributes, Table\Join $tab
 
 	$html = sprintf('<h3>%s</h3>', $sectionTitle);
 
-	if (in_array($tableLink->type, array(Table\Join::ONE_TO_MANY))) {
+	if (in_array($tableLink->type, array(JoinInterface::ONE_TO_MANY))) {
 		foreach ($data as $rowIndex => $row) {
 			$ancestors[$lastAncestorIndex] = $rowIndex;
-			$html .= renderAttributeListInputs($attributes, $tableLink->getChildTable(), $row, $ancestors);
+			$html .= renderAttributeListInputs($attributes, $tableLink->getChildTable(), $row, $failedValidators, $ancestors);
 		}
-	} elseif ($tableLink->type === Table\Join::MANY_TO_MANY) {
+	} elseif ($tableLink->type === JoinInterface::MANY_TO_MANY) {
 		$linkFields = $tableLink->getLinkedFields();
 		$childFieldName = $linkFields['child']->name;
 
@@ -95,17 +127,17 @@ function renderAttributeSubListInputs(AttributeList $attributes, Table\Join $tab
 		foreach ($data as $rowIndex => $row) {
 			$ancestors[$lastAncestorIndex] = $rowIndex;
 
-			/** @var Table\Join $childLink */
+			/** @var JoinInterface $childLink */
 			foreach ($tableLink->getChildTable()->links as $childLink) {
 				if ($attributes->indexOfPropertyValue('name', $childLink->name) !== -1) {
 					$editableAttributes->push($attributes->getByProperty('name', $childLink->name));
 				}
 			}
 
-			$html .= renderAttributeListInputs($editableAttributes, $tableLink->getChildTable(), $row, $ancestors);
+			$html .= renderAttributeListInputs($editableAttributes, $tableLink->getChildTable(), $row, $failedValidators, $ancestors);
 		}
 	} else {
-		$html .= renderAttributeListInputs($attributes, $tableLink->getChildTable(), $data, $ancestors);
+		$html .= renderAttributeListInputs($attributes, $tableLink->getChildTable(), $data, $failedValidators, $ancestors);
 	}
 	return sprintf('<fieldset>%s</fieldset>', $html);
 }

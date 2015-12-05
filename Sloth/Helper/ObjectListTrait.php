@@ -160,10 +160,12 @@ trait ObjectListTrait
 	protected function append($item)
 	{
 		$this->items[] = $item;
+		return $this;
 	}
 
 	protected function prepend($item)
 	{
 		array_unshift($this->items, $item);
+		return $this;
 	}
 }

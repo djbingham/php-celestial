@@ -23,4 +23,4 @@ $controller = $routedRequest->getController();
 
 echo $controller->execute($routedRequest);
 
-echo '<link rel="stylesheet" href="public/css/theme.css">';
+echo sprintf('<link rel="stylesheet" type="text/css" href="%s/public/css/theme.css">', $app->rootUrl());
