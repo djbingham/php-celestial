@@ -6,6 +6,7 @@ use Sloth\Api\Rest\Face\RestfulParsedRequestInterface;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Data\Resource as ResourceModule;
 use Sloth\Module\Data\Resource\Face\Definition\ResourceInterface;
+use Sloth\Module\Data\ResourceDataValidator\Result\ExecutedValidatorList;
 use Sloth\Module\Data\Table\Face\JoinInterface;
 use Sloth\Module\Data\Table\Face\TableInterface;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
@@ -150,6 +151,10 @@ class UpdateController extends RestfulController
 				)
 			)
 		));
+
+		if (!array_key_exists('failedValidators', $parameters)) {
+			$parameters['failedValidators'] = new ExecutedValidatorList();
+		}
 
 		return $renderer->render($view, $parameters);
 	}
