@@ -5,6 +5,7 @@ use Helper\Face\ObjectListInterface;
 use Sloth\Helper\ObjectListTrait;
 use Sloth\Module\Data\Resource\Definition\Resource\Validator as ResourceValidator;
 use Sloth\Module\Data\Table\Definition\Table\Validator as TableValidator;
+use Sloth\Module\Validation\Result\ValidationErrorList;
 
 class ExecutedValidatorList implements ObjectListInterface
 {
@@ -14,6 +15,11 @@ class ExecutedValidatorList implements ObjectListInterface
 	{
 		$this->append($item);
 		return $this;
+	}
+
+	public function isValid()
+	{
+		return $this->getFailedValidators()->length() === 0;
 	}
 
 	public function getFailedValidators()
@@ -28,6 +34,20 @@ class ExecutedValidatorList implements ObjectListInterface
 		}
 
 		return $failedValidators;
+	}
+
+	public function getErrors()
+	{
+		$errors = new ValidationErrorList();
+
+		/** @var ExecutedValidator $failedValidator */
+		foreach ($this->getFailedValidators() as $failedValidator) {
+			foreach ($failedValidator->getResult()->getErrors() as $error) {
+				$errors->push($error);
+			}
+		}
+
+		return $errors;
 	}
 
 	public function getByFieldName($fieldName)

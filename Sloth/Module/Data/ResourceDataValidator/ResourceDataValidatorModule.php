@@ -7,7 +7,6 @@ use Sloth\Module\Data\ResourceDataValidator\Result\ExecutedValidatorList;
 use Sloth\Module\Data\Resource\Face\Definition\ResourceInterface;
 use Sloth\Module\Data\Resource\Face\ResourceValidatorInterface;
 use Sloth\Module\Data\TableDataValidator\TableDataValidatorModule;
-use Sloth\Module\Validation\Face\ValidationResultListInterface;
 use Sloth\Module\Validation\ValidationModule;
 
 class ResourceDataValidatorModule
@@ -45,7 +44,7 @@ class ResourceDataValidatorModule
 	/**
 	 * @param ResourceInterface $resourceDefinition
 	 * @param array $attributes
-	 * @return ValidationResultListInterface
+	 * @return ExecutedValidatorList
 	 */
 	public function validateInsertData(ResourceInterface $resourceDefinition, array $attributes)
 	{
@@ -82,7 +81,7 @@ class ResourceDataValidatorModule
 	/**
 	 * @param ResourceInterface $resourceDefinition
 	 * @param array $attributes
-	 * @return ValidationResultListInterface
+	 * @return ExecutedValidatorList
 	 */
 	public function validateUpdateData(ResourceInterface $resourceDefinition, array $attributes)
 	{

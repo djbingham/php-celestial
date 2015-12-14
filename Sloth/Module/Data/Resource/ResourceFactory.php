@@ -88,6 +88,7 @@ class ResourceFactory implements ResourceFactoryInterface
 	{
 		$attributes = $this->encodeAttributes($attributes);
 		$validation = $this->dataValidator->validateUpdateData($this->resourceDefinition, $attributes);
+
 		if ($validation->isValid()) {
 			$data = $this->tableQueryModule->update()->execute($this->resourceDefinition->table, $filters, $attributes);
 			$resource = $this->instantiateResource($data);
