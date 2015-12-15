@@ -4,7 +4,10 @@
 			"type": "integer(11)",
 			"field": "userId",
 			"isUnique": true,
-			"validators": {}
+			"validators": {
+				"text.minimumLength": 1,
+				"text.maximumLength": 50
+			}
 		},
 		"houseName": {
 			"type": "text(50)",
@@ -22,22 +25,7 @@
 			"validators": {}
 		}
 	},
-	"validators": [
-		{
-			"rule": "text.minimumLength",
-			"fields": "houseName",
-			"options": {
-				"compareTo": 1
-			}
-		},
-		{
-			"rule": "text.maximumLength",
-			"fields": "houseName",
-			"options": {
-				"compareTo": 50
-			}
-		}
-	],
+	"validators": [],
 	"links": {
 		"landlord": {
 			"type": "oneToOne",
