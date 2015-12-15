@@ -9,6 +9,7 @@ use Sloth\Module\Data\ResourceDataValidator\Result\ExecutedValidatorList;
 /**
  * @var Sloth\App $app
  * @var array $data
+ * @var array $attributes
  * @var ExecutedValidatorList $failedValidators
  */
 
@@ -19,6 +20,10 @@ $resourceDefinition = $data['resourceDefinition'];
 $resource = $data['resource'];
 
 $resourceName = lcfirst($resourceDefinition->name);
+
+if (!isset($attributes)) {
+	$attributes = $resource;
+}
 ?>
 <h2>Update Resource (<?= ucfirst($resourceName) ?>)</h2>
 
@@ -31,7 +36,7 @@ $resourceName = lcfirst($resourceDefinition->name);
 </p>
 
 <form action="<?= $app->createUrl(array('resource', 'update', $resourceName, $resource[$resourceDefinition->primaryAttribute])) ?>" method="post">
-	<?= renderAttributeListInputs($resourceDefinition->attributes, $resourceDefinition->table, $resource, $failedValidators) ?>
+	<?= renderAttributeListInputs($resourceDefinition->attributes, $resourceDefinition->table, $attributes, $failedValidators) ?>
 	<button type="submit">Update</button>
 </form>
 
@@ -46,15 +51,17 @@ function renderAttributeListInputs(
 	$html = "";
 	/** @var AttributeList|Attribute $attribute */
 	foreach ($attributes as $attribute) {
-		if ($attribute instanceof AttributeList) {
-			$childLink = $tableDefinition->links->getByName($attribute->name);
-			if (!in_array($childLink->onUpdate, array(Sloth\Module\Data\Table\Definition\Table\Join::ACTION_IGNORE, Sloth\Module\Data\Table\Definition\Table\Join::ACTION_REJECT))) {
-				$subListAncestors = $ancestors;
-				array_push($subListAncestors, $attribute->name);
-				$html .= renderAttributeSubListInputs($attribute, $childLink, $data[$attribute->name], $failedValidators, $subListAncestors);
+		if (array_key_exists($attribute->name, $data)) {
+			if ($attribute instanceof AttributeList) {
+				$childLink = $tableDefinition->links->getByName($attribute->name);
+				if (!in_array($childLink->onUpdate, array(Sloth\Module\Data\Table\Definition\Table\Join::ACTION_IGNORE, Sloth\Module\Data\Table\Definition\Table\Join::ACTION_REJECT))) {
+					$subListAncestors = $ancestors;
+					array_push($subListAncestors, $attribute->name);
+					$html .= renderAttributeSubListInputs($attribute, $childLink, $data[$attribute->name], $failedValidators, $subListAncestors);
+				}
+			} else {
+				$html .= renderAttributeInput($attribute->name, $data, $failedValidators, $ancestors);
 			}
-		} else {
-			$html .= renderAttributeInput($attribute->name, $data, $failedValidators, $ancestors);
 		}
 	}
 	return sprintf('<fieldset>%s</fieldset>', $html);
