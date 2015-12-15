@@ -30,10 +30,16 @@ class CreateController extends RestfulController
 	public function handlePost(RestfulParsedRequestInterface $request)
 	{
 		$getParams = $request->getParams()->get();
-		$attributes = $request->getParams()->post();
+		$postParams = $request->getParams()->post();
 		$resourceDefinition = $request->getResourceDefinition();
 		$resourceFactory = $request->getResourceFactory();
 		$urlExtension = $request->getExtension();
+
+		if (!array_key_exists('attributes', $postParams)) {
+			throw new InvalidRequestException('POST/PUT request received with no parameters');
+		}
+
+		$attributes = $postParams['attributes'];
 
 		if (empty($attributes)) {
 			throw new InvalidRequestException('POST request to resource/create received with no parameters');
@@ -50,6 +56,8 @@ class CreateController extends RestfulController
 
 			if (array_key_exists('redirect', $getParams)) {
 				$redirectUrl = $this->app->createUrl(explode('/', $getParams['redirect']));
+			} elseif (array_key_exists('redirect', $postParams)) {
+				$redirectUrl = $this->app->createUrl(explode('/', $postParams['redirect']));
 			} else {
 				$redirectUrl = $this->app->createUrl(array('resource/view', lcfirst($resourceDefinition->name), $resourceId));
 				if ($urlExtension !== null) {

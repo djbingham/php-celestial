@@ -63,9 +63,8 @@ function renderAttributeListInputs(
 function renderAttributeInput($attributeName, array $data, ExecutedValidatorList $failedValidators, $ancestors)
 {
 	if (!empty($ancestors)) {
-		$inputName = '';
+		$inputName = 'attributes';
 		$validatorFieldName = '';
-		$inputName .= array_shift($ancestors);
 
 		foreach ($ancestors as $ancestor) {
 			$inputName .= sprintf('[%s]', $ancestor);
@@ -75,10 +74,11 @@ function renderAttributeInput($attributeName, array $data, ExecutedValidatorList
 		$inputName .= sprintf('[%s]', $attributeName);
 		$validatorFieldName .= sprintf('.%s', $attributeName);
 	} else {
-		$inputName = $attributeName;
+		$inputName = sprintf('attributes[%s]', $attributeName);
 		$validatorFieldName = $attributeName;
 	}
 
+	$validatorFieldName = ltrim($validatorFieldName, '.');
 	$attributeValue = $data[$attributeName];
 
 	$errors = array();

@@ -66,14 +66,15 @@ function renderAttributeInput(
 	$index = false
 ) {
 	if (!empty($ancestors)) {
-		$inputName = '';
+		$inputName = 'attributes';
 		$validatorFieldName = '';
-		$inputName .= array_shift($ancestors);
 
 		foreach ($ancestors as $ancestor) {
 			$inputName .= sprintf('[%s]', $ancestor);
 			$validatorFieldName .= sprintf('.%s', $ancestor);
 		}
+
+		$validatorFieldName = ltrim($validatorFieldName, '.');
 
 		if ($index !== null) {
 			$inputName .= sprintf('[%s]', $index);
@@ -82,7 +83,7 @@ function renderAttributeInput(
 		$inputName .= sprintf('[%s]', $attributeName);
 		$validatorFieldName .= sprintf('.%s', $attributeName);
 	} else {
-		$inputName = $attributeName;
+		$inputName = sprintf('attributes[%s]', $attributeName);
 		$validatorFieldName = $attributeName;
 	}
 

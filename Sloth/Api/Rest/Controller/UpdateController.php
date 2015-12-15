@@ -44,10 +44,16 @@ class UpdateController extends RestfulController
 	public function handlePut(RestfulParsedRequestInterface $request)
 	{
 		$getParams = $request->getParams()->get();
-		$attributes = $request->getParams()->post();
+		$postParams = $request->getParams()->post();
 		$resourceDefinition = $request->getResourceDefinition();
 		$resourceFactory = $request->getResourceFactory();
 		$urlExtension = $request->getExtension();
+
+		if (!array_key_exists('attributes', $postParams)) {
+			throw new InvalidRequestException('POST/PUT request received with no parameters');
+		}
+
+		$attributes = $postParams['attributes'];
 		$primaryAttributeName = $resourceDefinition->primaryAttribute;
 		$primaryAttributeValue = $attributes[$primaryAttributeName];
 
@@ -76,6 +82,8 @@ class UpdateController extends RestfulController
 
 			if (array_key_exists('redirect', $getParams)) {
 				$redirectUrl = $this->app->createUrl(explode('/', $getParams['redirect']));
+			} elseif (array_key_exists('redirect', $postParams)) {
+				$redirectUrl = $this->app->createUrl(explode('/', $postParams['redirect']));
 			} else {
 				$redirectUrl = $this->app->createUrl(array('resource/view', lcfirst($resourceDefinition->name), $primaryAttributeValue));
 				if ($urlExtension !== null) {
@@ -84,6 +92,8 @@ class UpdateController extends RestfulController
 			}
 		} elseif (array_key_exists('errorUrl', $getParams)) {
 			$redirectUrl = $this->app->createUrl(explode('/', $getParams['errorUrl']));
+		} elseif (array_key_exists('errorUrl', $postParams)) {
+			$redirectUrl = $this->app->createUrl(explode('/', $postParams['errorUrl']));
 		} else {
 			$viewParameters = array(
 				'attributes' => $attributes,
