@@ -105,7 +105,7 @@ class StructureValidatorTest extends UnitTest
 		$structureValidator = new StructureValidator($this->dependencyManager);
 		$validationResult = $this->mockValidationResult();
 
-		$this->setupMockExpectationsForSingleError($structureValidator, $validationResult, 'Missing required property `name`');
+		$this->setupMockExpectationsForSingleError($structureValidator, $validationResult, 'Missing required property `field`');
 
 		$result = $structureValidator->validate((object)array(
 			'type' => 'text(32)'
@@ -122,7 +122,7 @@ class StructureValidatorTest extends UnitTest
 		$this->setupMockExpectationsForSingleError($structureValidator, $validationResult, 'Missing required property `type`');
 
 		$result = $structureValidator->validate((object)array(
-			'name' => 'fieldName'
+			'field' => 'fieldName'
 		));
 
 		$this->assertSame($validationResult, $result);
@@ -136,7 +136,7 @@ class StructureValidatorTest extends UnitTest
 		$this->setupMockExpectationsForSingleError($structureValidator, $validationResult, 'Unrecognised property `invalidPropertyName` defined');
 
 		$result = $structureValidator->validate((object)array(
-			'name' => 'fieldName',
+			'field' => 'fieldName',
 			'type' => 'text(32)',
 			'invalidPropertyName' => true
 		));
@@ -152,7 +152,7 @@ class StructureValidatorTest extends UnitTest
 		$this->setupMockExpectationsForNoErrors($structureValidator, $validationResult);
 
 		$result = $structureValidator->validate((object)array(
-			'name' => 'fieldName',
+			'field' => 'fieldName',
 			'type' => 'text(32)'
 		));
 
@@ -167,7 +167,7 @@ class StructureValidatorTest extends UnitTest
 		$this->setupMockExpectationsForNoErrors($structureValidator, $validationResult);
 
 		$result = $structureValidator->validate((object)array(
-			'name' => 'fieldName',
+			'field' => 'fieldName',
 			'type' => 'text(32)',
 			'autoIncrement' => false
 		));
@@ -183,7 +183,7 @@ class StructureValidatorTest extends UnitTest
 		$this->setupMockExpectationsForNoErrors($structureValidator, $validationResult);
 
 		$result = $structureValidator->validate((object)array(
-			'name' => 'fieldName',
+			'field' => 'fieldName',
 			'type' => 'text(32)',
 			'isUnique' => false
 		));
@@ -199,7 +199,7 @@ class StructureValidatorTest extends UnitTest
 		$this->setupMockExpectationsForNoErrors($structureValidator, $validationResult);
 
 		$result = $structureValidator->validate((object)array(
-			'name' => 'fieldName',
+			'field' => 'fieldName',
 			'type' => 'text(32)',
 			'validators' => array()
 		));

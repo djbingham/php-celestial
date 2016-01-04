@@ -31,18 +31,9 @@ class ValidatorListValidator extends BaseValidator
 						);
 					}
 
-					$optionsAreValid = true;
-					try {
-						$optionsValidation = $validator->validateOptions($validatorOptions);
-					} catch (\Exception $e) {
-						$optionsAreValid = false;
-					}
+					$optionsValidation = $validator->validateOptions($validatorOptions);
 
-					// todo: validateOptions currently throws exception for invalid options.
-					// All need refactoring to return validation result.
-					// All validate methods then need refactoring to throw exception if validateOptions fails.
-
-					if (!$optionsAreValid) {
+					if (!$optionsValidation->isValid()) {
 						$errors->push($this->buildError(
 							sprintf('Invalid options declared for validator `%s`', $validatorName),
 							$optionsValidation->getErrors()

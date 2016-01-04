@@ -1,7 +1,7 @@
 {
 	"fields": {
 		"userId": {
-			"type": "integer(11)",
+			"type": "number(11)",
 			"field": "userId",
 			"isUnique": true,
 			"validators": {
@@ -20,7 +20,7 @@
 			"validators": {}
 		},
 		"landlordId": {
-			"type": "integer(11)",
+			"type": "number(11)",
 			"field": "landlordId",
 			"validators": {}
 		}

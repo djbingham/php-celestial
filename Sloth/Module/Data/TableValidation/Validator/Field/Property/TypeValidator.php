@@ -54,14 +54,10 @@ class TypeValidator extends BaseValidator
 			case 'number':
 				$this->validateNumber($typeString);
 				break;
-			case 'integer':
-				$this->validateInteger($typeString);
-				break;
 			case 'boolean':
 				$this->validateBoolean($typeString);
 				break;
 			default:
-				var_dump($typeString);
 				$this->errors->push($this->buildError(
 					sprintf('Invalid data type given. Must be text, number or boolean')
 				));
@@ -91,16 +87,6 @@ class TypeValidator extends BaseValidator
 		if (!preg_match('/^number\((\d+)(\,\d+)?\)$/', $typeString, $matches)) {
 			$this->errors->push($this->buildError(
 				sprintf('Invalid declaration of number data type. Should be similar to "number(11)" or "number(4,2)"')
-			));
-		}
-	}
-
-	private function validateInteger($typeString)
-	{
-		$matches = array();
-		if (!preg_match('/^integer\(\d+\)$/', $typeString, $matches)) {
-			$this->errors->push($this->buildError(
-				sprintf('Invalid declaration of number data type. Should be similar to "integer(11)" or "integer(4,2)"')
 			));
 		}
 	}

@@ -1,24 +1,24 @@
 {
 	"fields": {
 		"id": {
-			"type": "integer(11)",
+			"type": "number(11)",
 			"field": "id",
 			"autoIncrement": true,
 			"isUnique": true,
 			"validators": {}
 		},
 		"postId": {
-			"type": "integer(11)",
+			"type": "number(11)",
 			"field": "postId",
 			"validators": {}
 		},
 		"parentId": {
-			"type": "integer(11)",
+			"type": "number(11)",
 			"field": "parentId",
 			"validators": {}
 		},
 		"authorId": {
-			"type": "integer(11)",
+			"type": "number(11)",
 			"field": "authorId",
 			"validators": {}
 		},

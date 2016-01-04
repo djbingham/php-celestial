@@ -53,7 +53,7 @@ class ValidatorListValidatorTest extends UnitTest
         $this->assertSame($validationResult, $result);
     }
 
-    public function testValidatorListMustNotBePlainObject()
+    public function testValidatorListMustNotBeArray()
     {
         $validatorListValidator = new ValidatorListValidator($this->dependencyManager);
         $validationResult = $this->mockValidationResult();
@@ -61,10 +61,10 @@ class ValidatorListValidatorTest extends UnitTest
         $this->setupMockExpectationsForSingleError(
             $validatorListValidator,
             $validationResult,
-            'Validator list must be an instance of ValidatorListInterface'
+            'Field validators must be an array'
         );
 
-        $result = $validatorListValidator->validate(new \stdClass());
+        $result = $validatorListValidator->validate(array());
 
         $this->assertSame($validationResult, $result);
     }
@@ -77,7 +77,7 @@ class ValidatorListValidatorTest extends UnitTest
         $this->setupMockExpectationsForSingleError(
             $validatorListValidator,
             $validationResult,
-            'Validator list must be an instance of ValidatorListInterface'
+            'Field validators must be an array'
         );
 
         $result = $validatorListValidator->validate('Some string');
@@ -93,7 +93,7 @@ class ValidatorListValidatorTest extends UnitTest
         $this->setupMockExpectationsForSingleError(
             $validatorListValidator,
             $validationResult,
-            'Validator list must be an instance of ValidatorListInterface'
+            'Field validators must be an array'
         );
 
         $result = $validatorListValidator->validate(27);
@@ -109,7 +109,7 @@ class ValidatorListValidatorTest extends UnitTest
         $this->setupMockExpectationsForSingleError(
             $validatorListValidator,
             $validationResult,
-            'Validator list must be an instance of ValidatorListInterface'
+            'Field validators must be an array'
         );
 
         $result = $validatorListValidator->validate(true);
@@ -117,14 +117,14 @@ class ValidatorListValidatorTest extends UnitTest
         $this->assertSame($validationResult, $result);
     }
 
-    public function testValidatorListMayBeAnEmptyArray()
+    public function testValidatorListMayBeAnEmptyPlainObject()
     {
         $validatorListValidator = new ValidatorListValidator($this->dependencyManager);
         $validationResult = $this->mockValidationResult();
 
         $this->setupMockExpectationsForNoErrors($validatorListValidator, $validationResult);
 
-        $result = $validatorListValidator->validate(array());
+        $result = $validatorListValidator->validate(new \stdClass());
 
         $this->assertSame($validationResult, $result);
     }
@@ -140,7 +140,7 @@ class ValidatorListValidatorTest extends UnitTest
             'Invalid validator declared. No validator named `NotValidator` exists.'
         );
 
-        $result = $validatorListValidator->validate(array(
+        $result = $validatorListValidator->validate((object)array(
             'NotValidator' => array()
         ));
 
@@ -175,7 +175,7 @@ class ValidatorListValidatorTest extends UnitTest
             ->method('isValid')
             ->willReturn(true);
 
-        $result = $validatorListValidator->validate(array(
+        $result = $validatorListValidator->validate((object)array(
             'number.integer' => true
         ));
 
@@ -210,7 +210,7 @@ class ValidatorListValidatorTest extends UnitTest
             ->method('isValid')
             ->willReturn(true);
 
-        $result = $validatorListValidator->validate(array(
+        $result = $validatorListValidator->validate((object)array(
             'number.integer' => (object)array('validatorOption' => 'optionValue')
         ));
 
@@ -245,7 +245,7 @@ class ValidatorListValidatorTest extends UnitTest
             ->method('isValid')
             ->willReturn(true);
 
-        $result = $validatorListValidator->validate(array(
+        $result = $validatorListValidator->validate((object)array(
             'number.integer' => true
         ));
 
@@ -290,7 +290,7 @@ class ValidatorListValidatorTest extends UnitTest
             ->method('getErrors')
             ->willReturn($validatorOptionsErrors);
 
-        $result = $validatorListValidator->validate(array(
+        $result = $validatorListValidator->validate((object)array(
             'number.integer' => 'invalidOptionValue'
         ));
 

@@ -1,14 +1,19 @@
 <?php
 namespace Sloth\Module\Validation\Validator\Number;
 
-use Sloth\Exception\InvalidArgumentException;
+use Sloth\Exception\InvalidConfigurationException;
 use Sloth\Module\Validation\Base\AbstractValidator;
 
 class NumberValidator extends AbstractValidator
 {
 	public function validate($value, array $options = array())
 	{
-		$this->validateOptions($options);
+		$optionsValidation = $this->validateOptions($options);
+
+		if (!$optionsValidation->isValid()) {
+			throw new InvalidConfigurationException($optionsValidation->getErrors()->getByIndex(0)->getMessage());
+		}
+
 		$options = $this->padOptions($options);
 
 		$isNumeric = is_numeric($value);
@@ -31,11 +36,16 @@ class NumberValidator extends AbstractValidator
 
 	public function validateOptions(array $options)
 	{
+		$result = $this->buildResult();
+
 		if (array_key_exists('negate', $options)) {
 			if (!is_bool($options['negate'])) {
-				throw new InvalidArgumentException('Invalid value given for `negate` option in Number\IsNumberValidator.');
+				$error = $this->buildError('Invalid value given for `negate` option in Number\IsNumberValidator.');
+				$result->pushError($error);
 			}
 		}
+
+		return $result;
 	}
 
 	private function padOptions(array $options)

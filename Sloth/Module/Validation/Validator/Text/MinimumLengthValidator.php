@@ -2,13 +2,19 @@
 namespace Sloth\Module\Validation\Validator\Text;
 
 use Sloth\Exception\InvalidArgumentException;
+use Sloth\Exception\InvalidConfigurationException;
 use Sloth\Module\Validation\Base\AbstractValidator;
 
 class MinimumLengthValidator extends AbstractValidator
 {
 	public function validate($value, array $options = array())
 	{
-		$this->validateOptions($options);
+		$optionsValidation = $this->validateOptions($options);
+
+		if (!$optionsValidation->isValid()) {
+			throw new InvalidConfigurationException($optionsValidation->getErrors()->getByIndex(0)->getMessage());
+		}
+
 		$options = $this->padOptions($options);
 
 		$shorterThanMinimum = strlen($value) < $options['compareTo'];
@@ -31,17 +37,23 @@ class MinimumLengthValidator extends AbstractValidator
 
 	public function validateOptions(array $options)
 	{
+		$result = $this->buildResult();
+
 		if (array_key_exists('negate', $options)) {
 			if (!is_bool($options['negate'])) {
-				throw new InvalidArgumentException('Invalid value given for `negate` option in Text\MinimumLengthValidator.');
+				$error = $this->buildError('Invalid value given for `negate` option in Text\MinimumLengthValidator.');
+				$result->pushError($error);
 			}
 		}
 
 		if (array_key_exists('compareTo', $options)) {
 			if (!is_null($options['compareTo']) && !is_int($options['compareTo'])) {
-				throw new InvalidArgumentException('Invalid value given for `compareTo` option in Text\MinimumLengthValidator');
+				$error = $this->buildError('Invalid value given for `compareTo` option in Text\MinimumLengthValidator.');
+				$result->pushError($error);
 			}
 		}
+
+		return $result;
 	}
 
 	private function padOptions(array $options)

@@ -7,7 +7,7 @@
 			"validators": {}
 		},
 		"userId": {
-			"type": "integer(11)",
+			"type": "number(11)",
 			"field": "userId",
 			"validators": {}
 		},

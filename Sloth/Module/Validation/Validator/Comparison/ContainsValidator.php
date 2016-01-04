@@ -1,15 +1,23 @@
 <?php
 namespace Sloth\Module\Validation\Validator\Comparison;
 
-use Sloth\Exception\InvalidArgumentException;
+use Sloth\Exception\InvalidConfigurationException;
 use Sloth\Module\Validation\Base\AbstractValidator;
 
 class ContainsValidator extends AbstractValidator
 {
 	public function validate($values, array $options = array())
 	{
-		$this->validateValues($values);
-		$this->validateOptions($options);
+		$valuesValidation = $this->validateValues($values);
+		$optionsValidation = $this->validateOptions($options);
+
+		if (!$valuesValidation->isValid()) {
+			throw new InvalidConfigurationException($optionsValidation->getErrors()->getByIndex(0)->getMessage());
+		}
+
+		if (!$optionsValidation->isValid()) {
+			throw new InvalidConfigurationException($optionsValidation->getErrors()->getByIndex(0)->getMessage());
+		}
 
 		$values = $this->padValues($values);
 		$options = $this->padOptions($options);
@@ -57,32 +65,45 @@ class ContainsValidator extends AbstractValidator
 
 	private function validateValues($values)
 	{
+		$result = $this->buildResult();
+
 		if (!is_array($values)) {
-			throw new InvalidArgumentException('Invalid values given to ContainsValidator. Must be an array.');
+			$error = $this->buildError('Invalid values given to ContainsValidator. Must be an array.');
+			$result->pushError($error);
 		}
 
 		if (!array_key_exists('needle', $values)) {
-			throw new InvalidArgumentException('No "needle" value found in values given to ContainsValidator.');
+			$error = $this->buildError('No "needle" value found in values given to ContainsValidator.');
+			$result->pushError($error);
 		}
 
 		if (array_key_exists('haystack', $values) && count($values['haystack']) === 0) {
-			throw new InvalidArgumentException('No "haystack" found in values given to ContainsValidator.');
+			$error = $this->buildError('No "haystack" found in values given to ContainsValidator.');
+			$result->pushError($error);
 		}
+
+		return $result;
 	}
 
 	public function validateOptions(array $options)
 	{
+		$result = $this->buildResult();
+
 		if (array_key_exists('negate', $options)) {
 			if (!is_bool($options['negate'])) {
-				throw new InvalidArgumentException('Invalid value given for `negate` option in ContainsValidator.');
+				$error = $this->buildError('Invalid value given for `negate` option in ContainsValidator.');
+				$result->pushError($error);
 			}
 		}
 
 		if (array_key_exists('strict', $options)) {
 			if (!is_bool($options['strict'])) {
-				throw new InvalidArgumentException('Invalid value given for `strict` option in ContainsValidator.');
+				$error = $this->buildError('Invalid value given for `strict` option in ContainsValidator.');
+				$result->pushError($error);
 			}
 		}
+
+		return $result;
 	}
 
 	private function padValues(array $values) {

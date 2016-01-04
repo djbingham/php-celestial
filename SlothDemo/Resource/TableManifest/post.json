@@ -1,14 +1,14 @@
 {
 	"fields": {
 		"id": {
-			"type": "integer(11)",
+			"type": "number(11)",
 			"field": "id",
 			"autoIncrement": true,
 			"isUnique": true,
 			"validators": {}
 		},
 		"authorId": {
-			"type": "integer(11)",
+			"type": "number(11)",
 			"field": "authorId",
 			"validators": {}
 		},

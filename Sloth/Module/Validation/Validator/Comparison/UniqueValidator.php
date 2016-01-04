@@ -1,15 +1,24 @@
 <?php
 namespace Sloth\Module\Validation\Validator\Comparison;
 
-use Sloth\Exception\InvalidArgumentException;
+use Sloth\Exception\InvalidConfigurationException;
 use Sloth\Module\Validation\Base\AbstractValidator;
 
 class UniqueValidator extends AbstractValidator
 {
 	public function validate($values, array $options = array())
 	{
-		$this->validateValues($values);
-		$this->validateOptions($options);
+		$valuesValidation = $this->validateValues($values);
+		$optionsValidation = $this->validateOptions($options);
+
+		if (!$valuesValidation->isValid()) {
+			throw new InvalidConfigurationException($optionsValidation->getErrors()->getByIndex(0)->getMessage());
+		}
+
+		if (!$optionsValidation->isValid()) {
+			throw new InvalidConfigurationException($optionsValidation->getErrors()->getByIndex(0)->getMessage());
+		}
+
 		$options = $this->padOptions($options);
 
 		$valuesAreUnique = count(array_unique($values)) === count($values);
@@ -35,18 +44,28 @@ class UniqueValidator extends AbstractValidator
 
 	private function validateValues($values)
 	{
+		$result = $this->buildResult();
+
 		if (!is_array($values)) {
-			throw new InvalidArgumentException('Invalid values given to Comparison\UniqueValidator. Must be an array.');
+			$error = $this->buildError('Invalid values given to Comparison\UniqueValidator. Must be an array.');
+			$result->pushError($error);
 		}
+
+		return $result;
 	}
 
 	public function validateOptions(array $options)
 	{
+		$result = $this->buildResult();
+
 		if (array_key_exists('negate', $options)) {
 			if (!is_bool($options['negate'])) {
-				throw new InvalidArgumentException('Invalid value given for `negate` option in Comparison\UniqueValidator.');
+				$error = $this->buildError('Invalid value given for `negate` option in Comparison\UniqueValidator.');
+				$result->pushError($error);
 			}
 		}
+
+		return $result;
 	}
 
 	private function padOptions(array $options)

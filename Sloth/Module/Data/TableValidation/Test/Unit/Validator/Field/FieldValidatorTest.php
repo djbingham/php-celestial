@@ -86,7 +86,7 @@ class FieldValidatorTest extends UnitTest
 		$sampleField = (object)array(
 			'autoIncrement' => false,
 			'isUnique' => true,
-			'name' => 'sampleName',
+			'field' => 'sampleName',
 			'type' => 'text(20)',
 			'validators' => array()
 		);
@@ -95,7 +95,7 @@ class FieldValidatorTest extends UnitTest
 		$propertyValidators = array(
 			'autoIncrement' => $this->mockPropertyValidator('AutoIncrement'),
 			'isUnique' => $this->mockPropertyValidator('IsUnique'),
-			'name' => $this->mockPropertyValidator('Name'),
+			'field' => $this->mockPropertyValidator('Name'),
 			'type' => $this->mockPropertyValidator('Type'),
 			'validators' => $this->mockPropertyValidator('ValidatorList')
 		);
@@ -138,7 +138,7 @@ class FieldValidatorTest extends UnitTest
 		$sampleField = (object)array(
 			'autoIncrement' => false,
 			'isUnique' => true,
-			'name' => 'sampleName',
+			'field' => 'sampleName',
 			'type' => 'text(20)',
 			'validators' => array()
 		);
@@ -147,7 +147,7 @@ class FieldValidatorTest extends UnitTest
 		$propertyValidators = array(
 			'autoIncrement' => $this->mockPropertyValidator('AutoIncrement'),
 			'isUnique' => $this->mockPropertyValidator('IsUnique'),
-			'name' => $this->mockPropertyValidator('Name'),
+			'field' => $this->mockPropertyValidator('Name'),
 			'type' => $this->mockPropertyValidator('Type'),
 			'validators' => $this->mockPropertyValidator('ValidatorList')
 		);
@@ -229,7 +229,7 @@ class FieldValidatorTest extends UnitTest
 		$sampleField = (object)array(
 			'autoIncrement' => false,
 			'isUnique' => true,
-			'name' => 'sampleName',
+			'field' => 'sampleName',
 			'type' => 'text(20)',
 			'validators' => array()
 		);
@@ -238,7 +238,7 @@ class FieldValidatorTest extends UnitTest
 		$propertyValidators = array(
 			'autoIncrement' => $this->mockPropertyValidator('AutoIncrement'),
 			'isUnique' => $this->mockPropertyValidator('IsUnique'),
-			'name' => $this->mockPropertyValidator('Name'),
+			'field' => $this->mockPropertyValidator('Name'),
 			'type' => $this->mockPropertyValidator('Type'),
 			'validators' => $this->mockPropertyValidator('ValidatorList')
 		);
@@ -249,7 +249,7 @@ class FieldValidatorTest extends UnitTest
 		$propertyErrors = array(
 			'autoIncrement' => $this->mockValidationErrorList(),
 			'isUnique' => $this->mockValidationErrorList(),
-			'name' => $this->mockValidationErrorList(),
+			'field' => $this->mockValidationErrorList(),
 			'type' => $this->mockValidationErrorList(),
 			'validators' => $this->mockValidationErrorList()
 		);
@@ -259,7 +259,7 @@ class FieldValidatorTest extends UnitTest
 		$fieldErrors = array(
 			'autoIncrement' => $this->mockValidationError(),
 			'isUnique' => $this->mockValidationError(),
-			'name' => $this->mockValidationError(),
+			'field' => $this->mockValidationError(),
 			'type' => $this->mockValidationError(),
 			'validators' => $this->mockValidationError()
 		);
@@ -297,27 +297,27 @@ class FieldValidatorTest extends UnitTest
 		$errorProperties = array(
 			'autoIncrement' => array(
 				'validator' => $fieldValidator,
-				'message' => 'autoIncrement value is invalid',
+				'message' => 'Value of `autoIncrement` property is invalid',
 				'children' => $propertyErrors['autoIncrement']
 			),
 			'isUnique' => array(
 				'validator' => $fieldValidator,
-				'message' => 'isUnique value is invalid',
+				'message' => 'Value of `isUnique` property is invalid',
 				'children' => $propertyErrors['isUnique']
 			),
-			'name' => array(
+			'field' => array(
 				'validator' => $fieldValidator,
-				'message' => 'name value is invalid',
-				'children' => $propertyErrors['name']
+				'message' => 'Value of `field` property is invalid',
+				'children' => $propertyErrors['field']
 			),
 			'type' => array(
 				'validator' => $fieldValidator,
-				'message' => 'type value is invalid',
+				'message' => 'Value of `type` property is invalid',
 				'children' => $propertyErrors['type']
 			),
 			'validators' => array(
 				'validator' => $fieldValidator,
-				'message' => 'validators value is invalid',
+				'message' => 'Value of `validators` property is invalid',
 				'children' => $propertyErrors['validators']
 			)
 		);
@@ -331,7 +331,7 @@ class FieldValidatorTest extends UnitTest
 			->will($this->returnValueMap(array(
 				array($errorProperties['autoIncrement'], $fieldErrors['autoIncrement']),
 				array($errorProperties['isUnique'], $fieldErrors['isUnique']),
-				array($errorProperties['name'], $fieldErrors['name']),
+				array($errorProperties['field'], $fieldErrors['field']),
 				array($errorProperties['type'], $fieldErrors['type']),
 				array($errorProperties['validators'], $fieldErrors['validators'])
 			)));
@@ -341,7 +341,7 @@ class FieldValidatorTest extends UnitTest
 			->withConsecutive(
 				$fieldErrors['autoIncrement'],
 				$fieldErrors['isUnique'],
-				$fieldErrors['name'],
+				$fieldErrors['field'],
 				$fieldErrors['type'],
 				$fieldErrors['validators']
 			)
