@@ -2,7 +2,9 @@
 namespace Sloth\Module\Validation;
 
 use Sloth\Exception\InvalidArgumentException;
+use Sloth\Module\Validation\Face\ValidationErrorListInterface;
 use Sloth\Module\Validation\Face\ValidationResultFactoryInterface;
+use Sloth\Module\Validation\Face\ValidationResultListInterface;
 use Sloth\Module\Validation\Face\ValidatorInterface;
 
 class ValidationModule
@@ -80,5 +82,43 @@ class ValidationModule
 	public function buildValidationError(array $properties = array())
 	{
 		return $this->resultFactory->buildError($properties);
+	}
+
+	public function flattenResultList(ValidationResultListInterface $validationResults)
+	{
+		$resultList = $this->buildValidationResultList();
+
+		foreach ($validationResults as $result) {
+			if ($result instanceof ValidationResultListInterface) {
+				$nestedResults = $this->flattenResultList($result);
+
+				foreach ($nestedResults as $nestedResult) {
+					$resultList->pushResult($nestedResult);
+				}
+			} else {
+				$resultList->pushResult($result);
+			}
+		}
+
+		return $resultList;
+	}
+
+	public function flattenErrors(array $validationErrors)
+	{
+		$errorList = $this->buildValidationErrorList();
+
+		foreach ($validationErrors as $error) {
+			if (is_array($error)) {
+				$nestedErrors = $this->flattenErrors($error);
+
+				foreach ($nestedErrors as $nestedError) {
+					$errorList->push($nestedError);
+				}
+			} else {
+				$errorList->push($error);
+			}
+		}
+
+		return $errorList;
 	}
 }

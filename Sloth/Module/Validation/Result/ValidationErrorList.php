@@ -15,6 +15,15 @@ class ValidationErrorList implements ValidationErrorListInterface
 		return $this;
 	}
 
+	public function merge(ValidationErrorListInterface $errorList)
+	{
+		foreach ($errorList as $error) {
+			$this->append($error);
+		}
+
+		return $this;
+	}
+
 	public function getMessages()
 	{
 		$messages = array();

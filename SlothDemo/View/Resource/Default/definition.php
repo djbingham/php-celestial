@@ -14,6 +14,7 @@ $resourceName = lcfirst($resourceDefinition->name);
 ?>
 <form action="<?= $app->createUrl(array('resource', lcfirst($resourceName) . '.php')) ?>" method="get">
 	<h2>Resource Definition (<?= ucfirst($resourceName) ?>)</h2>
+
 	<p>
 		<a href="<?= $app->createUrl(array('resource', 'index')) ?>">Index</a>
 		&nbsp;|&nbsp;
@@ -23,6 +24,7 @@ $resourceName = lcfirst($resourceDefinition->name);
 		&nbsp;|&nbsp;
 		<a href="<?= $app->createUrl(array('resource', 'search', $resourceName)) ?>">Search</a>
 	</p>
+
 	<?= renderAttributes($resourceDefinition->attributes) ?>
 </form>
 
@@ -58,4 +60,3 @@ function renderAttributeSubList(AttributeList $attributes, array $ancestors)
 	$html .= sprintf('<ul>%s</ul>', renderAttributes($attributes, $ancestors));
 	return $html;
 }
-?>

@@ -72,6 +72,10 @@ class Config extends BaseConfig
 					'tableManifestDirectory' => $this->rootDirectory() . '/Resource/TableManifest'
 				)
 			),
+			'data.tableValidation' => array(
+				'factoryClass' => 'Sloth\\Module\\Data\\TableValidation\\Factory',
+				'options' => array()
+			),
 			'data.tableDataValidator' => array(
 				'factoryClass' => 'Sloth\\Module\\Data\\TableDataValidator\\Factory',
 				'options' => array()

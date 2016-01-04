@@ -12,4 +12,9 @@ interface ValidationErrorInterface
 	 * @return ValidatorInterface
 	 */
 	public function getValidator();
+
+	/**
+	 * @return ValidationErrorListInterface
+	 */
+	public function getChildren();
 }

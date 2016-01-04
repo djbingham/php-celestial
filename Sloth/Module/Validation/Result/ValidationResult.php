@@ -34,12 +34,24 @@ class ValidationResult implements ValidationResultInterface
 
 	public function isValid()
 	{
-		return ($this->errors->length() === 0);
+		if ($this->errors instanceof ValidationErrorListInterface) {
+			$isValid = ($this->errors->length() === 0);
+		} else {
+			$isValid = true;
+		}
+
+		return $isValid;
 	}
 
 	public function pushError(ValidationErrorInterface $error)
 	{
 		$this->errors->push($error);
+		return $this;
+	}
+
+	public function pushErrors(ValidationErrorListInterface $errors)
+	{
+		$this->errors->merge($errors);
 		return $this;
 	}
 

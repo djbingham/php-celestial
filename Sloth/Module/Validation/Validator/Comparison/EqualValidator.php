@@ -54,7 +54,7 @@ class EqualValidator extends AbstractValidator
 		}
 	}
 
-	private function validateOptions(array $options)
+	public function validateOptions(array $options)
 	{
 		if (array_key_exists('strict', $options)) {
 			if (!is_bool($options['strict'])) {

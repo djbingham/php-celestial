@@ -4,6 +4,7 @@ namespace Sloth\Module\Validation\Result;
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Helper\ObjectListTrait;
 use Sloth\Module\Validation\Face\ValidationErrorInterface;
+use Sloth\Module\Validation\Face\ValidationErrorListInterface;
 use Sloth\Module\Validation\Face\ValidationResultInterface;
 use Sloth\Module\Validation\Face\ValidationResultListInterface;
 use Sloth\Module\Validation\Face\ValidatorInterface;
@@ -58,6 +59,14 @@ class ValidationResultList implements ValidationResultListInterface
 	public function pushError(ValidationErrorInterface $error)
 	{
 		$this->errors[] = $error;
+		return $this;
+	}
+
+	public function pushErrors(ValidationErrorListInterface $errorList)
+	{
+		foreach ($errorList as $error) {
+			$this->pushError($error);
+		}
 		return $this;
 	}
 

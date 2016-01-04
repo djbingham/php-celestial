@@ -15,6 +15,12 @@ interface ValidationResultInterface
 	public function pushError(ValidationErrorInterface $error);
 
 	/**
+	 * @param ValidationErrorListInterface $errors
+	 * @return $this
+	 */
+	public function pushErrors(ValidationErrorListInterface $errors);
+
+	/**
 	 * @return ValidationErrorListInterface
 	 */
 	public function getErrors();

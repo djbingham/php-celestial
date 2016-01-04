@@ -102,7 +102,11 @@ class ResultFactory implements ValidationResultFactoryInterface
 	private function padErrorProperties(array $properties)
 	{
 		if (!array_key_exists('message', $properties)) {
-			$properties['message'] = new ValidationErrorList();
+			$properties['message'] = '';
+		}
+
+		if (!array_key_exists('children', $properties) || $properties['children'] === null) {
+			$properties['children'] = new ValidationErrorList();
 		}
 
 		return $properties;

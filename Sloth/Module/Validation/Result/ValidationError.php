@@ -3,6 +3,7 @@ namespace Sloth\Module\Validation\Result;
 
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Module\Validation\Face\ValidationErrorInterface;
+use Sloth\Module\Validation\Face\ValidationErrorListInterface;
 use Sloth\Module\Validation\Face\ValidatorInterface;
 
 class ValidationError implements ValidationErrorInterface
@@ -17,6 +18,11 @@ class ValidationError implements ValidationErrorInterface
 	 */
 	private $validator;
 
+	/**
+	 * @var ValidationErrorListInterface
+	 */
+	private $children;
+
 	public function __construct(array $properties)
 	{
 		$this->validateProperties($properties);
@@ -28,6 +34,10 @@ class ValidationError implements ValidationErrorInterface
 		if (array_key_exists('validator', $properties)) {
 			$this->validator = $properties['validator'];
 		}
+
+		if (array_key_exists('children', $properties)) {
+			$this->children = $properties['children'];
+		}
 	}
 
 	public function getMessage()
@@ -38,6 +48,11 @@ class ValidationError implements ValidationErrorInterface
 	public function getValidator()
 	{
 		return $this->validator;
+	}
+
+	public function getChildren()
+	{
+		return $this->children;
 	}
 
 	protected function validateProperties(array $properties)
@@ -54,6 +69,12 @@ class ValidationError implements ValidationErrorInterface
 		if (array_key_exists('validator', $properties) && !($properties['validator'] instanceof ValidatorInterface)) {
 			throw new InvalidArgumentException(
 				'Validator given to ValidationResult does not implement ValidatorInterface'
+			);
+		}
+
+		if (array_key_exists('children', $properties) && !($properties['children'] instanceof ValidationErrorListInterface)) {
+			throw new InvalidArgumentException(
+				'Children property given to ValidationResult does not implement ValidationErrorListInterface'
 			);
 		}
 

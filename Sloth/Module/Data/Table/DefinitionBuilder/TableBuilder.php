@@ -2,7 +2,7 @@
 namespace Sloth\Module\Data\Table\DefinitionBuilder;
 
 use Sloth\Module\Data\Table\Definition;
-use Sloth\Module\Data\Table\TableManifestValidator;
+use Sloth\Module\Data\TableValidation\TableValidatorModule;
 
 class TableBuilder
 {
@@ -22,7 +22,7 @@ class TableBuilder
 	private $validatorListBuilder;
 
 	/**
-	 * @var TableManifestValidator
+	 * @var TableValidatorModule
 	 */
 	private $manifestValidator;
 
@@ -31,7 +31,7 @@ class TableBuilder
 	 */
 	private $manifestDirectory;
 
-	public function __construct(TableManifestValidator $manifestValidator, $manifestDirectory)
+	public function __construct(TableValidatorModule $manifestValidator, $manifestDirectory)
 	{
 		$this->manifestValidator = $manifestValidator;
 		$this->manifestDirectory = $manifestDirectory;
@@ -42,6 +42,7 @@ class TableBuilder
 		$this->validatorListBuilder = $builders['validatorListBuilder'];
 		$this->tableFieldListBuilder = $builders['tableFieldListBuilder'];
 		$this->linkListBuilder = $builders['linkListBuilder'];
+
 		return $this;
 	}
 
@@ -64,6 +65,7 @@ class TableBuilder
 		$fileName = basename($filePath, '.json');
 		$manifest = json_decode($fileContents);
 		$manifest->name = ucfirst($fileName);
+
 		return $this->buildFromManifest($manifest, $alias);
 	}
 
@@ -96,8 +98,10 @@ class TableBuilder
 
 	private function assertManifestIsValid(\stdClass $manifest)
 	{
-		if (!$this->manifestValidator->validate($manifest)) {
-			$errorString = implode('; ', $this->manifestValidator->getErrors());
+		$validationResult = $this->manifestValidator->validate($manifest);
+
+		if (!$validationResult->isValid()) {
+			$errorString = implode('; ', $validationResult->getErrors()->getMessages());
 			throw new \Exception('Manifest file failed validation, with the following errors: ' . $errorString);
 		}
 	}
@@ -107,12 +111,15 @@ class TableBuilder
 		if (!property_exists($manifest, 'fields')) {
 			$manifest->fields = new \stdClass();
 		}
+
 		if (!property_exists($manifest, 'links')) {
 			$manifest->links = new \stdClass();
 		}
+
 		if (!property_exists($manifest, 'validators')) {
 			$manifest->validators = array();
 		}
+
 		return $manifest;
 	}
 }

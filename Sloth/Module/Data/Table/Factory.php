@@ -19,7 +19,6 @@ class Factory extends AbstractModuleFactory
 		$module = new TableModule($this->app);
 
 		$module->setTableManifestDirectory($this->options['tableManifestDirectory'])
-			->setTableManifestValidator($this->getTableManifestValidator())
 			->setTableBuilder($this->getTableBuilder());
 
 		return $module;
@@ -45,10 +44,7 @@ class Factory extends AbstractModuleFactory
 
 	protected function getTableManifestValidator()
 	{
-		if (!$this->isCached('tableManifestValidator')) {
-			$this->setCached('tableManifestValidator', new TableManifestValidator());
-		}
-		return $this->getCached('tableManifestValidator');
+		return $this->app->module('data.tableValidation');
 	}
 
 	protected function getTableBuilder()

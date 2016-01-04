@@ -30,7 +30,7 @@ class MaximumDigitsValidator extends AbstractValidator
 		return $result;
 	}
 
-	private function validateOptions(array $options)
+	public function validateOptions(array $options)
 	{
 		if (array_key_exists('negate', $options)) {
 			if (!is_bool($options['negate'])) {

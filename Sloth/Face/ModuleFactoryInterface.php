@@ -2,7 +2,6 @@
 namespace Sloth\Face;
 
 use Sloth\App;
-use Sloth\Module\Request\Request;
 
 interface ModuleFactoryInterface
 {

@@ -12,6 +12,12 @@ interface ValidationErrorListInterface extends ObjectListInterface
 	public function push(ValidationErrorInterface $item);
 
 	/**
+	 * @param ValidationErrorListInterface $errorList
+	 * @return $this
+	 */
+	public function merge(ValidationErrorListInterface $errorList);
+
+	/**
 	 * @return array
 	 */
 	public function getMessages();

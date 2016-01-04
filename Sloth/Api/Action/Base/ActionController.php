@@ -6,11 +6,10 @@ use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Module\Render\View;
-use Sloth\Module\Request\Request;
 
 abstract class ActionController extends Controller
 {
-	abstract protected function handleIndex(RoutedRequestInterface $request);
+	abstract protected function actionIndex(RoutedRequestInterface $request);
 
 	public function execute(RoutedRequestInterface $request)
 	{

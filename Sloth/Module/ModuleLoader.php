@@ -52,7 +52,7 @@ class ModuleLoader
 	private function initialiseModule(Module $config)
 	{
 		$factory = $this->getModuleFactory($config);
-		return $factory->initialise($config->getOptions());
+		return $factory->initialise();
 	}
 
 	/**

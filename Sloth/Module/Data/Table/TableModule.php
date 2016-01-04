@@ -17,11 +17,6 @@ class TableModule
 	private $tableManifestDirectory;
 
 	/**
-	 * @var TableManifestValidator
-	 */
-	private $tableManifestValidator;
-
-	/**
 	 * @var TableBuilder
 	 */
 	private $tableBuilder;
@@ -40,12 +35,6 @@ class TableModule
 	public function getTableManifestDirectory()
 	{
 		return $this->tableManifestDirectory;
-	}
-
-	public function setTableManifestValidator(TableManifestValidator $tableManifestValidator)
-	{
-		$this->tableManifestValidator = $tableManifestValidator;
-		return $this;
 	}
 
 	public function setTableBuilder(TableBuilder $tableBuilder)
@@ -78,7 +67,7 @@ class TableModule
 		return $table;
 	}
 
-	private function getManifestPath($tableName)
+	public function getManifestPath($tableName)
 	{
 		$pathParts = explode('/', $tableName);
 
