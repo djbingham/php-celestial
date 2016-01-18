@@ -46,7 +46,7 @@
 			"onUpdate": "ignore",
 			"onDelete": "ignore",
 			"joins": {
-				"this.postId": "Post.id"
+				"this.postId": "post.id"
 			}
 		},
 		"replies": {
