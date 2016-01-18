@@ -47,7 +47,7 @@ class ValidatorListValidator extends BaseValidator
 			}
 		} else {
 			$errors->push($this->buildError(
-				sprintf('Field validators must be an array')
+				sprintf('Field validators must be an object')
 			));
 		}
 

@@ -37,7 +37,7 @@ class ValidatorListValidatorTest extends UnitTest
         $this->setupMockExpectationsForSingleError(
             $validatorListValidator,
             $validationResult,
-            'Field validators must be an array'
+            'Field validators must be an object'
         );
 
         $result = $validatorListValidator->validate(array());
@@ -53,7 +53,7 @@ class ValidatorListValidatorTest extends UnitTest
         $this->setupMockExpectationsForSingleError(
             $validatorListValidator,
             $validationResult,
-            'Field validators must be an array'
+            'Field validators must be an object'
         );
 
         $result = $validatorListValidator->validate('Some string');
@@ -69,7 +69,7 @@ class ValidatorListValidatorTest extends UnitTest
         $this->setupMockExpectationsForSingleError(
             $validatorListValidator,
             $validationResult,
-            'Field validators must be an array'
+            'Field validators must be an object'
         );
 
         $result = $validatorListValidator->validate(27);
@@ -85,7 +85,7 @@ class ValidatorListValidatorTest extends UnitTest
         $this->setupMockExpectationsForSingleError(
             $validatorListValidator,
             $validationResult,
-            'Field validators must be an array'
+            'Field validators must be an object'
         );
 
         $result = $validatorListValidator->validate(true);

@@ -52,14 +52,14 @@ class FieldValidator extends BaseValidator
 			$propertyValue = null;
 			if (property_exists($validator, $propertyName)) {
 				$propertyValue = $validator->$propertyName;
-			}
 
-			$propertyResult = $this->executeValidator($propertyValidator, $propertyValue);
+				$propertyResult = $this->executeValidator($propertyValidator, $propertyValue);
 
-			if (!$propertyResult->isValid()) {
-				$errorMessage = sprintf('Value of `%s` property is invalid', $propertyName);
-				$error = $this->buildError($errorMessage, $propertyResult->getErrors());
-				$errors->push($error);
+				if (!$propertyResult->isValid()) {
+					$errorMessage = sprintf('Value of `%s` property is invalid', $propertyName);
+					$error = $this->buildError($errorMessage, $propertyResult->getErrors());
+					$errors->push($error);
+				}
 			}
 		}
 
