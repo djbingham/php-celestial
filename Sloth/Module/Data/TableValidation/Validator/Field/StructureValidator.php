@@ -23,20 +23,20 @@ class StructureValidator extends BaseValidator
 		));
 	}
 
-	public function validate($field, array $options = array())
+	public function validate($validator, array $options = array())
 	{
 		$errors = $this->validationModule->buildValidationErrorList();
 
-		if (is_object($field)) {
+		if (is_object($validator)) {
 			foreach (self::$requiredProperties as $propertyName) {
-				if (!property_exists($field, $propertyName)) {
+				if (!property_exists($validator, $propertyName)) {
 					$errors->push($this->buildError(
 							sprintf('Missing required property `%s`', $propertyName)
 					));
 				}
 			}
 
-			foreach ($field as $propertyName => $propertyValue) {
+			foreach ($validator as $propertyName => $propertyValue) {
 				if (!in_array($propertyName, array_merge(self::$allowedProperties, self::$requiredProperties))) {
 					$errors->push(
 						$this->buildError(sprintf('Unrecognised property `%s` defined', $propertyName))

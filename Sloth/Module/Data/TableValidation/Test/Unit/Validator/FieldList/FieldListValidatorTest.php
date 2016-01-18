@@ -1,39 +1,16 @@
 <?php
 namespace Sloth\Module\Data\TableValidation\Test\Unit\Validator\FieldList;
 
-use Sloth\Module\Data\TableValidation\DependencyManager;
 use Sloth\Module\Data\TableValidation\Test\UnitTest;
 use Sloth\Module\Data\TableValidation\Validator\FieldList\FieldListValidator;
-use Sloth\Module\Validation\ValidationModule;
 
 class FieldListValidatorTest extends UnitTest
 {
-	/**
-	 * @var DependencyManager|\PHPUnit_Framework_MockObject_MockObject
-	 */
-	private $dependencyManager;
-
-	/**
-	 * @var ValidationModule|\PHPUnit_Framework_MockObject_MockObject
-	 */
-	private $validationModule;
-
-	public function setUp()
-	{
-		parent::setUp();
-
-		$this->dependencyManager = $this->mockDependencyManager();
-		$this->validationModule = $this->mockValidationModule();
-
-		$this->dependencyManager->expects($this->once())
-			->method('getValidationModule')
-			->willReturn($this->validationModule);
-	}
-
 	public function testConstructorReadsDependenciesFromDependencyManager()
 	{
 		$structureValidator = $this->mockStructureValidator();
 		$aliasValidator = $this->mockAliasValidator();
+		$validationModule = $this->mockValidationModule();
 
 		$this->dependencyManager->expects($this->once())
 			->method('getFieldListStructureValidator')
@@ -42,6 +19,10 @@ class FieldListValidatorTest extends UnitTest
 		$this->dependencyManager->expects($this->once())
 			->method('getFieldListAliasValidator')
 			->willReturn($aliasValidator);
+
+		$this->dependencyManager->expects($this->once())
+			->method('getValidationModule')
+			->willReturn($validationModule);
 
 		new FieldListValidator($this->dependencyManager);
 	}

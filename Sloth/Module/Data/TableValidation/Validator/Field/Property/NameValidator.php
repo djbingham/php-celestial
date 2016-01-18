@@ -17,7 +17,8 @@ class NameValidator extends BaseValidator
 		$errors = $this->validationModule->buildValidationErrorList();
 
 		if (!is_string($value)) {
-			$errors->push($this->buildError('Field name must be a string'));
+			$error = $this->buildError('Field name must be a string');
+			$errors->push($error);
 		}
 
 		return $this->validationModule->buildValidationResult(array(

@@ -25,7 +25,6 @@
 			"validators": {}
 		}
 	},
-	"validators": [],
 	"links": {
 		"landlord": {
 			"type": "oneToOne",

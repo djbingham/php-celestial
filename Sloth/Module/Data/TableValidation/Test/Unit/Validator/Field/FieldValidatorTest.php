@@ -1,36 +1,12 @@
 <?php
 namespace Sloth\Module\Data\TableValidation\Test\Unit\Validator\Field;
 
-use Sloth\Module\Data\TableValidation\DependencyManager;
-use Sloth\Module\Data\TableValidation\Face\FieldPropertyValidatorInterface;
+use Sloth\Module\Data\TableValidation\Base\BaseValidator;
 use Sloth\Module\Data\TableValidation\Validator\Field\FieldValidator;
-use Sloth\Module\Validation\ValidationModule;
 use Sloth\Module\Data\TableValidation\Test\UnitTest;
 
 class FieldValidatorTest extends UnitTest
 {
-	/**
-	 * @var DependencyManager|\PHPUnit_Framework_MockObject_MockObject
-	 */
-	private $dependencyManager;
-
-	/**
-	 * @var ValidationModule|\PHPUnit_Framework_MockObject_MockObject
-	 */
-	private $validationModule;
-
-	public function setUp()
-	{
-		parent::setUp();
-
-		$this->dependencyManager = $this->mockDependencyManager();
-		$this->validationModule = $this->mockValidationModule();
-
-		$this->dependencyManager->expects($this->once())
-			->method('getValidationModule')
-			->will($this->returnValue($this->validationModule));
-	}
-
 	public function testConstructorReadsDependenciesFromDependencyManager()
 	{
 		$structureValidator = $this->mockStructureValidator();
@@ -115,7 +91,7 @@ class FieldValidatorTest extends UnitTest
 			->method('isValid')
 			->will($this->returnValue(true));
 
-		/** @var FieldPropertyValidatorInterface|\PHPUnit_Framework_MockObject_MockObject $propertyValidator */
+		/** @var BaseValidator|\PHPUnit_Framework_MockObject_MockObject $propertyValidator */
 		foreach ($propertyValidators as $propertyName => $propertyValidator) {
 			$propertyValidationResult = $this->mockValidationResult();
 			$propertyValidationResult->expects($this->once())
@@ -174,7 +150,7 @@ class FieldValidatorTest extends UnitTest
 			->method('getErrors')
 			->will($this->returnValue($structureErrorList));
 
-		/** @var FieldPropertyValidatorInterface|\PHPUnit_Framework_MockObject_MockObject $propertyValidator */
+		/** @var BaseValidator|\PHPUnit_Framework_MockObject_MockObject $propertyValidator */
 		foreach ($propertyValidators as $propertyName => $propertyValidator) {
 			$propertyValidationResult = $this->mockValidationResult();
 
@@ -276,7 +252,7 @@ class FieldValidatorTest extends UnitTest
 		$structureValidationResult->expects($this->never())
 			->method('getErrors');
 
-		/** @var FieldPropertyValidatorInterface|\PHPUnit_Framework_MockObject_MockObject $propertyValidator */
+		/** @var BaseValidator|\PHPUnit_Framework_MockObject_MockObject $propertyValidator */
 		foreach ($propertyValidators as $propertyName => $propertyValidator) {
 			$propertyValidationResult = $this->mockValidationResult();
 

@@ -54,7 +54,7 @@ class ValidateController extends ActionController
 		$tableJson = file_get_contents($tableManifestPath);
 		$tableDefinition = json_decode($tableJson);
 
-		$validationResult = $this->getTableValidationModule()->validate($tableDefinition);
+		$validationResult = $this->getTableValidationModule()->validateManifest($tableDefinition);
 
 		$renderer = $this->getRenderModule();
 

@@ -15,14 +15,11 @@ class TableValidatorModule
 
 	public function validateNamedTable($tableName)
 	{
-		$file = $this->dependencyManager->getTableModule()->getManifestPath($tableName);
-		$fileContents = file_get_contents($file);
-		$manifest = json_decode($fileContents);
-
-		return $this->validate($manifest);
+		$filePath = $this->dependencyManager->getTableModule()->getManifestPath($tableName);
+		return $this->dependencyManager->getTableManifestFileValidator()->validate($filePath);
 	}
 
-	public function validate(\stdClass $tableManifest)
+	public function validateManifest(\stdClass $tableManifest)
 	{
 		return $this->dependencyManager->getTableManifestValidator()->validate($tableManifest);
 	}

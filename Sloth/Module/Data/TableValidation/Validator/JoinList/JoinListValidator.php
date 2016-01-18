@@ -1,26 +1,34 @@
 <?php
 namespace Sloth\Module\Data\TableValidation\Validator\JoinList;
 
+use Sloth\Module\Data\TableValidation\Base\BaseValidator;
 use Sloth\Module\Data\TableValidation\DependencyManager;
 use Sloth\Module\Validation\Face\ValidatorInterface;
-use Sloth\Module\Validation\ValidationModule;
 
-class JoinListValidator implements ValidatorInterface
+class JoinListValidator extends BaseValidator
 {
 	/**
-	 * @var DependencyManager
+	 * @var ValidatorInterface
 	 */
-	private $dependencyManager;
+	private $joinValidator;
 
 	/**
-	 * @var ValidationModule
+	 * @var ValidatorInterface
 	 */
-	private $validationModule;
+	private $joinAliasValidator;
+
+	/**
+	 * @var ValidatorInterface
+	 */
+	private $listStructureValidator;
 
 	public function __construct(DependencyManager $dependencyManager)
 	{
-		$this->dependencyManager = $dependencyManager;
-		$this->validationModule = $dependencyManager->getValidationModule();
+		parent::__construct($dependencyManager);
+
+		$this->listStructureValidator = $dependencyManager->getJoinListStructureValidator();
+		$this->joinAliasValidator = $dependencyManager->getJoinListAliasValidator();
+		$this->joinValidator = $dependencyManager->getJoinValidator();
 	}
 
 	public function validateOptions(array $options)
@@ -30,8 +38,35 @@ class JoinListValidator implements ValidatorInterface
 		));
 	}
 
-	public function validate($fieldList, array $options = array())
+	public function validate($joinList, array $options = array())
 	{
-		return $this->validationModule->buildValidationResultList();
+		$errors = $this->validationModule->buildValidationErrorList();
+
+		$structureResult = $this->listStructureValidator->validate($joinList);
+		if (!$structureResult->isValid()) {
+			$error = $this->buildError('Join list structure is invalid', $structureResult->getErrors());
+			$errors->push($error);
+		}
+
+		foreach ($joinList as $joinAlias => $join) {
+			$aliasResult = $this->joinAliasValidator->validate($joinAlias);
+			if (!$aliasResult->isValid()) {
+				$error = $this->buildError(sprintf('Join alias `%s` is invalid', $joinAlias), $aliasResult->getErrors());
+				$errors->push($error);
+			}
+
+			$joinResult = $this->joinValidator->validate($join, array('joinAlias' => $joinAlias));
+
+			if (!$joinResult->isValid()) {
+				$errorMessage = sprintf('Join with alias `%s` is invalid', $joinAlias);
+				$error = $this->buildError($errorMessage, $joinResult->getErrors());
+				$errors->push($error);
+			}
+		}
+
+		return $this->validationModule->buildValidationResult(array(
+			'validator' => $this,
+			'errors' => $errors
+		));
 	}
 }

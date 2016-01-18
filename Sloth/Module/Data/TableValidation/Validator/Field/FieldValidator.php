@@ -1,25 +1,12 @@
 <?php
 namespace Sloth\Module\Data\TableValidation\Validator\Field;
 
-use Sloth\Exception\InvalidArgumentException;
 use Sloth\Module\Data\TableValidation\Base\BaseValidator;
 use Sloth\Module\Data\TableValidation\DependencyManager;
 use Sloth\Module\Validation\Face\ValidatorInterface;
-use Sloth\Module\Validation\ValidationModule;
 
 class FieldValidator extends BaseValidator
 {
-	private static $requiredProperties = array(
-		'name',
-		'type'
-	);
-
-	private static $allowedProperties = array(
-		'autoIncrement',
-		'isUnique',
-		'validators'
-	);
-
 	/**
 	 * @var ValidatorInterface
 	 */
@@ -51,11 +38,11 @@ class FieldValidator extends BaseValidator
 		));
 	}
 
-	public function validate($field, array $options = array())
+	public function validate($validator, array $options = array())
 	{
 		$errors = $this->validationModule->buildValidationErrorList();
 
-		$structureResult = $this->structureValidator->validate($field);
+		$structureResult = $this->structureValidator->validate($validator);
 		if (!$structureResult->isValid()) {
 			$error = $this->buildError(sprintf('Field structure is invalid'), $structureResult->getErrors());
 			$errors->push($error);
@@ -63,8 +50,8 @@ class FieldValidator extends BaseValidator
 
 		foreach ($this->propertyValidators as $propertyName => $propertyValidator) {
 			$propertyValue = null;
-			if (property_exists($field, $propertyName)) {
-				$propertyValue = $field->$propertyName;
+			if (property_exists($validator, $propertyName)) {
+				$propertyValue = $validator->$propertyName;
 			}
 
 			$propertyResult = $this->executeValidator($propertyValidator, $propertyValue);

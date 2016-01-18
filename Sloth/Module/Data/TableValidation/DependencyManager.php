@@ -25,7 +25,7 @@ class DependencyManager
 	 */
 	public function getTableModule()
 	{
-		return $this->app->module('table');
+		return $this->app->module('data.table');
 	}
 
 	/**
@@ -34,6 +34,14 @@ class DependencyManager
 	public function getValidationModule()
 	{
 		return $this->app->module('validation');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\FileValidator
+	 */
+	public function getTableManifestFileValidator()
+	{
+		return new Validator\FileValidator($this);
 	}
 
 	/**
@@ -185,15 +193,159 @@ class DependencyManager
 	}
 
 	/**
-	 * @return \Sloth\Module\Data\TableValidation\Validator\JoinList\JoinValidator
+	 * @return \Sloth\Module\Data\TableValidation\Validator\JoinList\StructureValidator
+	 */
+	public function getJoinListStructureValidator()
+	{
+		if (!$this->isCached('joinListStructureValidator')) {
+			$this->setCached('joinListStructureValidator', new Validator\JoinList\StructureValidator($this));
+		}
+
+		return $this->getCached('joinListStructureValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\JoinList\AliasValidator
+	 */
+	public function getJoinListAliasValidator()
+	{
+		if (!$this->isCached('joinListAliasValidator')) {
+			$this->setCached('joinListAliasValidator', new Validator\JoinList\AliasValidator($this));
+		}
+
+		return $this->getCached('joinListAliasValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Join\JoinValidator
 	 */
 	public function getJoinValidator()
 	{
 		if (!$this->isCached('joinValidator')) {
-			$this->setCached('joinValidator', new Validator\JoinList\JoinValidator($this));
+			$this->setCached('joinValidator', new Validator\Join\JoinValidator($this));
 		}
 
 		return $this->getCached('joinValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Join\StructureValidator
+	 */
+	public function getJoinStructureValidator()
+	{
+		if (!$this->isCached('joinStructureValidator')) {
+			$this->setCached('joinStructureValidator', new Validator\Join\StructureValidator($this));
+		}
+
+		return $this->getCached('joinStructureValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Join\Property\TypeValidator
+	 */
+	public function getJoinTypeValidator()
+	{
+		if (!$this->isCached('joinTypeValidator')) {
+			$this->setCached('joinTypeValidator', new Validator\Join\Property\TypeValidator($this));
+		}
+
+		return $this->getCached('joinTypeValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Join\Property\TableValidator
+	 */
+	public function getJoinTableValidator()
+	{
+		if (!$this->isCached('joinTableValidator')) {
+			$this->setCached('joinTableValidator', new Validator\Join\Property\TableValidator($this));
+		}
+
+		return $this->getCached('joinTableValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Join\Property\JoinsValidator
+	 */
+	public function getJoinJoinsValidator()
+	{
+		if (!$this->isCached('joinJoinsValidator')) {
+			$this->setCached('joinJoinsValidator', new Validator\Join\Property\JoinsValidator($this));
+		}
+
+		return $this->getCached('joinJoinsValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Join\Property\ViaValidator
+	 */
+	public function getJoinViaValidator()
+	{
+		if (!$this->isCached('joinViaValidator')) {
+			$this->setCached('joinViaValidator', new Validator\Join\Property\ViaValidator($this));
+		}
+
+		return $this->getCached('joinViaValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Join\Property\Via\TableAliasValidator
+	 */
+	public function getJoinViaTableAliasValidator()
+	{
+		if (!$this->isCached('joinViaTableAliasValidator')) {
+			$this->setCached('joinViaTableAliasValidator', new Validator\Join\Property\Via\TableAliasValidator($this));
+		}
+
+		return $this->getCached('joinViaTableAliasValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Join\Property\Via\TableNameValidator
+	 */
+	public function getJoinViaTableNameValidator()
+	{
+		if (!$this->isCached('joinViaTableNameValidator')) {
+			$this->setCached('joinViaTableNameValidator', new Validator\Join\Property\Via\TableNameValidator($this));
+		}
+
+		return $this->getCached('joinViaTableNameValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Join\Property\OnInsertValidator
+	 */
+	public function getJoinOnInsertValidator()
+	{
+		if (!$this->isCached('joinOnInsertValidator')) {
+			$this->setCached('joinOnInsertValidator', new Validator\Join\Property\OnInsertValidator($this));
+		}
+
+		return $this->getCached('joinOnInsertValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Join\Property\OnUpdateValidator
+	 */
+	public function getJoinOnUpdateValidator()
+	{
+		if (!$this->isCached('joinOnUpdateValidator')) {
+			$this->setCached('joinOnUpdateValidator', new Validator\Join\Property\OnUpdateValidator($this));
+		}
+
+		return $this->getCached('joinOnUpdateValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Join\Property\OnDeleteValidator
+	 */
+	public function getJoinOnDeleteValidator()
+	{
+		if (!$this->isCached('joinOnDeleteValidator')) {
+			$this->setCached('joinOnDeleteValidator', new Validator\Join\Property\OnDeleteValidator($this));
+		}
+
+		return $this->getCached('joinOnDeleteValidator');
 	}
 
 	/**
@@ -209,14 +361,74 @@ class DependencyManager
 	}
 
 	/**
-	 * @return \Sloth\Module\Data\TableValidation\Validator\DataValidator\ValidatorValidator
+	 * @return \Sloth\Module\Data\TableValidation\Validator\ValidatorList\StructureValidator
+	 */
+	public function getValidatorListStructureValidator()
+	{
+		if (!$this->isCached('validatorListStructureValidator')) {
+			$this->setCached('validatorListStructureValidator', new Validator\ValidatorList\StructureValidator($this));
+		}
+
+		return $this->getCached('validatorListStructureValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Validator\ValidatorValidator
 	 */
 	public function getValidatorValidator()
 	{
 		if (!$this->isCached('validatorValidator')) {
-			$this->setCached('validatorValidator', new Validator\DataValidator\ValidatorValidator($this));
+			$this->setCached('validatorValidator', new Validator\Validator\ValidatorValidator($this));
 		}
 
 		return $this->getCached('validatorValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Validator\StructureValidator
+	 */
+	public function getValidatorStructureValidator()
+	{
+		if (!$this->isCached('validatorStructureValidator')) {
+			$this->setCached('validatorStructureValidator', new Validator\Validator\StructureValidator($this));
+		}
+
+		return $this->getCached('validatorStructureValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Validator\Property\FieldsValidator
+	 */
+	public function getValidatorFieldsValidator()
+	{
+		if (!$this->isCached('validatorFieldsValidator')) {
+			$this->setCached('validatorFieldsValidator', new Validator\Validator\Property\FieldsValidator($this));
+		}
+
+		return $this->getCached('validatorFieldsValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Validator\Property\OptionsValidator
+	 */
+	public function getValidatorOptionsValidator()
+	{
+		if (!$this->isCached('validatorOptionsValidator')) {
+			$this->setCached('validatorOptionsValidator', new Validator\Validator\Property\OptionsValidator($this));
+		}
+
+		return $this->getCached('validatorOptionsValidator');
+	}
+
+	/**
+	 * @return \Sloth\Module\Data\TableValidation\Validator\Validator\Property\RuleValidator
+	 */
+	public function getValidatorRuleValidator()
+	{
+		if (!$this->isCached('validatorRuleValidator')) {
+			$this->setCached('validatorRuleValidator', new Validator\Validator\Property\RuleValidator($this));
+		}
+
+		return $this->getCached('validatorRuleValidator');
 	}
 }

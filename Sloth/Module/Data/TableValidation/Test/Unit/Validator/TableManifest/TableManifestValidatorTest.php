@@ -1,41 +1,22 @@
 <?php
-namespace Sloth\Module\Data\TableValidation\Test\Unit\Validator;
+namespace Sloth\Module\Data\TableValidation\Test\Unit\Validator\TableManifest;
 
-use Sloth\Module\Data\TableValidation\DependencyManager;
 use Sloth\Module\Data\TableValidation\Test\UnitTest;
 use Sloth\Module\Data\TableValidation\Validator\TableManifest\TableManifestValidator;
-use Sloth\Module\Validation\ValidationModule;
 
 class TableManifestValidatorTest extends UnitTest
 {
-	/**
-	 * @var DependencyManager|\PHPUnit_Framework_MockObject_MockObject
-	 */
-	private $dependencyManager;
-
-	/**
-	 * @var ValidationModule|\PHPUnit_Framework_MockObject_MockObject
-	 */
-	private $validationModule;
-
-	public function setUp()
-	{
-		parent::setUp();
-
-		$this->dependencyManager = $this->mockDependencyManager();
-		$this->validationModule = $this->mockValidationModule();
-
-		$this->dependencyManager->expects($this->once())
-			->method('getValidationModule')
-			->will($this->returnValue($this->validationModule));
-	}
-
 	public function testConstructorReadsDependenciesFromDependencyManager()
 	{
+		$validationModule = $this->mockValidationModule();
 		$structureValidator = $this->mockTableManifestStructureValidator();
 		$fieldListValidator = $this->mockFieldListValidator();
 		$joinListValidator = $this->mockJoinListValidator();
 		$validatorListValidator = $this->mockValidatorListValidator();
+
+		$this->dependencyManager->expects($this->once())
+			->method('getValidationModule')
+			->will($this->returnValue($validationModule));
 
 		$this->dependencyManager->expects($this->once())
 			->method('getTableManifestStructureValidator')
@@ -148,7 +129,7 @@ class TableManifestValidatorTest extends UnitTest
 
 		$validatorListValidator->expects($this->once())
 			->method('validate')
-			->with($sampleManifest->validators)
+			->with($sampleManifest->validators, array('tableManifest' => $sampleManifest))
 			->will($this->returnValue($validatorListValidationResult));
 
 		$this->validationModule->expects($this->once())

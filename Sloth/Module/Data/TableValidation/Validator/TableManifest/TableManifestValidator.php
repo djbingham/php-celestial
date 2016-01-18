@@ -53,7 +53,10 @@ class TableManifestValidator extends BaseValidator
 		$resultList->pushResult($this->structureValidator->validate($tableManifest));
 		$resultList->pushResult($this->fieldListValidator->validate($tableManifest->fields));
 		$resultList->pushResult($this->joinListValidator->validate($tableManifest->links));
-		$resultList->pushResult($this->validatorListValidator->validate($tableManifest->validators));
+		$resultList->pushResult($this->validatorListValidator->validate(
+			$tableManifest->validators,
+			array('tableManifest' => $tableManifest)
+		));
 
 		return $this->validationModule->flattenResultList($resultList);
 	}

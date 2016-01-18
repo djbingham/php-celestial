@@ -82,8 +82,8 @@
 				"friendLink": "UserFriend"
 			},
 			"joins": {
-				"this.id": "userFriends.friendId1",
-				"userFriends.friendId2": "friends.id"
+				"this.id": "friendLink.friendId1",
+				"friendLink.friendId2": "friends.id"
 			}
 		},
 		"posts": {
@@ -93,7 +93,7 @@
 			"onUpdate": "ignore",
 			"onDelete": "ignore",
 			"joins": {
-				"this.id": "Post.authorId"
+				"this.id": "posts.authorId"
 			}
 		},
 		"address": {

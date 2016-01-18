@@ -4,11 +4,11 @@ namespace Sloth\Module\Validation\Face;
 interface ValidatorInterface
 {
 	/**
-	 * @param mixed $fieldList
+	 * @param mixed $validatorList
 	 * @param array $options
 	 * @return ValidationResultInterface
 	 */
-	public function validate($fieldList, array $options = array());
+	public function validate($validatorList, array $options = array());
 
 	/**
 	 * @param array $options

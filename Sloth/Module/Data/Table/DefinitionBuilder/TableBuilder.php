@@ -72,7 +72,6 @@ class TableBuilder
 	public function buildFromManifest(\stdClass $manifest, $alias = null)
 	{
 		$manifest = $this->padManifest($manifest);
-		$this->assertManifestIsValid($manifest);
 
 		$table = new Definition\Table();
 		if (!is_null($alias)) {
@@ -93,16 +92,6 @@ class TableBuilder
 	{
 		if (!is_file($filePath)) {
 			throw new \Exception('Manifest file not found: ' . $filePath);
-		}
-	}
-
-	private function assertManifestIsValid(\stdClass $manifest)
-	{
-		$validationResult = $this->manifestValidator->validate($manifest);
-
-		if (!$validationResult->isValid()) {
-			$errorString = implode('; ', $validationResult->getErrors()->getMessages());
-			throw new \Exception('Manifest file failed validation, with the following errors: ' . $errorString);
 		}
 	}
 

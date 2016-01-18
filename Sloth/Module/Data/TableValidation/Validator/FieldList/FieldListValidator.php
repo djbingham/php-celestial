@@ -38,17 +38,17 @@ class FieldListValidator extends BaseValidator
 		));
 	}
 
-	public function validate($fieldList, array $options = array())
+	public function validate($validatorList, array $options = array())
 	{
 		$errors = $this->validationModule->buildValidationErrorList();
 
-		$structureResult = $this->listStructureValidator->validate($fieldList);
+		$structureResult = $this->listStructureValidator->validate($validatorList);
 		if (!$structureResult->isValid()) {
 			$error = $this->buildError('Field list structure is invalid', $structureResult->getErrors());
 			$errors->push($error);
 		}
 
-		foreach ($fieldList as $fieldAlias => $field) {
+		foreach ($validatorList as $fieldAlias => $field) {
 			$aliasResult = $this->fieldAliasValidator->validate($fieldAlias);
 			if (!$aliasResult->isValid()) {
 				$error = $this->buildError(sprintf('Field alias `%s` is invalid', $fieldAlias), $aliasResult->getErrors());

@@ -12,10 +12,18 @@ class StructureValidator extends BaseValidator
 		));
 	}
 
-	public function validate($fieldList, array $options = array())
+	public function validate($value, array $options = array())
 	{
+		$errors = $this->validationModule->buildValidationErrorList();
+
+		if (!is_object($value)) {
+			$error = $this->buildError('Field list must be an object');
+			$errors->push($error);
+		}
+
 		return $this->validationModule->buildValidationResult(array(
-			'validator' => $this
+			'validator' => $this,
+			'errors' => $errors
 		));
 	}
 }
