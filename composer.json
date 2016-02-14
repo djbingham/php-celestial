@@ -1,5 +1,5 @@
 {
-	"name": "favicon/Sloth",
+	"name": "favicon/sloth",
 	"description": "PHP Framework",
 	"version": "0.1",
 	"minimum-stability": "stable",
@@ -7,7 +7,7 @@
 	"authors": [
 		{
 			"name": "David Bingham",
-			"email": "david.favicon@gmail.com"
+			"email": "davidjhodgkinson@gmail.com"
 		}
 	],
 	"repositories": [
