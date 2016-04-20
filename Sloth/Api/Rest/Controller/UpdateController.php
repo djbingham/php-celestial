@@ -7,8 +7,6 @@ use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Data\Resource as ResourceModule;
 use Sloth\Module\Data\Resource\Face\Definition\ResourceInterface;
 use Sloth\Module\Data\ResourceDataValidator\Result\ExecutedValidatorList;
-use Sloth\Module\Data\Table\Face\JoinInterface;
-use Sloth\Module\Data\Table\Face\TableInterface;
 use Sloth\Module\Request\Face\RoutedRequestInterface;
 use Sloth\Module\Render\Face\RendererInterface;
 use Sloth\Api\Rest\RestfulRequestParser;
@@ -72,13 +70,12 @@ class UpdateController extends RestfulController
 
 		if ($failedValidators->length() === 0) {
 			$filters = array(
-					$primaryAttributeName => $primaryAttributeValue
+				$primaryAttributeName => $primaryAttributeValue
 			);
 
 			$resource = $resourceFactory->getBy($resourceDefinition->attributes, $filters)->current();
-			$updateFilters = $this->getUpdateFiltersFromResource($resource->getAttributes(), $resourceDefinition);
 
-			$resourceFactory->update($updateFilters, $attributes);
+			$resourceFactory->update($resource->getAttributes(), $attributes);
 
 			if (array_key_exists('redirect', $getParams)) {
 				$redirectUrl = $this->app->createUrl(explode('/', $getParams['redirect']));
@@ -167,33 +164,5 @@ class UpdateController extends RestfulController
 		}
 
 		return $renderer->render($view, $parameters);
-	}
-
-	private function getUpdateFiltersFromResource(array $attributes, ResourceInterface $resourceDefinition)
-	{
-		$primaryTableField = $resourceDefinition->table->fields->getByName($resourceDefinition->primaryAttribute);
-		$filters = array(
-			$primaryTableField->name => $attributes[$primaryTableField->name]
-		);
-		$filters = array_merge($filters, $this->getLinkDataFromTableDefinitionTree($attributes, $resourceDefinition->table));
-		return $filters;
-	}
-
-	protected function getLinkDataFromTableDefinitionTree(array $data, TableInterface $tableDefinition)
-	{
-		$linkData = array();
-		/** @var JoinInterface $join */
-		foreach ($tableDefinition->links as $join) {
-			$linkedFields = $join->getLinkedFields();
-			$childField = $linkedFields['child'];
-			if (in_array($join->type, array(JoinInterface::ONE_TO_MANY, JoinInterface::MANY_TO_MANY))) {
-				foreach ($data[$join->name] as $rowIndex => $rowData) {
-					$linkData[$join->name][$rowIndex][$childField->name] = $rowData[$childField->name];
-				}
-			} else {
-				$linkData[$join->name][$childField->name] = $data[$join->name][$childField->name];
-			}
-		}
-		return $linkData;
 	}
 }
