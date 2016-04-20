@@ -26,4 +26,15 @@ interface SingleQueryWrapperInterface extends QueryWrapperInterface
 	 * @return array
 	 */
 	public function getData();
+
+	/**
+	 * @param array $filters
+	 * @return $this
+	 */
+	public function setFilters(array $filters);
+
+	/**
+	 * @return array
+	 */
+	public function getFilters();
 }

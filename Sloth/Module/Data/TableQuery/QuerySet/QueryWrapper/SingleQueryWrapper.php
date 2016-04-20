@@ -17,6 +17,11 @@ class SingleQueryWrapper extends AbstractQueryWrapper implements SingleQueryWrap
 	 */
 	private $data;
 
+	/**
+	 * @var array $filters
+	 */
+	private $filters;
+
 	public function setQuery(SlothMySql\Face\QueryInterface $query)
 	{
 		$this->query = $query;
@@ -37,5 +42,16 @@ class SingleQueryWrapper extends AbstractQueryWrapper implements SingleQueryWrap
 	public function getData()
 	{
 		return $this->data;
+	}
+
+	public function setFilters(array $filters)
+	{
+		$this->filters = $filters;
+		return $this;
+	}
+
+	public function getFilters()
+	{
+		return $this->filters;
 	}
 }
