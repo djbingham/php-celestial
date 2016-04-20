@@ -50,7 +50,7 @@ class UpdateController extends RestfulController
 		$urlExtension = $request->getExtension();
 
 		if (!array_key_exists('attributes', $postParams)) {
-			throw new InvalidRequestException('POST/PUT request received with no parameters');
+			throw new InvalidRequestException('POST/PUT request received with no attributes to update');
 		}
 
 		$attributes = $postParams['attributes'];
@@ -58,7 +58,7 @@ class UpdateController extends RestfulController
 		$primaryAttributeValue = $attributes[$primaryAttributeName];
 
 		if (empty($attributes)) {
-			throw new InvalidRequestException('PUT request received with no parameters');
+			throw new InvalidRequestException('PUT request received with no attributes to update');
 		} elseif (!array_key_exists($primaryAttributeName, $attributes)) {
 			throw new InvalidRequestException(
 				sprintf('PUT request received with no value for primary attribute `%s`', $primaryAttributeName)
