@@ -5,7 +5,6 @@ use Sloth\Module\Data\Table\Face\TableInterface;
 use Sloth\Module\Data\TableQuery\QuerySet\Base\AbstractComposer;
 use Sloth\Module\Data\TableQuery\QuerySet\Base\AbstractConductor;
 use Sloth\Module\Data\TableQuery\QuerySet\Face\FilterParserInterface;
-use Sloth\Module\Data\TableQuery\QuerySet\Filter\FilterParser;
 use SlothMySql\DatabaseWrapper;
 
 class Orchestrator
@@ -26,7 +25,7 @@ class Orchestrator
 	private $conductor;
 
 	/**
-	 * @var FilterParser
+	 * @var FilterParserInterface
 	 */
 	private $filterParser;
 
