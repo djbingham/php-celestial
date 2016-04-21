@@ -41,6 +41,7 @@ EOT;
 		$expectedData = array(
 			'User' => array(
 				array(
+					'User.id' => '1',
 					'User.forename' => 'David',
 					'User.surname' => 'Bingham'
 				)
@@ -108,19 +109,22 @@ WHERE `User`.`id` = 7
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `UserAddress`
-SET `UserAddress`.`postcode` = "AB34 5FG"
+SET `UserAddress`.`postcode` = "AB34 5FG",
+	`UserAddress`.`userId` = 7
 WHERE `UserAddress`.`userId` = 7
 EOT;
 		$expectedData = array(
 			'User' => array(
 				array(
 					'User.forename' => 'David',
-					'User.surname' => 'Bingham'
+					'User.surname' => 'Bingham',
+					'User.id' => 7
 				)
 			),
 			'UserAddress' => array(
 				array(
-					'User_address.postcode' => 'AB34 5FG'
+					'User_address.postcode' => 'AB34 5FG',
+					'User_address.userId' => 7
 				)
 			)
 		);
@@ -197,19 +201,22 @@ WHERE `User`.`id` = 7
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `UserAddress`
-SET `UserAddress`.`postcode` = "AB34 5FG"
+SET `UserAddress`.`postcode` = "AB34 5FG",
+	`UserAddress`.`userId` = 7
 WHERE `UserAddress`.`userId` = 7
 EOT;
 		$expectedData = array(
 			'User' => array(
 				array(
 					'User.forename' => 'David',
-					'User.surname' => 'Bingham'
+					'User.surname' => 'Bingham',
+					'User.id' => 7
 				)
 			),
 			'UserAddress' => array(
 				array(
-					'User_address.postcode' => 'AB34 5FG'
+					'User_address.postcode' => 'AB34 5FG',
+					'User_address.userId' => 7
 				)
 			)
 		);
@@ -270,6 +277,7 @@ EOT;
 		);
 
 		$data = array(
+			'id' => 7,
 			'forename' => 'David',
 			'surname' => 'Bingham',
 			'posts' => array(
@@ -287,7 +295,8 @@ EOT;
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
 UPDATE `User`
-SET `User`.`forename` = "David",
+SET `User`.`id` = 7,
+	`User`.`forename` = "David",
 	`User`.`surname` = "Bingham"
 WHERE `User`.`id` = 7
 EOT;
@@ -307,17 +316,20 @@ EOT;
 			'User' => array(
 				array(
 					'User.forename' => 'David',
-					'User.surname' => 'Bingham'
+					'User.surname' => 'Bingham',
+					'User.id' => 7
 				)
 			),
 			'Post' => array(
 				array(
 					'User_posts.authorId' => 7,
-					'User_posts.content' => 'First updated post'
+					'User_posts.content' => 'First updated post',
+					'User_posts.id' => 12
 				),
 				array(
 					'User_posts.authorId' => 7,
-					'User_posts.content' => 'Second updated post'
+					'User_posts.content' => 'Second updated post',
+					'User_posts.id' => 13
 				)
 			)
 		);
@@ -383,6 +395,7 @@ EOT;
 		);
 
 		$data = array(
+			'id' => 7,
 			'forename' => 'David',
 			'surname' => 'Bingham',
 			'address' => array(
@@ -401,43 +414,53 @@ EOT;
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
 UPDATE `User`
-SET `User`.`forename` = "David",
+SET `User`.`id` = 7,
+	`User`.`forename` = "David",
 	`User`.`surname` = "Bingham"
 WHERE `User`.`id` = 7
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `UserAddress`
-SET `UserAddress`.`postcode` = "AB34 5FG"
+SET `UserAddress`.`postcode` = "AB34 5FG",
+	`UserAddress`.`userId` = 7
 WHERE `UserAddress`.`userId` = 7
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Post`
-SET `Post`.`content` = "First updated post"
+SET `Post`.`content` = "First updated post",
+	`Post`.`authorId` = 7
 WHERE `Post`.`id` = 12
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Post`
-SET `Post`.`content` = "Second updated post"
+SET `Post`.`content` = "Second updated post",
+	`Post`.`authorId` = 7
 WHERE `Post`.`id` = 13
 EOT;
 		$expectedData = array(
 			'User' => array(
 				array(
+					'User.id' => 7,
 					'User.forename' => 'David',
 					'User.surname' => 'Bingham'
 				)
 			),
 			'UserAddress' => array(
 				array(
-					'User_address.postcode' => 'AB34 5FG'
+					'User_address.postcode' => 'AB34 5FG',
+					'User_address.userId' => 7
 				)
 			),
 			'Post' => array(
 				array(
-					'User_posts.content' => 'First updated post'
+					'User_posts.content' => 'First updated post',
+					'User_posts.authorId' => 7,
+					'User_posts.id' => 12
 				),
 				array(
-					'User_posts.content' => 'Second updated post'
+					'User_posts.content' => 'Second updated post',
+					'User_posts.authorId' => 7,
+					'User_posts.id' => 13
 				)
 			)
 		);
@@ -514,10 +537,12 @@ EOT;
 		);
 
 		$data = array(
+			'id' => 1,
 			'forename' => 'David',
 			'surname' => 'Bingham',
 			'posts' => array(
 				array(
+					'id' => 11,
 					'content' => 'First post',
 					'comments' => array(
 						array(
@@ -529,6 +554,7 @@ EOT;
 					)
 				),
 				array(
+					'id' => 12,
 					'content' => 'Second post'
 				)
 			)
@@ -537,51 +563,67 @@ EOT;
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
 UPDATE `User`
-SET `User`.`forename` = "David",
+SET `User`.`id` = 1,
+	`User`.`forename` = "David",
 	`User`.`surname` = "Bingham"
 WHERE `User`.`id` = 1
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Post`
-SET `Post`.`content` = "First post"
+SET `Post`.`id` = 11,
+	`Post`.`content` = "First post",
+	`Post`.`authorId` = 1
 WHERE `Post`.`id` = 11
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Comment`
-SET `Comment`.`content` = "First reply to first post"
+SET `Comment`.`content` = "First reply to first post",
+	`Comment`.`postId` = 11
 WHERE `Comment`.`id` = 21
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Comment`
-SET `Comment`.`content` = "Second reply to first post"
+SET `Comment`.`content` = "Second reply to first post",
+	`Comment`.`postId` = 11
 WHERE `Comment`.`id` = 22
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Post`
-SET `Post`.`content` = "Second post"
+SET `Post`.`id` = 12,
+	`Post`.`content` = "Second post",
+	`Post`.`authorId` = 1
 WHERE `Post`.`id` = 12
 EOT;
 		$expectedData = array(
 			'User' => array(
 				array(
+					'User.id' => 1,
 					'User.forename' => 'David',
 					'User.surname' => 'Bingham'
 				)
 			),
 			'Post' => array(
 				array(
-					'User_posts.content' => 'First post'
+					'User_posts.content' => 'First post',
+					'User_posts.authorId' => 1,
+					'User_posts.id' => 11
 				),
 				array(
-					'User_posts.content' => 'Second post'
+					'User_posts.content' => 'Second post',
+					'User_posts.authorId' => 1,
+					'User_posts.id' => 12
 				)
 			),
 			'Comment' => array(
 				array(
-					'User_posts_comments.content' => 'First reply to first post'
+					'User_posts_comments.content' => 'First reply to first post',
+					'User_posts_comments.id' => 21,
+					'User_posts_comments.postId' => 11
 				),
 				array(
-					'User_posts_comments.content' => 'Second reply to first post'
+					'User_posts_comments.content' => 'Second reply to first post',
+					'User_posts_comments.id' => 22,
+					'User_posts_comments.postId' => 11
 				)
 			)
 		);
@@ -680,6 +722,7 @@ EOT;
 		$expectedData = array(
 			'User' => array(
 				array(
+					'User.id' => 1,
 					'User.forename' => 'David',
 					'User.surname' => 'Bingham'
 				)

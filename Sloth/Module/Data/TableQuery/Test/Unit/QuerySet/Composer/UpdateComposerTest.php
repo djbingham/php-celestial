@@ -438,10 +438,146 @@ EOT;
 		);
 
 		$data = array(
+			'id' => 7,
 			'forename' => 'David',
 			'surname' => 'Bingham',
 			'posts' => array(
 				array(
+					'authorId' => 7,
+					'content' => 'First updated post'
+				),
+				array(
+					'authorId' => 7,
+					'content' => 'Second updated post'
+				)
+			)
+		);
+
+		$expectedQueries = array();
+		$expectedQueries[] = <<<EOT
+UPDATE `User`
+SET `User`.`id` = 7,
+	`User`.`forename` = "David",
+	`User`.`surname` = "Bingham"
+WHERE `User`.`id` = 7
+EOT;
+		$expectedQueries[] = <<<EOT
+UPDATE `Post`
+SET `Post`.`authorId` = 7,
+	`Post`.`content` = "First updated post"
+WHERE `Post`.`id` = 12
+EOT;
+		$expectedQueries[] = <<<EOT
+UPDATE `Post`
+SET `Post`.`authorId` = 7,
+	`Post`.`content` = "Second updated post"
+WHERE `Post`.`id` = 13
+EOT;
+
+		$composer = new UpdateComposer();
+		$composer->setDatabase($database)
+			->setTable($table)
+			->setFilters($filters)
+			->setData($data);
+
+		$firstQuerySet = $composer->compose();
+
+		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\MultiQueryWrapper', $firstQuerySet);
+		$this->assertEquals(1, $firstQuerySet->length());
+
+		/** @var SingleQueryWrapperInterface $firstQueryWrapper */
+		$firstQueryWrapper = $firstQuerySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $firstQueryWrapper);
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Update', $firstQueryWrapper->getQuery());
+		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $firstQueryWrapper->getChildLinks());
+
+		$firstQuery = $firstQueryWrapper->getQuery();
+		$this->assertSame($table, $firstQueryWrapper->getTable());
+		$this->assertEquals($expectedQueries[0], (string)$firstQuery);
+		$this->assertEquals(1, $firstQueryWrapper->getChildLinks()->length());
+
+		/** @var QueryLinkInterface $firstChildLink */
+		$firstChildLink = $firstQueryWrapper->getChildLinks()->getByIndex(0);
+		$this->assertInstanceof('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLink', $firstChildLink);
+		$this->assertSame($table->links->getByName('posts'), $firstChildLink->getJoinDefinition());
+		$this->assertSame($firstQueryWrapper, $firstChildLink->getParentQueryWrapper());
+
+		/** @var MultiQueryWrapperInterface $secondQuerySet */
+		$secondQuerySet = $firstChildLink->getChildQueryWrapper();
+		$this->assertSame($secondQuerySet, $firstChildLink->getChildQueryWrapper());
+		$this->assertEquals(2, $secondQuerySet->length());
+
+		/** @var MultiQueryWrapperInterface $secondQuerySetFirstSubset */
+		$secondQuerySetFirstSubset = $secondQuerySet->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\MultiQueryWrapper', $secondQuerySetFirstSubset);
+		$this->assertEquals(1, $secondQuerySetFirstSubset->length());
+		$this->assertNull($secondQuerySetFirstSubset->getChildLinks());
+
+		/** @var SingleQueryWrapperInterface $secondQueryWrapper */
+		$secondQueryWrapper = $secondQuerySetFirstSubset->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $secondQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $secondQueryWrapper->getChildLinks());
+		$this->assertSame($postTable, $secondQueryWrapper->getTable());
+
+		$secondQuery = $secondQueryWrapper->getQuery();
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Update', $secondQuery);
+		$this->assertEquals($expectedQueries[1], (string)$secondQuery);
+		$this->assertEquals(0, $secondQueryWrapper->getChildLinks()->length());
+
+		/** @var MultiQueryWrapperInterface $secondQuerySetSecondSubset */
+		$secondQuerySetSecondSubset = $secondQuerySet->getByIndex(1);
+		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\MultiQueryWrapper', $secondQuerySetSecondSubset);
+		$this->assertEquals(1, $secondQuerySetSecondSubset->length());
+		$this->assertNull($secondQuerySetSecondSubset->getChildLinks());
+
+		/** @var SingleQueryWrapperInterface $thirdQueryWrapper */
+		$thirdQueryWrapper = $secondQuerySetSecondSubset->getByIndex(0);
+		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $thirdQueryWrapper);
+		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $thirdQueryWrapper->getChildLinks());
+		$this->assertSame($postTable, $thirdQueryWrapper->getTable());
+
+		$thirdQuery = $thirdQueryWrapper->getQuery();
+		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Update', $thirdQuery);
+		$this->assertEquals($expectedQueries[2], (string)$thirdQuery);
+		$this->assertEquals(0, $thirdQueryWrapper->getChildLinks()->length());
+	}
+
+	public function testQueriesToUpdateOneToManyLinkedTableIncludesExistingDataForLinkFieldWhenNoNewDataIsProvided()
+	{
+		$tableDefinitionBuilder = $this->getTableDefinitionBuilder();
+		$dbConnection = new Connection();
+		$database = $this->getDatabaseWrapper($dbConnection);
+
+		$table = $tableDefinitionBuilder->buildFromName('User');
+		$table->links->removeByPropertyValue('name', 'friends');
+		$table->links->removeByPropertyValue('name', 'address');
+
+		$linkToPosts = $table->links->getByName('posts');
+		$linkToPosts->onUpdate = Definition\Table\Join::ACTION_UPDATE;
+
+		$postTable = $linkToPosts->getChildTable();
+		$postTable->links->removeByPropertyValue('name', 'author');
+		$postTable->links->removeByPropertyValue('name', 'comments');
+
+		$filters = array(
+			'id' => 7,
+			'posts' => array(
+				array(
+					'id' => 12
+				),
+				array(
+					'id' => 13
+				)
+			)
+		);
+
+		$data = array(
+			'id' => 7,
+			'forename' => 'David',
+			'surname' => 'Bingham',
+			'posts' => array(
+				array(
+					'authorId' => 7,
 					'content' => 'First updated post'
 				),
 				array(
@@ -453,18 +589,21 @@ EOT;
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
 UPDATE `User`
-SET `User`.`forename` = "David",
+SET `User`.`id` = 7,
+	`User`.`forename` = "David",
 	`User`.`surname` = "Bingham"
 WHERE `User`.`id` = 7
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Post`
-SET `Post`.`content` = "First updated post"
+SET `Post`.`authorId` = 7,
+	`Post`.`content` = "First updated post"
 WHERE `Post`.`id` = 12
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Post`
-SET `Post`.`content` = "Second updated post"
+SET `Post`.`content` = "Second updated post",
+	`Post`.`authorId` = 7
 WHERE `Post`.`id` = 13
 EOT;
 
@@ -571,6 +710,7 @@ EOT;
 		);
 
 		$data = array(
+			'id' => 7,
 			'forename' => 'David',
 			'surname' => 'Bingham',
 			'address' => array(
@@ -578,9 +718,11 @@ EOT;
 			),
 			'posts' => array(
 				array(
+					'id' => 12,
 					'content' => 'First updated post'
 				),
 				array(
+					'id' => 13,
 					'content' => 'Second updated post'
 				)
 			)
@@ -589,7 +731,8 @@ EOT;
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
 UPDATE `User`
-SET `User`.`forename` = "David",
+SET `User`.`id` = 7,
+	`User`.`forename` = "David",
 	`User`.`surname` = "Bingham"
 WHERE `User`.`id` = 7
 EOT;
@@ -600,12 +743,16 @@ WHERE `UserAddress`.`userId` = 7
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Post`
-SET `Post`.`content` = "First updated post"
+SET `Post`.`id` = 12,
+	`Post`.`content` = "First updated post",
+	`Post`.`authorId` = 7
 WHERE `Post`.`id` = 12
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Post`
-SET `Post`.`content` = "Second updated post"
+SET `Post`.`id` = 13,
+	`Post`.`content` = "Second updated post",
+	`Post`.`authorId` = 7
 WHERE `Post`.`id` = 13
 EOT;
 
@@ -734,21 +881,26 @@ EOT;
 		);
 
 		$data = array(
+			'id' => 1,
 			'forename' => 'David',
 			'surname' => 'Bingham',
 			'posts' => array(
 				array(
+					'id' => 11,
 					'content' => 'First post',
 					'comments' => array(
 						array(
+							'id' => 21,
 							'content' => 'First reply to first post'
 						),
 						array(
+							'id' => 22,
 							'content' => 'Second reply to first post'
 						)
 					)
 				),
 				array(
+					'id' => 12,
 					'content' => 'Second post'
 				)
 			)
@@ -757,28 +909,37 @@ EOT;
 		$expectedQueries = array();
 		$expectedQueries[] = <<<EOT
 UPDATE `User`
-SET `User`.`forename` = "David",
+SET `User`.`id` = 1,
+	`User`.`forename` = "David",
 	`User`.`surname` = "Bingham"
 WHERE `User`.`id` = 1
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Post`
-SET `Post`.`content` = "First post"
+SET `Post`.`id` = 11,
+	`Post`.`content` = "First post",
+	`Post`.`authorId` = 1
 WHERE `Post`.`id` = 11
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Comment`
-SET `Comment`.`content` = "First reply to first post"
+SET `Comment`.`id` = 21,
+	`Comment`.`content` = "First reply to first post",
+	`Comment`.`postId` = 11
 WHERE `Comment`.`id` = 21
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Comment`
-SET `Comment`.`content` = "Second reply to first post"
+SET `Comment`.`id` = 22,
+	`Comment`.`content` = "Second reply to first post",
+	`Comment`.`postId` = 11
 WHERE `Comment`.`id` = 22
 EOT;
 		$expectedQueries[] = <<<EOT
 UPDATE `Post`
-SET `Post`.`content` = "Second post"
+SET `Post`.`id` = 12,
+	`Post`.`content` = "Second post",
+	`Post`.`authorId` = 1
 WHERE `Post`.`id` = 12
 EOT;
 

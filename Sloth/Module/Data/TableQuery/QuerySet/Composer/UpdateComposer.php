@@ -26,7 +26,7 @@ class UpdateComposer extends Base\AbstractComposer
 	protected function validateFiltersAndData(array $filters, array $rowData, TableInterface $tableDefinition, JoinInterface $joinDefinition = null)
 	{
 		$this->validateFiltersForTable($filters, $tableDefinition, $joinDefinition);
-		foreach ($rowData as $fieldName => $value) {
+		foreach ($rowData as $fieldName => $fieldValue) {
 			if ($tableDefinition->links->indexOfName($fieldName) !== -1) {
 				$join = $tableDefinition->links->getByName($fieldName);
 				$childTable = $join->getChildTable();
@@ -38,7 +38,7 @@ class UpdateComposer extends Base\AbstractComposer
 				}
 
 				$this->validateJoins($join);
-				$this->validateFiltersAndData($joinFilters, $value, $childTable, $join);
+				$this->validateFiltersAndData($joinFilters, $fieldValue, $childTable, $join);
 			}
 		}
 		return $this;
@@ -47,7 +47,7 @@ class UpdateComposer extends Base\AbstractComposer
 	protected function validateFiltersForTable(array $filters, TableInterface $tableDefinition, JoinInterface $joinDefinition = null)
 	{
 		$foundFieldFilter = false;
-		if ($joinDefinition instanceof JoinInterface && in_array($joinDefinition->type, array(JoinInterface::ONE_TO_MANY, JoinInterface::MANY_TO_MANY))) {
+		if ($joinDefinition !== null && in_array($joinDefinition->type, array(JoinInterface::ONE_TO_MANY, JoinInterface::MANY_TO_MANY))) {
 			foreach ($filters as $rowFilters) {
 				$this->validateFiltersForTable($rowFilters, $tableDefinition);
 				$foundFieldFilter = true;
@@ -61,7 +61,7 @@ class UpdateComposer extends Base\AbstractComposer
 				}
 			}
 		}
-		if (!$foundFieldFilter) {
+		if (!$foundFieldFilter && ($joinDefinition === null || $joinDefinition->onUpdate === JoinInterface::ACTION_UPDATE)) {
 			throw new InvalidRequestException(
 				'No filters given for table: ' . $tableDefinition->getAlias()
 			);
@@ -108,27 +108,35 @@ class UpdateComposer extends Base\AbstractComposer
 		$querySet = new MultiQueryWrapper();
 		$queryWrapper = new SingleQueryWrapper();
 		$childLinks = new QueryLinkList();
+
 		$tableData = $this->extractTableData($tableDefinition, $data);
-		$tableFilters = $this->extractTableFilters($filters, $tableDefinition);
-		$query = $this->buildQueryForTable($tableDefinition, $tableData, $tableFilters);
 
-		$queryWrapper
-			->setTable($tableDefinition)
-			->setQuery($query)
-			->setChildLinks($childLinks)
-			->setData($tableData);
+		if (!empty($tableData)) {
+			$tableFilters = $this->extractTableFilters($filters, $tableDefinition);
+			$query = $this->buildQueryForTable($tableDefinition, $tableData, $tableFilters);
 
-		if ($parentLink instanceof QueryLinkInterface && $parentLink->getJoinDefinition() !== null) {
-			$queryWrapper->setParentLink($parentLink);
+			$queryWrapper
+				->setTable($tableDefinition)
+				->setQuery($query)
+				->setChildLinks($childLinks)
+				->setData($tableData)
+				->setFilters($tableFilters);
+
+			if ($parentLink instanceof QueryLinkInterface && $parentLink->getJoinDefinition() !== null) {
+				$queryWrapper->setParentLink($parentLink);
+			}
+
+			$querySet->push($queryWrapper);
 		}
-
-		$querySet->push($queryWrapper);
 
 		/** @var JoinInterface $join */
 		foreach ($tableDefinition->links as $join) {
 			if ($join->onUpdate === JoinInterface::ACTION_IGNORE) {
 				continue;
 			}
+
+			$childData = array();
+			$childFilters = array();
 
 			if (array_key_exists($join->name, $data)) {
 				$childData = $data[$join->name];
@@ -137,48 +145,80 @@ class UpdateComposer extends Base\AbstractComposer
 				$childFilters = $filters[$join->name];
 			}
 
-			if (!empty($childData) && !empty($childFilters)) {
-				if ($join->onUpdate === JoinInterface::ACTION_REJECT) {
-					throw new InvalidRequestException();
-				}
+			if ($join->onUpdate === JoinInterface::ACTION_REJECT) {
+				throw new InvalidRequestException();
+			}
 
-				$queryLink = new QueryLink();
-				$queryLink->setParentQueryWrapper($queryWrapper)
-					->setJoinDefinition($join);
+			$queryLink = new QueryLink();
+			$queryLink->setParentQueryWrapper($queryWrapper)
+				->setJoinDefinition($join);
 
-				switch ($join->type) {
-					case JoinInterface::ONE_TO_ONE:
-					case JoinInterface::MANY_TO_ONE:
-					default:
-						if ($join->onUpdate === JoinInterface::ACTION_UPDATE) {
-							$childQuerySet = $this->buildQueriesForTableAndDescendants($join->getChildTable(), $childData, $childFilters);
+			switch ($join->type) {
+				case JoinInterface::ONE_TO_ONE:
+				default:
+					if ($join->onUpdate === JoinInterface::ACTION_UPDATE) {
+						$childQuerySet = $this->buildQueriesForTableAndDescendants($join->getChildTable(), $childData, $childFilters);
+						if ($childQuerySet->length() > 0) {
 							$queryLink->setChildQueryWrapper($childQuerySet->getByIndex(0));
-						} else {
-							throw new InvalidRequestException('Invalid update action for one/many-to-one join: ' . $join->onUpdate);
 						}
+					} else {
+						throw new InvalidRequestException('Invalid update action for *-to-one join: ' . $join->onUpdate);
+					}
 					break;
-					case JoinInterface::ONE_TO_MANY:
-						if ($join->onUpdate === JoinInterface::ACTION_UPDATE) {
-							$childQuerySet = new MultiQueryWrapper();
-							foreach ($childData as $rowIndex => $childRow) {
-								$childRowQueries = $this->buildQueriesForTableAndDescendants($join->getChildTable(), $childRow, $childFilters[$rowIndex]);
+				case JoinInterface::MANY_TO_ONE:
+					if ($join->onUpdate === JoinInterface::ACTION_UPDATE) {
+						$childQuerySet = $this->buildQueriesForTableAndDescendants($join->getChildTable(), $childData, $childFilters);
+						if ($childQuerySet->length() > 0) {
+							$queryLink->setChildQueryWrapper($childQuerySet->getByIndex(0));
+						}
+					} elseif (!in_array($join->onUpdate, array(JoinInterface::ACTION_ASSOCIATE, JoinInterface::ACTION_IGNORE))) {
+						throw new InvalidRequestException('Invalid update action for *-to-one join: ' . $join->onUpdate);
+					}
+					break;
+				case JoinInterface::ONE_TO_MANY:
+					if ($join->onUpdate === JoinInterface::ACTION_UPDATE) {
+						$childQuerySet = new MultiQueryWrapper();
+						foreach ($childData as $rowIndex => $childRow) {
+							$linkedFields = $join->getLinkedFields();
+
+							/** @var FieldInterface $parentField */
+							$parentField = $linkedFields['parent'];
+
+							/** @var FieldInterface $childField */
+							$childField = $linkedFields['child'];
+
+							$childRow[$childField->name] = $data[$parentField->name];
+
+							$childRowFilters = array();
+							if (array_key_exists($rowIndex, $childFilters)) {
+								$childRowFilters = $childFilters[$rowIndex];
+							}
+							$childRowQueries = $this->buildQueriesForTableAndDescendants($join->getChildTable(), $childRow, $childRowFilters);
+							if ($childRowQueries->length() > 0) {
 								$childQuerySet->push($childRowQueries);
 							}
-							$queryLink->setChildQueryWrapper($childQuerySet);
-						} else {
-							throw new InvalidRequestException('Invalid update action for one-to-one join: ' . $join->onUpdate);
 						}
-						break;
+						if ($childQuerySet->length() > 0) {
+							$queryLink->setChildQueryWrapper($childQuerySet);
+						}
+					} else {
+						throw new InvalidRequestException('Invalid update action for one-to-one join: ' . $join->onUpdate);
+					}
+					break;
 
-					case JoinInterface::MANY_TO_MANY:
-						if ($join->onUpdate === JoinInterface::ACTION_ASSOCIATE) {
-							$childQuerySet = $this->buildQueriesForLinkTable($join, $data, $filters);
+				case JoinInterface::MANY_TO_MANY:
+					if ($join->onUpdate === JoinInterface::ACTION_ASSOCIATE) {
+						$childQuerySet = $this->buildQueriesForLinkTable($join, $data, $filters);
+						if ($childQuerySet->length() > 0) {
 							$queryLink->setChildQueryWrapper($childQuerySet);
-						} else {
-							throw new InvalidRequestException('Invalid update action for one/many-to-one join: ' . $join->onUpdate);
 						}
-						break;
-				}
+					} else {
+						throw new InvalidRequestException('Invalid update action for many-to-many join: ' . $join->onUpdate);
+					}
+					break;
+			}
+
+			if ($queryLink->getChildQueryWrapper() !== null) {
 				$childLinks->push($queryLink);
 			}
 		}
@@ -192,9 +232,7 @@ class UpdateComposer extends Base\AbstractComposer
 		foreach ($data as $fieldName => $value) {
 			$fieldIndex = $tableDefinition->fields->indexOfName($fieldName);
 			if ($fieldIndex !== -1) {
-				if (!$tableDefinition->fields->getByIndex($fieldIndex)->autoIncrement) {
-					$tableRow[$fieldName] = $value;
-				}
+				$tableRow[$fieldName] = $value;
 			}
 		}
 		return $tableRow;
@@ -215,29 +253,57 @@ class UpdateComposer extends Base\AbstractComposer
 	{
 		$queryTable = $this->database->value()->table($tableDefinition->name);
 		$queryData = $this->buildQueryData($data, $queryTable);
-		$queryConstraint = $this->buildConstraintForTable($queryTable, $filters);
-		$query = $this->database->query()->update();
-		$query->table($queryTable)
-			->data($queryData)
-			->where($queryConstraint);
+
+		if (empty($filters)) {
+			$query = $this->database->query()->insert();
+			$query->into($queryTable)
+				->data($queryData);
+		} else {
+			$queryConstraint = $this->buildConstraintForTable($queryTable, $filters);
+			$query = $this->database->query()->update();
+			$query->table($queryTable)
+				->data($queryData)
+				->where($queryConstraint);
+		}
+
 		return $query;
 	}
 
 	protected function buildConstraintForTable(QueryTableInterface $queryTable, array $filters)
 	{
-		$constraint = $this->database->query()->constraint();
-		foreach ($filters as $fieldName => $value) {
-			$querySubject = $queryTable->field($fieldName);
-			$queryValue = $this->database->value()->guess($value);
-			$constraint->setSubject($querySubject)
-				->equals($queryValue);
+		if (empty($filters)) {
+			$constraint = $this->database->query()->constraint();
+		} else {
+			/** @var \SlothMySql\Face\Query\ConstraintInterface $constraint */
+			$constraint = null;
+			foreach ($filters as $fieldName => $value) {
+				if ($constraint === null) {
+					$constraint = $this->buildQueryConstraint($queryTable, $fieldName, $value);
+				} else {
+					$constraint->andWhere($this->buildQueryConstraint($queryTable, $fieldName, $value));
+				}
+			}
 		}
+
+		return $constraint;
+	}
+
+	protected function buildQueryConstraint(QueryTableInterface $table, $fieldName, $value)
+	{
+		$constraint = $this->database->query()->constraint();
+		$querySubject = $table->field($fieldName);
+		$queryValue = $this->database->value()->guess($value);
+
+		$constraint->setSubject($querySubject)
+			->equals($queryValue);
+
 		return $constraint;
 	}
 
 	protected function buildQueryData(array $data, QueryTableInterface $queryTable)
 	{
 		$queryData = $this->database->value()->tableData();
+
 		if (!empty($data)) {
 			$queryData->beginRow();
 			foreach ($data as $fieldName => $value) {
@@ -245,6 +311,7 @@ class UpdateComposer extends Base\AbstractComposer
 			}
 			$queryData->endRow();
 		}
+
 		return $queryData;
 	}
 
@@ -253,7 +320,10 @@ class UpdateComposer extends Base\AbstractComposer
 		$querySet = new MultiQueryWrapper();
 
 		$parentFilters = $this->extractLinkTableData($join, $joinFilters);
-		$childData = $data[$join->name];
+		$childData = array();
+		if (array_key_exists($join->name, $data)) {
+			$childData = $data[$join->name];
+		}
 
 		$targetLinkData = array();
 		/** @var ConstraintInterface $constraint */

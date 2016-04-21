@@ -20,7 +20,7 @@ class UpdateConductor extends Base\AbstractConductor
 	/**
 	 * @var array
 	 */
-	private $insertedData = array();
+	private $updatedData = array();
 
 	public function conduct()
 	{
@@ -30,7 +30,7 @@ class UpdateConductor extends Base\AbstractConductor
 			$this->executeQueryWithLinks($queryWrapper);
 			$this->executedQuerySet->push($queryWrapper);
 		}
-		return $this->insertedData;
+		return $this->updatedData;
 	}
 
 	private function executeQueryWithLinks(QueryWrapperInterface $queryWrapper)
@@ -63,26 +63,98 @@ class UpdateConductor extends Base\AbstractConductor
 		$table = $queryWrapper->getTable();
 		$query = $queryWrapper->getQuery();
 		$data = $queryWrapper->getData();
+		$filters = $queryWrapper->getFilters();
+
+		$filterData = array();
+		if ($filters !== null) {
+			foreach ($filters as $filterName => $filterValue) {
+				$filterAlias = $table->fields->getByName($filterName)->getAlias();
+				$filterData[$filterAlias] = $filterValue;
+			}
+		}
 
 		$this->database->execute($query);
 
-		$insertedData = array();
+		$updatedData = array();
 		if ($query instanceof Insert) {
 			foreach ($data as $rowIndex => $dataRow) {
+				$updatedData[$rowIndex] = $filterData;
+				if (!is_array($dataRow)) {
+					exit;
+				}
 				foreach ($dataRow as $fieldName => $value) {
 					$fieldAlias = $table->fields->getByName($fieldName)->getAlias();
-					$insertedData[$rowIndex][$fieldAlias] = $value;
+					$updatedData[$rowIndex][$fieldAlias] = $value;
 				}
 			}
-			$this->insertedData[$table->name] = $insertedData;
+			$this->updatedData[$table->name] = $updatedData;
 		} elseif ($query instanceof Update) {
+			$updatedData = $filterData;
 			foreach ($data as $fieldName => $value) {
 				$fieldAlias = $table->fields->getByName($fieldName)->getAlias();
-				$insertedData[$fieldAlias] = $value;
+				$updatedData[$fieldAlias] = $value;
 			}
-			$this->insertedData[$table->name][] = $insertedData;
+			$this->updatedData[$table->name][] = $updatedData;
 		}
 
-		return $insertedData;
+		$linkData = $this->dataParser->extractLinkListData($queryWrapper->getChildLinks(), array($updatedData));
+
+		$this->applyLinkDataToChildQueries($linkData, $queryWrapper);
+
+		return $updatedData;
+	}
+
+	private function applyLinkDataToChildQueries(array $linkData, QueryWrapperInterface $parentQueryWrapper)
+	{
+		/** @var QueryLinkInterface $link */
+		foreach ($parentQueryWrapper->getChildLinks() as $link) {
+			$targetQueryWrapper = $link->getChildQueryWrapper();
+			if ($targetQueryWrapper !== null) {
+				$this->applyLinkDataToQueryWrapper($linkData, $targetQueryWrapper);
+			}
+		}
+		return $this;
+	}
+
+	private function applyLinkDataToQueryWrapper(array $linkData, QueryWrapperInterface $querySetWrapper)
+	{
+		if ($querySetWrapper instanceof SingleQueryWrapperInterface) {
+			$this->applyLinkDataToSingleQuery($linkData, $querySetWrapper);
+		} else {
+			foreach ($querySetWrapper as $queryWrapper) {
+				$this->applyLinkDataToQueryWrapper($linkData, $queryWrapper);
+			}
+		}
+	}
+
+	private function applyLinkDataToSingleQuery(array $linkData, SingleQueryWrapperInterface $queryWrapper)
+	{
+		$targetTable = $queryWrapper->getTable();
+		$targetData = $queryWrapper->getData();
+
+		if (array_key_exists($targetTable->getAlias(), $linkData)) {
+			/** @var Update $query */
+			$query = $queryWrapper->getQuery();
+			if ($query instanceof Update || $query instanceof Insert) {
+				$queryData = $query->getData();
+				$targetLinkData = $linkData[$targetTable->getAlias()];
+
+				foreach ($targetLinkData as $fieldAlias => $values) {
+					$field = $targetTable->fields->getByAlias($fieldAlias);
+					foreach ($values as $rowIndex => $value) {
+						$queryField = $query->getTable()->field($field->name);
+						$queryValue = $this->database->value()->guess($value);
+
+						$queryData
+							->beginRow($rowIndex)
+							->set($queryField, $queryValue)
+							->endRow();
+					}
+					$queryWrapper->setData($targetData);
+				}
+
+				$query->data($queryData);
+			}
+		}
 	}
 }

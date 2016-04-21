@@ -4,8 +4,6 @@ namespace Sloth\Module\Data\TableQuery\Test\Unit\QuerySet\Composer;
 require_once dirname(dirname(dirname(__DIR__))) . '/UnitTest.php';
 
 use Sloth\Module\Data\Table\Definition;
-use Sloth\Module\Data\TableQuery\QuerySet\Face\MultiQueryWrapperInterface;
-use Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkInterface;
 use Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface;
 use Sloth\Module\Data\TableQuery\QuerySet\Composer\DeleteComposer;
 use Sloth\Module\Data\TableQuery\Test\Mock\Connection;

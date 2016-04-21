@@ -47,6 +47,14 @@ class DeleteComposer extends Base\AbstractComposer
 		if ($joinDefinition instanceof JoinInterface && in_array($joinDefinition->type, array(JoinInterface::ONE_TO_MANY, JoinInterface::MANY_TO_MANY))) {
 			foreach ($filters as $rowFilters) {
 				$filtersHaveValidFields = $filtersHaveValidFields && $this->validateFiltersForTable($rowFilters, $tableDefinition);
+
+				/** @var FieldInterface $tableField */
+				foreach ($tableDefinition->fields as $tableField) {
+					if (array_key_exists($tableField->name, $rowFilters)) {
+						$filtersExistForTables = true;
+						break;
+					}
+				}
 			}
 		} else {
 			/** @var FieldInterface $tableField */
