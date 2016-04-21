@@ -2,7 +2,6 @@
 namespace Sloth\Module\Data\Table\DefinitionBuilder;
 
 use Sloth\Module\Data\Table\Definition;
-use Sloth\Module\Data\TableValidation\TableValidatorModule;
 
 class TableBuilder
 {
@@ -22,18 +21,12 @@ class TableBuilder
 	private $validatorListBuilder;
 
 	/**
-	 * @var TableValidatorModule
-	 */
-	private $manifestValidator;
-
-	/**
 	 * @var string
 	 */
 	private $manifestDirectory;
 
-	public function __construct(TableValidatorModule $manifestValidator, $manifestDirectory)
+	public function __construct($manifestDirectory)
 	{
-		$this->manifestValidator = $manifestValidator;
 		$this->manifestDirectory = $manifestDirectory;
 	}
 

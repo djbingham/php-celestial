@@ -42,16 +42,10 @@ class Factory extends AbstractModuleFactory
 		}
 	}
 
-	protected function getTableManifestValidator()
-	{
-		return $this->app->module('data.tableValidation');
-	}
-
 	protected function getTableBuilder()
 	{
-
 		if (!$this->isCached('tableBuilder')) {
-			$tableBuilder = new TableBuilder($this->getTableManifestValidator(), $this->options['tableManifestDirectory']);
+			$tableBuilder = new TableBuilder($this->options['tableManifestDirectory']);
 			$tableBuilder->setSubBuilders(array(
 				'linkListBuilder' => $this->getLinkListBuilder($tableBuilder),
 				'tableFieldListBuilder' => $this->getTableFieldListBuilder(),

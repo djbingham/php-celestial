@@ -40,9 +40,8 @@ abstract class UnitTest extends \PHPUnit_Framework_TestCase
 
 	protected function getTableDefinitionBuilder()
 	{
-		$manifestValidator = new TableManifestValidator();
 		$manifestDirectory = __DIR__ . '/sample/tableManifest';
-		$tableDefinitionBuilder = new TableBuilder($manifestValidator, $manifestDirectory);
+		$tableDefinitionBuilder = new TableBuilder($manifestDirectory);
 
 		$validatorListBuilder = new ValidatorListBuilder();
 		$attributeBuilder = new TableFieldBuilder($validatorListBuilder);
