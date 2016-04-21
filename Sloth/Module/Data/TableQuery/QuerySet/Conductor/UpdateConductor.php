@@ -136,12 +136,13 @@ class UpdateConductor extends Base\AbstractConductor
 			$query = $queryWrapper->getQuery();
 			if ($query instanceof Update || $query instanceof Insert) {
 				$queryData = $query->getData();
+				$numRows = $queryData->numRows();
 				$targetLinkData = $linkData[$targetTable->getAlias()];
 
 				foreach ($targetLinkData as $fieldAlias => $values) {
 					$field = $targetTable->fields->getByAlias($fieldAlias);
 					foreach ($values as $rowIndex => $value) {
-						if ($queryData->rowExists($rowIndex)) {
+						if ($rowIndex <= $numRows) {
 							$queryField = $query->getTable()->field($field->name);
 							$queryValue = $this->database->value()->guess($value);
 
