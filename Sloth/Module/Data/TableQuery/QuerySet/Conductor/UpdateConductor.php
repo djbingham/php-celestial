@@ -130,7 +130,6 @@ class UpdateConductor extends Base\AbstractConductor
 	private function applyLinkDataToSingleQuery(array $linkData, SingleQueryWrapperInterface $queryWrapper)
 	{
 		$targetTable = $queryWrapper->getTable();
-		$targetData = $queryWrapper->getData();
 
 		if (array_key_exists($targetTable->getAlias(), $linkData)) {
 			/** @var Update $query */
@@ -142,15 +141,16 @@ class UpdateConductor extends Base\AbstractConductor
 				foreach ($targetLinkData as $fieldAlias => $values) {
 					$field = $targetTable->fields->getByAlias($fieldAlias);
 					foreach ($values as $rowIndex => $value) {
-						$queryField = $query->getTable()->field($field->name);
-						$queryValue = $this->database->value()->guess($value);
+						if ($queryData->rowExists($rowIndex)) {
+							$queryField = $query->getTable()->field($field->name);
+							$queryValue = $this->database->value()->guess($value);
 
-						$queryData
-							->beginRow($rowIndex)
-							->set($queryField, $queryValue)
-							->endRow();
+							$queryData
+								->beginRow($rowIndex)
+								->set($queryField, $queryValue)
+								->endRow();
+						}
 					}
-					$queryWrapper->setData($targetData);
 				}
 
 				$query->data($queryData);
