@@ -2,6 +2,7 @@
 namespace Sloth\Module\Data\TableQuery\QuerySet\Base;
 
 use Sloth\Module\Data\Table\Face\TableInterface;
+use Sloth\Module\Data\TableQuery\QuerySet\Face\MultiQueryWrapperInterface;
 use SlothMySql\DatabaseWrapper;
 
 abstract class AbstractComposer
@@ -26,6 +27,9 @@ abstract class AbstractComposer
 	 */
 	protected $data = array();
 
+	/**
+	 * @return MultiQueryWrapperInterface
+	 */
 	abstract public function compose();
 
 	public function setDatabase(DatabaseWrapper $database)

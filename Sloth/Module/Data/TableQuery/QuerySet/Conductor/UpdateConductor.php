@@ -40,6 +40,7 @@ class UpdateConductor extends Base\AbstractConductor
 		} elseif ($queryWrapper instanceof MultiQueryWrapperInterface) {
 			$this->executeQuerySet($queryWrapper);
 		}
+
 		$childLinks = $queryWrapper->getChildLinks();
 		if ($childLinks !== null) {
 			/** @var QueryLinkInterface $childLink */
@@ -52,6 +53,7 @@ class UpdateConductor extends Base\AbstractConductor
 
 	private function executeQuerySet(MultiQueryWrapperInterface $multiQueryWrapper)
 	{
+		/** @var QueryWrapperInterface $queryWrapper */
 		foreach ($multiQueryWrapper as $queryWrapper) {
 			$this->executeQueryWithLinks($queryWrapper);
 		}
@@ -73,7 +75,9 @@ class UpdateConductor extends Base\AbstractConductor
 			}
 		}
 
-		$this->database->execute($query);
+		if ($query !== null) {
+			$this->database->execute($query);
+		}
 
 		$updatedData = array();
 		if ($query instanceof Insert) {

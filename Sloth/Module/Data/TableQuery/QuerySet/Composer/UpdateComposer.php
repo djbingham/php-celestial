@@ -109,6 +109,11 @@ class UpdateComposer extends Base\AbstractComposer
 		$queryWrapper = new SingleQueryWrapper();
 		$childLinks = new QueryLinkList();
 
+		$querySet->push($queryWrapper);
+		$queryWrapper
+			->setTable($tableDefinition)
+			->setChildLinks($childLinks);
+
 		$tableData = $this->extractTableData($tableDefinition, $data);
 
 		if (!empty($tableData)) {
@@ -116,110 +121,106 @@ class UpdateComposer extends Base\AbstractComposer
 			$query = $this->buildQueryForTable($tableDefinition, $tableData, $tableFilters);
 
 			$queryWrapper
-				->setTable($tableDefinition)
 				->setQuery($query)
-				->setChildLinks($childLinks)
 				->setData($tableData)
 				->setFilters($tableFilters);
 
 			if ($parentLink instanceof QueryLinkInterface && $parentLink->getJoinDefinition() !== null) {
 				$queryWrapper->setParentLink($parentLink);
 			}
+		}
 
-			$querySet->push($queryWrapper);
+		/** @var JoinInterface $join */
+		foreach ($tableDefinition->links as $join) {
+			if ($join->onUpdate === JoinInterface::ACTION_IGNORE) {
+				continue;
+			}
 
-			/** @var JoinInterface $join */
-			foreach ($tableDefinition->links as $join) {
-				if ($join->onUpdate === JoinInterface::ACTION_IGNORE) {
-					continue;
-				}
+			$childData = array();
+			$childFilters = array();
 
-				$childData = array();
-				$childFilters = array();
+			if (array_key_exists($join->name, $data)) {
+				$childData = $data[$join->name];
+			}
+			if (array_key_exists($join->name, $filters)) {
+				$childFilters = $filters[$join->name];
+			}
 
-				if (array_key_exists($join->name, $data)) {
-					$childData = $data[$join->name];
-				}
-				if (array_key_exists($join->name, $filters)) {
-					$childFilters = $filters[$join->name];
-				}
+			if ($join->onUpdate === JoinInterface::ACTION_REJECT) {
+				throw new InvalidRequestException();
+			}
 
-				if ($join->onUpdate === JoinInterface::ACTION_REJECT) {
-					throw new InvalidRequestException();
-				}
+			$queryLink = new QueryLink();
+			$queryLink->setParentQueryWrapper($queryWrapper)
+				->setJoinDefinition($join);
 
-				$queryLink = new QueryLink();
-				$queryLink->setParentQueryWrapper($queryWrapper)
-					->setJoinDefinition($join);
-
-				switch ($join->type) {
-					case JoinInterface::ONE_TO_ONE:
-					default:
-						if ($join->onUpdate === JoinInterface::ACTION_UPDATE) {
-							$childQuerySet = $this->buildQueriesForTableAndDescendants($join->getChildTable(), $childData, $childFilters);
-							if ($childQuerySet->length() > 0) {
-								$queryLink->setChildQueryWrapper($childQuerySet->getByIndex(0));
-							}
-						} else {
-							throw new InvalidRequestException('Invalid update action for *-to-one join: ' . $join->onUpdate);
+			switch ($join->type) {
+				case JoinInterface::ONE_TO_ONE:
+				default:
+					if ($join->onUpdate === JoinInterface::ACTION_UPDATE) {
+						$childQuerySet = $this->buildQueriesForTableAndDescendants($join->getChildTable(), $childData, $childFilters);
+						if ($childQuerySet->length() > 0) {
+							$queryLink->setChildQueryWrapper($childQuerySet->getByIndex(0));
 						}
-						break;
-					case JoinInterface::MANY_TO_ONE:
-						if ($join->onUpdate === JoinInterface::ACTION_UPDATE) {
-							$childQuerySet = $this->buildQueriesForTableAndDescendants($join->getChildTable(), $childData, $childFilters);
-							if ($childQuerySet->length() > 0) {
-								$queryLink->setChildQueryWrapper($childQuerySet->getByIndex(0));
-							}
-						} elseif (!in_array($join->onUpdate, array(JoinInterface::ACTION_ASSOCIATE, JoinInterface::ACTION_IGNORE))) {
-							throw new InvalidRequestException('Invalid update action for *-to-one join: ' . $join->onUpdate);
+					} else {
+						throw new InvalidRequestException('Invalid update action for one-to-one join: ' . $join->onUpdate);
+					}
+					break;
+				case JoinInterface::MANY_TO_ONE:
+					if ($join->onUpdate === JoinInterface::ACTION_UPDATE) {
+						$childQuerySet = $this->buildQueriesForTableAndDescendants($join->getChildTable(), $childData, $childFilters);
+						if ($childQuerySet->length() > 0) {
+							$queryLink->setChildQueryWrapper($childQuerySet->getByIndex(0));
 						}
-						break;
-					case JoinInterface::ONE_TO_MANY:
-						if ($join->onUpdate === JoinInterface::ACTION_UPDATE) {
-							$childQuerySet = new MultiQueryWrapper();
-							foreach ($childData as $rowIndex => $childRow) {
-								$linkedFields = $join->getLinkedFields();
+					} elseif (!in_array($join->onUpdate, array(JoinInterface::ACTION_ASSOCIATE, JoinInterface::ACTION_IGNORE))) {
+						throw new InvalidRequestException('Invalid update action for many-to-one join: ' . $join->onUpdate);
+					}
+					break;
+				case JoinInterface::ONE_TO_MANY:
+					if ($join->onUpdate === JoinInterface::ACTION_UPDATE) {
+						$childQuerySet = new MultiQueryWrapper();
+						foreach ($childData as $rowIndex => $childRow) {
+							$linkedFields = $join->getLinkedFields();
 
-								/** @var FieldInterface $parentField */
-								$parentField = $linkedFields['parent'];
+							/** @var FieldInterface $parentField */
+							$parentField = $linkedFields['parent'];
 
-								/** @var FieldInterface $childField */
-								$childField = $linkedFields['child'];
+							/** @var FieldInterface $childField */
+							$childField = $linkedFields['child'];
 
-								$childRow[$childField->name] = $data[$parentField->name];
+							$childRow[$childField->name] = $data[$parentField->name];
 
-								$childRowFilters = array();
-								if (array_key_exists($rowIndex, $childFilters)) {
-									$childRowFilters = $childFilters[$rowIndex];
-								}
-								$childRowQueries = $this->buildQueriesForTableAndDescendants($join->getChildTable(), $childRow, $childRowFilters);
-								if ($childRowQueries->length() > 0) {
-									$childQuerySet->push($childRowQueries);
-								}
+							$childRowFilters = array();
+							if (array_key_exists($rowIndex, $childFilters)) {
+								$childRowFilters = $childFilters[$rowIndex];
 							}
-							if ($childQuerySet->length() > 0) {
-								$queryLink->setChildQueryWrapper($childQuerySet);
+							$childRowQueries = $this->buildQueriesForTableAndDescendants($join->getChildTable(), $childRow, $childRowFilters);
+							if ($childRowQueries->length() > 0) {
+								$childQuerySet->push($childRowQueries);
 							}
-						} else {
-							throw new InvalidRequestException('Invalid update action for one-to-one join: ' . $join->onUpdate);
 						}
-						break;
-
-					case JoinInterface::MANY_TO_MANY:
-						if ($join->onUpdate === JoinInterface::ACTION_ASSOCIATE) {
-							$childQuerySet = $this->buildQueriesForLinkTable($join, $data, $filters);
-							if ($childQuerySet->length() > 0) {
-								$queryLink->setChildQueryWrapper($childQuerySet);
-							}
-						} else {
-							throw new InvalidRequestException('Invalid update action for many-to-many join: ' . $join->onUpdate);
+						if ($childQuerySet->length() > 0) {
+							$queryLink->setChildQueryWrapper($childQuerySet);
 						}
-						break;
-				}
+					} else {
+						throw new InvalidRequestException('Invalid update action for one-to-one join: ' . $join->onUpdate);
+					}
+					break;
 
-				if ($queryLink->getChildQueryWrapper() !== null) {
-					$childLinks->push($queryLink);
-				}
+				case JoinInterface::MANY_TO_MANY:
+					if ($join->onUpdate === JoinInterface::ACTION_ASSOCIATE) {
+						$childQuerySet = $this->buildQueriesForLinkTable($join, $data, $filters);
+						if ($childQuerySet->length() > 0) {
+							$queryLink->setChildQueryWrapper($childQuerySet);
+						}
+					} else {
+						throw new InvalidRequestException('Invalid update action for many-to-many join: ' . $join->onUpdate);
+					}
+					break;
+			}
+
+			if ($queryLink->getChildQueryWrapper() !== null) {
+				$childLinks->push($queryLink);
 			}
 		}
 
@@ -379,7 +380,7 @@ class UpdateComposer extends Base\AbstractComposer
 				$deleteQueryWrapper = new SingleQueryWrapper();
 				$deleteQueryWrapper->setQuery($deleteQuery)
 					->setTable($linkTable)
-					->setData($parentFilters)
+					->setData($targetLinkData)
 					->setChildLinks(new QueryLinkList());
 
 				$insertQueryWrapper = new SingleQueryWrapper();
