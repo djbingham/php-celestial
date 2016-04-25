@@ -116,7 +116,13 @@ class Config extends BaseConfig
 				'factoryClass' => 'Sloth\\Module\\Render\\Factory',
 				'options' => array(
 					'viewDirectory' => $this->rootDirectory() . '/Route/View',
-					'viewManifestDirectory' => $this->rootDirectory() . '/Route/Manifest'
+					'viewManifestDirectory' => $this->rootDirectory() . '/Route/Manifest',
+					'engines' => array(
+						'handlebars' => 'Sloth\\Module\\Render\\Engine\\LightNCandy',
+						'json' => 'Sloth\\Module\\Render\\Engine\\Json',
+						'mustache' => 'Sloth\\Module\\Render\\Engine\\Mustache',
+						'php' => 'Sloth\\Module\\Render\\Engine\\Php'
+					)
 				)
 			),
 			'request' => array(

@@ -58,7 +58,9 @@ class Factory extends AbstractModuleFactory
 			$engines = $this->options['engines'];
 		} else {
 			$engines = array(
+				'handlebars' => 'Sloth\\Module\\Render\\Engine\\LightNCandy',
 				'json' => 'Sloth\\Module\\Render\\Engine\\Json',
+				'mustache' => 'Sloth\\Module\\Render\\Engine\\Mustache',
 				'php' => 'Sloth\\Module\\Render\\Engine\\Php'
 			);
 		}
@@ -92,18 +94,20 @@ class Factory extends AbstractModuleFactory
 		if (array_key_exists('viewManifestDirectory', $this->options) && !is_dir($this->options['viewManifestDirectory'])) {
 			throw new InvalidArgumentException('Invalid view manifest directory given in options for Render module.');
 		}
-		if (array_key_exists('engines', $this->options) && !is_array($this->options['engines'])) {
-			throw new InvalidArgumentException('Invalid engines option given to Render module. Must be an array.');
-		}
+		if (array_key_exists('engines', $this->options)) {
+			if (!is_array($this->options['engines'])) {
+				throw new InvalidArgumentException('Invalid engines option given to Render module. Must be an array.');
+			}
 
-		foreach ($this->options['engines'] as $engineName => $engineClass) {
-			if (!is_a($engineClass, 'Sloth\\Module\\Render\\Face\\RenderEngineInterface', true)) {
-				throw new InvalidArgumentException(
-					sprintf(
-						'Invalid class specified for render engine `%s` - must implement RenderEngineInterface.',
-						$engineName
-					)
-				);
+			foreach ($this->options['engines'] as $engineName => $engineClass) {
+				if (!is_a($engineClass, 'Sloth\\Module\\Render\\Face\\RenderEngineInterface', true)) {
+					throw new InvalidArgumentException(
+						sprintf(
+							'Invalid class specified for render engine `%s` - must implement RenderEngineInterface.',
+							$engineName
+						)
+					);
+				}
 			}
 		}
 	}
