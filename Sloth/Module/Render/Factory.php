@@ -28,21 +28,46 @@ class Factory extends AbstractModuleFactory
 			$this->setCached('viewFactory', new ViewFactory(array(
 				'viewManifestDirectory' => $this->options['viewManifestDirectory'],
 				'viewDirectory' => $this->options['viewDirectory'],
-				'renderEngineFactory' => $this->getRenderEngineFactory(),
+				'engineManager' => $this->getEngineManager(),
 				'dataProviderModule' => $this->getDataProviderModule()
 			)));
 		}
 		return $this->getCached('viewFactory');
 	}
 
-	protected function getRenderEngineFactory()
+	protected function getEngineManager()
 	{
-		if (!$this->isCached('renderEngineFactory')) {
-			$this->setCached('renderEngineFactory', new RenderEngineFactory(array(
+		if (!$this->isCached('engineManager')) {
+			$engineManager = new EngineManager();
 
-			)));
+			$engines = $this->buildEngines();
+			foreach ($engines as $engineName => $engine) {
+				$engineManager->registerEngine($engineName, $engine);
+			}
+
+			$this->setCached('engineManager', $engineManager);
 		}
-		return $this->getCached('renderEngineFactory');
+		return $this->getCached('engineManager');
+	}
+
+	protected function buildEngines()
+	{
+		$instances = array();
+
+		if (array_key_exists('engines', $this->options)) {
+			$engines = $this->options['engines'];
+		} else {
+			$engines = array(
+				'json' => 'Sloth\\Module\\Render\\Engine\\Json',
+				'php' => 'Sloth\\Module\\Render\\Engine\\Php'
+			);
+		}
+
+		foreach ($engines as $engineName => $engineClass) {
+			$instances[$engineName] = new $engineClass();
+		}
+
+		return $instances;
 	}
 
 	protected function getDataProviderModule()
@@ -61,11 +86,25 @@ class Factory extends AbstractModuleFactory
 			);
 		}
 
-		if (!empty($this->options['viewManifestDirectory']) && !is_dir($this->options['viewManifestDirectory'])) {
-			throw new InvalidArgumentException('Invalid view manifest directory given in options for Render module');
-		}
 		if (!is_dir($this->options['viewDirectory'])) {
-			throw new InvalidArgumentException('Invalid view directory given in options for Render module');
+			throw new InvalidArgumentException('Invalid view directory given in options for Render module.');
+		}
+		if (array_key_exists('viewManifestDirectory', $this->options) && !is_dir($this->options['viewManifestDirectory'])) {
+			throw new InvalidArgumentException('Invalid view manifest directory given in options for Render module.');
+		}
+		if (array_key_exists('engines', $this->options) && !is_array($this->options['engines'])) {
+			throw new InvalidArgumentException('Invalid engines option given to Render module. Must be an array.');
+		}
+
+		foreach ($this->options['engines'] as $engineName => $engineClass) {
+			if (!is_a($engineClass, 'Sloth\\Module\\Render\\Face\\RenderEngineInterface', true)) {
+				throw new InvalidArgumentException(
+					sprintf(
+						'Invalid class specified for render engine `%s` - must implement RenderEngineInterface.',
+						$engineName
+					)
+				);
+			}
 		}
 	}
 }

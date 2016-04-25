@@ -12,9 +12,9 @@ class ViewFactory implements ViewFactoryInterface
 	use InternalCacheTrait;
 
 	/**
-	 * @var RenderEngineFactory
+	 * @var EngineManager
 	 */
-	private $renderEngineFactory;
+	private $engineManager;
 
 	/**
 	 * @var DataProviderModule
@@ -34,7 +34,7 @@ class ViewFactory implements ViewFactoryInterface
 	public function __construct(array $dependencies)
 	{
 		$this->validateDependencies($dependencies);
-		$this->renderEngineFactory = $dependencies['renderEngineFactory'];
+		$this->engineManager = $dependencies['engineManager'];
 		$this->dataProviderModule = $dependencies['dataProviderModule'];
 		$this->viewManifestDirectory = $dependencies['viewManifestDirectory'];
 		$this->viewDirectory = $dependencies['viewDirectory'];
@@ -87,7 +87,7 @@ class ViewFactory implements ViewFactoryInterface
 		$view = new \Sloth\Module\Render\View();
 		$view->name = $viewName;
 		$view->path = $this->viewDirectory . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $viewManifest['path']);
-		$view->engine = $this->renderEngineFactory->getByName($viewManifest['engine']);
+		$view->engine = $this->engineManager->getByName($viewManifest['engine']);
 		$view->dataProviders = $this->buildDataProviders($viewManifest['dataProviders']);
 
 		return $view;
@@ -100,7 +100,7 @@ class ViewFactory implements ViewFactoryInterface
 		$view = new \Sloth\Module\Render\View();
 		$view->name = $viewManifest['name'];
 		$view->path = $this->viewDirectory . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $viewManifest['path']);
-		$view->engine = $this->renderEngineFactory->getByName($viewManifest['engine']);
+		$view->engine = $this->engineManager->getByName($viewManifest['engine']);
 		$view->dataProviders = $this->buildDataProviders($viewManifest['dataProviders']);
 
 		return $view;
@@ -108,14 +108,14 @@ class ViewFactory implements ViewFactoryInterface
 
 	private function validateDependencies(array $dependencies)
 	{
-		$required = array('renderEngineFactory', 'dataProviderModule', 'viewDirectory');
+		$required = array('engineManager', 'dataProviderModule', 'viewDirectory');
 		$missing = array_diff($required, array_keys($dependencies));
 		if (!empty($missing)) {
 			throw new InvalidArgumentException(
 				'Missing required dependencies for ViewFactory in Render module: ' . implode(', ', $missing)
 			);
 		}
-		if (!($dependencies['renderEngineFactory'] instanceof RenderEngineFactory)) {
+		if (!($dependencies['engineManager'] instanceof EngineManager)) {
 			throw new InvalidArgumentException('Invalid render engine factory given in dependencies for ViewFactory');
 		}
 		if (!($dependencies['dataProviderModule'] instanceof DataProviderModule)) {
