@@ -1,7 +1,6 @@
 {
 	"name": "favicon/sloth",
 	"description": "PHP Framework",
-	"version": "0.1",
 	"minimum-stability": "stable",
 	"license": "proprietary",
 	"authors": [
@@ -20,6 +19,7 @@
 		"favicon/autoload": "dev-master",
 		"favicon/slothmysql": "dev-master",
 		"mustache/mustache": "v2.7.0",
-		"phpunit/phpunit": "4.6.4"
+		"phpunit/phpunit": "4.6.4",
+		"zordius/lightncandy": "dev-master"
 	}
 }
