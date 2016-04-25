@@ -1,0 +1,13 @@
+<h2>Fake Form</h2>
+
+<p>This form does not actually submit to anywhere, but demonstrates building an option list with a pre-selected option.</p>
+
+<form style="margin: 50px;">
+	<select>
+		{{#each data.options}}
+			<option value="{{id}}" {{isEqual id ../data.selected "selected" ""}}>{{id}}: {{name}}</option>
+		{{/each}}
+	</select>
+
+	<p>Selected: {{data.selected}}</p>
+</form>
