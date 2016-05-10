@@ -82,7 +82,8 @@ class DataParser
 	public function formatResourceData(array $rawData, TableInterface $tableDefinition, array $filters = array())
 	{
 		if (!empty($rawData)) {
-			$resourceData = $this->extractResourceData($tableDefinition, $rawData);
+			$resourceData = $this->formatDataForTableAndDescendants($rawData, $tableDefinition, $tableDefinition);
+			$resourceData = $this->stripLinkFieldsAndTableNamesFromFormattedData($resourceData, $tableDefinition);
 			$resourceData = $this->filterResourceData($resourceData, $tableDefinition, $filters);
 		} else {
 			$resourceData = array();
@@ -90,94 +91,224 @@ class DataParser
 		return $resourceData;
 	}
 
-	private function extractResourceData(TableInterface $tableDefinition, array $rawData, array $linkFilters = array())
+	private function formatDataForTableAndDescendants(array $rawData, TableInterface $table, TableInterface $primaryTable, JoinInterface $parentJoin = null)
 	{
-		$tableAlias = $tableDefinition->getAlias();
-		$fieldData = array();
-		if (array_key_exists($tableAlias, $rawData)) {
-			foreach ($rawData[$tableAlias] as $rowIndex => $rowData) {
-				/** @var FieldInterface $field */
-				if ($this->rowMatchesExpectedData($rowData, $linkFilters)) {
-					foreach ($tableDefinition->fields as $field) {
-						$fieldAlias = $field->getAlias();
-						if (array_key_exists($fieldAlias, $rowData)) {
-							$fieldData[$rowIndex][$field->name] = $rowData[$fieldAlias];
-						}
+		$formattedData = array();
+		$tableAlias = $table->getAlias();
+		$primaryTableData = $this->getTableData($table, $primaryTable, $rawData);
+
+		if (!empty($primaryTableData)) {
+			if ($parentJoin === null) {
+				$tableAliasRegex = sprintf('/^%s\./', $tableAlias);
+			} else {
+				$tablesToInclude = array($tableAlias);
+				foreach ($parentJoin->intermediaryTables as $intermediaryTable) {
+					$tablesToInclude[] = $intermediaryTable->getAlias();
+				}
+				$tableAliasRegex = sprintf('/^(%s)\./', implode('|', $tablesToInclude));
+			}
+
+			foreach ($primaryTableData as $dataRow) {
+				$formattedRow = array();
+
+				foreach ($dataRow as $fieldAlias => $value) {
+					if (preg_match($tableAliasRegex, $fieldAlias)) {
+						$formattedRow[$fieldAlias] = $value;
 					}
 				}
-				/** @var JoinInterface $link */
-				foreach ($tableDefinition->links as $link) {
-					if (in_array($link->type, array(JoinInterface::ONE_TO_ONE, JoinInterface::MANY_TO_ONE))) {
-						foreach ($link->getChildTable()->fields as $field) {
-							$fieldAlias = $field->getAlias();
-							if (array_key_exists($fieldAlias, $rowData)) {
-								$fieldData[$rowIndex][$link->name][$field->name] = $rowData[$fieldAlias];
-							}
-						}
-					} else {
-						$childLinkFilters = $this->getLinkData($link, $rowData);
-						if ($this->rowMatchesExpectedData($rowData, $linkFilters)) {
-							$childData = $this->extractResourceData($link->getChildTable(), $rawData, $childLinkFilters);
 
-							$fieldData[$rowIndex][$link->name] = array();
-							foreach ($childData as $childRow) {
-								$fieldData[$rowIndex][$link->name][] = $childRow;
-							}
-						}
-					}
-				}
+				$formattedData[] = $formattedRow;
 			}
 		}
-		return $fieldData;
-	}
 
-	private function rowMatchesExpectedData(array $rowData, array $expectedValues)
-	{
-		$matches = 0;
-		foreach ($expectedValues as $childFieldAlias => $parentValue) {
-			if ($rowData[$childFieldAlias] === $parentValue) {
-				$matches++;
+		/** @var JoinInterface $join */
+		foreach ($table->links as $join) {
+			$childTable = $join->getChildTable();
+			$childQueryData = $this->getTableData($childTable, $primaryTable, $rawData);
+
+			foreach ($formattedData as &$formattedRow) {
+				$formattedRow[$join->name] = array();
 			}
-		}
-		return $matches === count($expectedValues);
-	}
 
-	private function getLinkData(JoinInterface $link, array $parentRowData)
-	{
-		$linkData = array();
-		/** @var ConstraintInterface $constraint */
-		foreach ($link->getConstraints() as $constraint) {
-			if ($constraint->subJoins !== null && $constraint->subJoins->length() > 0) {
-				/** @var SubJoinInterface $subJoin */
-				foreach ($constraint->subJoins as $subJoin) {
-					$parentAlias = $subJoin->parentField->getAlias();
-					$childAlias = $subJoin->childField->getAlias();
-					if (array_key_exists($parentAlias, $parentRowData)) {
-						if ($subJoin->parentTable->getAlias() === $link->parentTable->getAlias()) {
-							$linkData[$childAlias] = $parentRowData[$parentAlias];
-						}
+			if ($join->type === JoinInterface::MANY_TO_MANY) {
+				$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $table, $join);
+
+				foreach ($descendantData as $descendantRow) {
+					$linkedParentRowIndices = $this->getIndicesOfLinkedParentRows($descendantRow, $formattedData, $join);
+
+					foreach ($linkedParentRowIndices as $parentRowIndex) {
+						$formattedData[$parentRowIndex][$join->name][] = $descendantRow;
 					}
 				}
 			} else {
-				$parentAlias = $constraint->parentField->getAlias();
-				$childAlias = $constraint->childField->getAlias();
-				if (array_key_exists($parentAlias, $parentRowData)) {
-					$linkData[$childAlias] = $parentRowData[$parentAlias];
+				$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $primaryTable);
+
+				foreach ($childQueryData as $childRow) {
+					$parentRowIndices = $this->getIndicesOfLinkedParentRows($childRow, $primaryTableData, $join);
+
+					if (count($parentRowIndices) > 0) {
+						$parentRowIndex = $parentRowIndices[0];
+
+						foreach ($descendantData as $descendantRow) {
+							$descendantRowMatchesChildRow = true;
+
+							foreach ($childRow as $childFieldAlias => $childFieldValue) {
+								if ($descendantRow[$childFieldAlias] !== $childFieldValue) {
+									$descendantRowMatchesChildRow = false;
+								}
+							}
+
+							if (
+								$descendantRowMatchesChildRow &&
+								!in_array($descendantRow, $formattedData[$parentRowIndex][$join->name])
+							) {
+								if ($join->type === JoinInterface::ONE_TO_MANY) {
+									$formattedData[$parentRowIndex][$join->name][] = $descendantRow;
+								} else {
+									$formattedData[$parentRowIndex][$join->name] = $descendantRow;
+									break;
+								}
+							}
+						}
+					}
 				}
 			}
 		}
-		return $linkData;
+
+		return $formattedData;
+	}
+
+	private function stripLinkFieldsAndTableNamesFromFormattedData(array $formattedData, TableInterface $primaryTable)
+	{
+		$strippedData = array();
+
+
+		foreach ($formattedData as $rowIndex => $formattedRow) {
+
+			$strippedData[] = $this->stripLinkFieldsAndTableNamesFromFormattedDataRow($formattedRow, $primaryTable);
+		}
+
+		return $strippedData;
+	}
+
+	private function stripLinkFieldsAndTableNamesFromFormattedDataRow(array $formattedRow, TableInterface $primaryTable)
+	{
+		$strippedRow = array();
+
+		/** @var FieldInterface $field */
+		foreach ($primaryTable->fields as $field) {
+			$fieldAlias = $field->getAlias();
+
+			if (array_key_exists($fieldAlias, $formattedRow)) {
+				$fieldName = preg_replace('/^.+\./', '', $fieldAlias);
+				$strippedRow[$fieldName] = $formattedRow[$fieldAlias];
+			}
+		}
+
+		/** @var JoinInterface $join */
+		foreach ($primaryTable->links as $join) {
+			if (array_key_exists($join->name, $formattedRow)) {
+				$childTable = $join->getChildTable();
+				$joinData = $formattedRow[$join->name];
+
+				if (in_array($join->type, array(JoinInterface::ONE_TO_MANY, JoinInterface::MANY_TO_MANY))) {
+					$strippedRow[$join->name] = $this->stripLinkFieldsAndTableNamesFromFormattedData($joinData, $childTable);
+				} else {
+					$strippedRow[$join->name] = $this->stripLinkFieldsAndTableNamesFromFormattedDataRow($joinData, $childTable);
+				}
+			}
+		}
+
+		return $strippedRow;
+	}
+
+	private function getTableData(TableInterface $targetTable, TableInterface $primaryTable, array $rawData)
+	{
+		$primaryTableAlias = $primaryTable->getAlias();
+		$targetTableAlias = $targetTable->getAlias();
+		$targetTableAliasRegex = sprintf('/^%s\./', $targetTableAlias);
+		$targetData = array();
+
+		if (array_key_exists($targetTableAlias, $rawData)) {
+			foreach ($rawData[$targetTableAlias] as $targetTableRow) {
+				$targetData[] = $targetTableRow;
+			}
+		} elseif (array_key_exists($primaryTableAlias, $rawData)) {
+			foreach ($rawData[$primaryTableAlias] as $parentRowIndex => $parentRow) {
+				$childRow = array();
+
+				foreach ($parentRow as $parentFieldAlias => $parentValue) {
+					if (preg_match($targetTableAliasRegex, $parentFieldAlias, $matches)) {
+						$childRow[$parentFieldAlias] = $parentValue;
+					}
+				}
+				$targetData[] = $childRow;
+			}
+		}
+
+		return $targetData;
+	}
+
+	private function getIndicesOfLinkedParentRows(array $childRow, array $parentData, JoinInterface $join)
+	{
+		$linkedParentRowIndices = array();
+
+		/** @var ConstraintInterface $constraint */
+		foreach ($join->getConstraints() as $constraint) {
+			$parentFieldAlias = $constraint->parentField->getAlias();
+			$childFieldAlias = $constraint->childField->getAlias();
+
+			if (array_key_exists($childFieldAlias, $childRow)) {
+				$childValue = $childRow[$childFieldAlias];
+				$parentValue = null;
+
+				foreach ($parentData as $parentRowIndex => $parentRow) {
+					$isLinked = false;
+
+					if ($constraint->subJoins === null || $constraint->subJoins->length() === 0) {
+						$parentValue = $parentRow[$parentFieldAlias];
+
+						if ($parentValue === $childValue) {
+							$isLinked = true;
+						}
+					} else {
+						/** @var SubJoinInterface $subJoin */
+						foreach ($constraint->subJoins as $subJoin) {
+							if ($subJoin->parentTable === $join->parentTable) {
+								$subParentFieldAlias = $subJoin->parentField->getAlias();
+								$subChildFieldAlias = $subJoin->childField->getAlias();
+
+								if (
+									array_key_exists($subChildFieldAlias, $childRow) &&
+									$childRow[$subChildFieldAlias] === $parentRow[$subParentFieldAlias]
+								) {
+									$isLinked = true;
+								}
+							}
+						}
+					}
+
+					if ($isLinked) {
+						$linkedParentRowIndices[] = $parentRowIndex;
+					}
+				}
+			}
+		}
+
+		return array_unique($linkedParentRowIndices);
 	}
 
 	private function filterResourceData(array $resourceData, TableInterface $tableDefinition, array $filters)
 	{
 		$filteredData = array();
+
 		while (!empty($resourceData)) {
 			$resourceRow = array_shift($resourceData);
 			if ($this->resourceRowContainsRequiredAttributes($resourceRow, $tableDefinition, $filters)) {
 				$filteredData[] = $resourceRow;
 			}
 		}
+
 		return $filteredData;
 	}
 
@@ -195,6 +326,7 @@ class DataParser
 	{
 		$filterCount = 0;
 		$matchedFilterCount = 0;
+
 		/** @var JoinInterface $link */
 		foreach ($tableDefinition->links as $link) {
 			if (array_key_exists($link->name, $filters)) {
@@ -213,18 +345,21 @@ class DataParser
 				}
 			}
 		}
+
 		return $filterCount === $matchedFilterCount;
 	}
 
 	private function filterResourceSubRowsByRequiredAttributes(array $rows, TableInterface $tableDefinition, array $filters)
 	{
 		$filteredRows = array();
+
 		while (!empty($rows)) {
 			$row = array_shift($rows);
 			if ($this->resourceRowContainsRequiredAttributes($row, $tableDefinition, $filters)) {
 				$filteredRows[] = $row;
 			}
 		}
+
 		return $filteredRows;
 	}
 }

@@ -73,12 +73,16 @@ class DataParserTest extends UnitTest
 		$resource->links->removeByPropertyValue('name', 'friends');
 		$resource->links->removeByPropertyValue('name', 'posts');
 
+		$addressTable = $resource->links->getByName('address')->getChildTable();
+		$addressTable->links->removeByPropertyValue('name', 'landlord');
+
 		$rawData = array(
 			'User' => array(
 				array(
 					'User.id' => 1,
 					'User.forename' => 'David',
 					'User.surname' => 'Bingham',
+					'User_address.userId' => 1,
 					'User_address.houseName' => 'Bingham House',
 					'User_address.postcode' => 'BI34 7AM',
 					'User_address.landlordId' => 3
@@ -87,6 +91,7 @@ class DataParserTest extends UnitTest
 					'User.id' => 3,
 					'User.forename' => 'Michael',
 					'User.surname' => 'Hughes',
+					'User_address.userId' => 3,
 					'User_address.houseName' => 'Hughes House',
 					'User_address.postcode' => 'HU56 3PM',
 					'User_address.landlordId' => 4
@@ -99,6 +104,7 @@ class DataParserTest extends UnitTest
 				'forename' => 'David',
 				'surname' => 'Bingham',
 				'address' => array(
+					'userId' => 1,
 					'houseName' => 'Bingham House',
 					'postcode' => 'BI34 7AM',
 					'landlordId' => 3
@@ -109,6 +115,7 @@ class DataParserTest extends UnitTest
 				'forename' => 'Michael',
 				'surname' => 'Hughes',
 				'address' => array(
+					'userId' => 3,
 					'houseName' => 'Hughes House',
 					'postcode' => 'HU56 3PM',
 					'landlordId' => 4
@@ -129,6 +136,14 @@ class DataParserTest extends UnitTest
 		$resource = $resourceDefinitionBuilder->buildFromName('User');
 		$resource->links->removeByPropertyValue('name', 'address');
 		$resource->links->removeByPropertyValue('name', 'friends');
+
+		$postTable = $resource->links->getByName('posts')->getChildTable();
+		$postTable->links->removeByPropertyValue('name', 'author');
+
+		$commentsTable = $postTable->links->getByName('comments')->getChildTable();
+		$commentsTable->links->removeByPropertyValue('name', 'author');
+		$commentsTable->links->removeByPropertyValue('name', 'post');
+		$commentsTable->links->removeByPropertyValue('name', 'replies');
 
 		$rawData = array(
 			'User' => array(
@@ -625,12 +640,12 @@ class DataParserTest extends UnitTest
 					'User_friends_friends.forename' => 'Tamsin',
 					'User_friends_friends.surname' => 'Boatman'
 				),
-				// Michael is friends with Flic and Tamsin
+				// Michael is friends with Tamsin and Sam
 				array(
 					'User_friends_friendLink.friendId1' => 3,
-					'User_friends_friends.id' => 2,
-					'User_friends_friends.forename' => 'Flic',
-					'User_friends_friends.surname' => 'Bingham'
+					'User_friends_friends.id' => 4,
+					'User_friends_friends.forename' => 'Tamsin',
+					'User_friends_friends.surname' => 'Boatman'
 				),
 				array(
 					'User_friends_friendLink.friendId1' => 3,
@@ -686,9 +701,9 @@ class DataParserTest extends UnitTest
 						'surname' => 'Hughes',
 						'friends' => array(
 							array(
-								'id' => 2,
-								'forename' => 'Flic',
-								'surname' => 'Bingham'
+								'id' => 4,
+								'forename' => 'Tamsin',
+								'surname' => 'Boatman'
 							),
 							array(
 								'id' => 5,
@@ -738,9 +753,9 @@ class DataParserTest extends UnitTest
 						'surname' => 'Hughes',
 						'friends' => array(
 							array(
-								'id' => 2,
-								'forename' => 'Flic',
-								'surname' => 'Bingham'
+								'id' => 4,
+								'forename' => 'Tamsin',
+								'surname' => 'Boatman'
 							),
 							array(
 								'id' => 5,
