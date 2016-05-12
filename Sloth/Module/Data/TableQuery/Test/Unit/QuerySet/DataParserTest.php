@@ -23,7 +23,7 @@ class DataParserTest extends UnitTest
 		$this->assertSame($rawData, $parsedData);
 	}
 
-	public function testFormatResourceDataWithDataFromSingleResource()
+	public function testFormatResourceDataWithNoTableJoins()
 	{
 		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 
@@ -65,7 +65,7 @@ class DataParserTest extends UnitTest
 		$this->assertEquals($expectedParsedData, $parsedData);
 	}
 
-	public function testFormatResourceDataWithDataFromOneToOneJoinedResources()
+	public function testFormatResourceDataWithOneToOneJoin()
 	{
 		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 
@@ -129,7 +129,7 @@ class DataParserTest extends UnitTest
 		$this->assertEquals($expectedParsedData, $parsedData);
 	}
 
-	public function testFormatResourceDataWithDataFromOneToManyJoinedResources()
+	public function testFormatResourceDataWithOneToManyJoin()
 	{
 		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 
@@ -221,7 +221,7 @@ class DataParserTest extends UnitTest
 		$this->assertEquals($expectedParsedData, $parsedData);
 	}
 
-	public function testFormatResourceDataWithDataFromTwoManyToManyJoinedResources()
+	public function testFormatResourceDataWithManyToManyJoin()
 	{
 		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 
@@ -328,7 +328,7 @@ class DataParserTest extends UnitTest
 		$this->assertEquals($expectedParsedData, $parsedData);
 	}
 
-	public function testFormatResourceDataWithDataFromThreeManyToManyJoinedResources()
+	public function testFormatResourceDataWithChainedManyToManyToManyJoins()
 	{
 		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 
@@ -503,7 +503,164 @@ class DataParserTest extends UnitTest
 		$this->assertEquals($expectedParsedData, $parsedData);
 	}
 
-	public function testFormatResourceDataFiltersOutRowsWithNoRecordsInLinkedTables()
+	public function testFormatResourceDataWithChainedManyToOneToManyJoins()
+	{
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
+
+		$resource = $resourceDefinitionBuilder->buildFromName('Post');
+
+		$resource->links->removeByPropertyValue('name', 'comments');
+
+		$authorTable = $resource->links->getByName('author')->getChildTable();
+		$authorTable->links->removeByPropertyValue('name', 'address');
+		$authorTable->links->removeByPropertyValue('name', 'posts');
+
+		$authorFriendsTable = $authorTable->links->getByName('friends')->getChildTable();
+		$authorFriendsTable->links->removeByPropertyValue('name', 'friends');
+		$authorFriendsTable->links->removeByPropertyValue('name', 'address');
+		$authorFriendsTable->links->removeByPropertyValue('name', 'posts');
+
+		$rawData = array(
+			'Post' => array(
+				array(
+					'Post.id' => 1,
+					'Post.authorId' => 1,
+					'Post.content' => 'First post',
+					'Post_author.id' => 1,
+					'Post_author.forename' => 'David',
+					'Post_author.surname' => 'Bingham'
+				),
+				array(
+					'Post.id' => 2,
+					'Post.authorId' => 2,
+					'Post.content' => 'Second post',
+					'Post_author.id' => 2,
+					'Post_author.forename' => 'Flic',
+					'Post_author.surname' => 'Bingham'
+				),
+				array(
+					'Post.id' => 3,
+					'Post.authorId' => 1,
+					'Post.content' => 'Third post',
+					'Post_author.id' => 1,
+					'Post_author.forename' => 'David',
+					'Post_author.surname' => 'Bingham'
+				)
+			),
+			'Post_author_friends' => array(
+				array(
+					'Post_author_friendLink.friendId1' => 1,
+					'Post_author_friends.id' => 2,
+					'Post_author_friends.forename' => 'Flic',
+					'Post_author_friends.surname' => 'Bingham'
+				),
+				array(
+					'Post_author_friendLink.friendId1' => 1,
+					'Post_author_friends.id' => 3,
+					'Post_author_friends.forename' => 'Michael',
+					'Post_author_friends.surname' => 'Hughes'
+				),
+				array(
+					'Post_author_friendLink.friendId1' => 2,
+					'Post_author_friends.id' => 1,
+					'Post_author_friends.forename' => 'David',
+					'Post_author_friends.surname' => 'Bingham'
+				),
+				array(
+					'Post_author_friendLink.friendId1' => 2,
+					'Post_author_friends.id' => 3,
+					'Post_author_friends.forename' => 'Michael',
+					'Post_author_friends.surname' => 'Hughes'
+				),
+				array(
+					'Post_author_friendLink.friendId1' => 2,
+					'Post_author_friends.id' => 4,
+					'Post_author_friends.forename' => 'Tamsin',
+					'Post_author_friends.surname' => 'Boatman'
+				)
+			)
+		);
+		$expectedParsedData = array(
+			array(
+				'id' => 1,
+				'authorId' => 1,
+				'content' => 'First post',
+				'author' => array(
+					'id' => 1,
+					'forename' => 'David',
+					'surname' => 'Bingham',
+					'friends' => array(
+						array(
+							'id' => 2,
+							'forename' => 'Flic',
+							'surname' => 'Bingham'
+						),
+						array(
+							'id' => 3,
+							'forename' => 'Michael',
+							'surname' => 'Hughes'
+						)
+					)
+				)
+			),
+			array(
+				'id' => 2,
+				'authorId' => 2,
+				'content' => 'Second post',
+				'author' => array(
+					'id' => 2,
+					'forename' => 'Flic',
+					'surname' => 'Bingham',
+					'friends' => array(
+						array(
+							'id' => 1,
+							'forename' => 'David',
+							'surname' => 'Bingham'
+						),
+						array(
+							'id' => 3,
+							'forename' => 'Michael',
+							'surname' => 'Hughes'
+						),
+						array(
+							'id' => 4,
+							'forename' => 'Tamsin',
+							'surname' => 'Boatman'
+						)
+					)
+				)
+			),
+			array(
+				'id' => 3,
+				'authorId' => 1,
+				'content' => 'Third post',
+				'author' => array(
+					'id' => 1,
+					'forename' => 'David',
+					'surname' => 'Bingham',
+					'friends' => array(
+						array(
+							'id' => 2,
+							'forename' => 'Flic',
+							'surname' => 'Bingham'
+						),
+						array(
+							'id' => 3,
+							'forename' => 'Michael',
+							'surname' => 'Hughes'
+						)
+					)
+				)
+			)
+		);
+
+		$dataParser = new DataParser();
+		$parsedData = $dataParser->formatResourceData($rawData, $resource);
+
+		$this->assertEquals($expectedParsedData, $parsedData);
+	}
+
+	public function testFormatResourceDataFiltersOutRowsWithNoRecordsInJoinedTables()
 	{
 		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
 

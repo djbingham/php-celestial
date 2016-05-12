@@ -102,9 +102,13 @@ class DataParser
 				$tableAliasRegex = sprintf('/^%s\./', $tableAlias);
 			} else {
 				$tablesToInclude = array($tableAlias);
-				foreach ($parentJoin->intermediaryTables as $intermediaryTable) {
-					$tablesToInclude[] = $intermediaryTable->getAlias();
+
+				if ($parentJoin->intermediaryTables !== null) {
+					foreach ($parentJoin->intermediaryTables as $intermediaryTable) {
+						$tablesToInclude[] = $intermediaryTable->getAlias();
+					}
 				}
+
 				$tableAliasRegex = sprintf('/^(%s)\./', implode('|', $tablesToInclude));
 			}
 
@@ -124,13 +128,12 @@ class DataParser
 		/** @var JoinInterface $join */
 		foreach ($table->links as $join) {
 			$childTable = $join->getChildTable();
-			$childQueryData = $this->getTableData($childTable, $primaryTable, $rawData);
 
 			foreach ($formattedData as &$formattedRow) {
 				$formattedRow[$join->name] = array();
 			}
 
-			if ($join->type === JoinInterface::MANY_TO_MANY) {
+			if ($join->type === JoinInterface::MANY_TO_MANY || $join->type === JoinInterface::ONE_TO_MANY) {
 				$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $table, $join);
 
 				foreach ($descendantData as $descendantRow) {
@@ -141,35 +144,13 @@ class DataParser
 					}
 				}
 			} else {
-				$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $primaryTable);
+				$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $primaryTable, $join);
 
-				foreach ($childQueryData as $childRow) {
-					$parentRowIndices = $this->getIndicesOfLinkedParentRows($childRow, $primaryTableData, $join);
+				foreach ($descendantData as $descendantRow) {
+					$linkedParentRowIndices = $this->getIndicesOfLinkedParentRows($descendantRow, $primaryTableData, $join);
 
-					if (count($parentRowIndices) > 0) {
-						$parentRowIndex = $parentRowIndices[0];
-
-						foreach ($descendantData as $descendantRow) {
-							$descendantRowMatchesChildRow = true;
-
-							foreach ($childRow as $childFieldAlias => $childFieldValue) {
-								if ($descendantRow[$childFieldAlias] !== $childFieldValue) {
-									$descendantRowMatchesChildRow = false;
-								}
-							}
-
-							if (
-								$descendantRowMatchesChildRow &&
-								!in_array($descendantRow, $formattedData[$parentRowIndex][$join->name])
-							) {
-								if ($join->type === JoinInterface::ONE_TO_MANY) {
-									$formattedData[$parentRowIndex][$join->name][] = $descendantRow;
-								} else {
-									$formattedData[$parentRowIndex][$join->name] = $descendantRow;
-									break;
-								}
-							}
-						}
+					foreach ($linkedParentRowIndices as $parentRowIndex) {
+						$formattedData[$parentRowIndex][$join->name] = $descendantRow;
 					}
 				}
 			}
