@@ -10,6 +10,7 @@ use Sloth\Module\Data\Table\Face\JoinListInterface;
 use Sloth\Module\Data\Table\Face\SubJoinInterface;
 use Sloth\Module\Data\Table\Face\TableInterface;
 use Sloth\Module\Data\TableQuery\QuerySet\Base;
+use Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface;
 use Sloth\Module\Data\TableQuery\QuerySet\Filter\Filter;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\MultiQueryWrapper;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLink;
@@ -70,10 +71,13 @@ class GetByComposer extends Base\AbstractComposer
 			}
 
 			$descendantQuerySet = $this->buildQuerySetForLinkDescendants($link, $descendantFilters);
+
 			if (!is_null($descendantQuerySet)) {
+				/** @var SingleQueryWrapperInterface $descendantSingleQueryWrapper */
 				foreach ($descendantQuerySet as $descendantSingleQueryWrapper) {
 					$querySet->push($descendantSingleQueryWrapper);
 				}
+				$link->setChildQueryWrapper($descendantQuerySet);
 			}
 		}
 
@@ -86,6 +90,7 @@ class GetByComposer extends Base\AbstractComposer
 		/** @var JoinInterface $join */
 		foreach ($tableDefinition->links as $join) {
 			if (in_array($join->type, array(JoinInterface::ONE_TO_ONE, JoinInterface::MANY_TO_ONE))) {
+				// For *-to-one joins, check if any descendant joins are *-to-many
 				$childLinks = $this->getLinksToManyRowsFromTable($join->getChildTable(), $parentQueryWrapper);
 				foreach ($childLinks as $childLink) {
 					$foundLinks->push($childLink);
@@ -290,7 +295,6 @@ class GetByComposer extends Base\AbstractComposer
 			->setChildLinks($childLinks);
 		$querySet->push($queryWrapper);
 
-		$childLinks = $this->getLinksToManyRowsFromTable($childTable, $queryWrapper);
 		/** @var QueryLink $childLink */
 		foreach ($childLinks as $childLink) {
 			$childJoin = $childLink->getJoinDefinition();
