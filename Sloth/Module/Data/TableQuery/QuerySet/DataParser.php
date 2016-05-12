@@ -134,7 +134,7 @@ class DataParser
 			}
 
 			if ($join->type === JoinInterface::MANY_TO_MANY || $join->type === JoinInterface::ONE_TO_MANY) {
-				$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $table, $join);
+				$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $primaryTable, $join);
 
 				foreach ($descendantData as $descendantRow) {
 					$linkedParentRowIndices = $this->getIndicesOfLinkedParentRows($descendantRow, $formattedData, $join);
@@ -209,6 +209,17 @@ class DataParser
 		$targetTableAlias = $targetTable->getAlias();
 		$targetTableAliasRegex = sprintf('/^%s\./', $targetTableAlias);
 		$targetData = array();
+
+		// Merge data from any link fields between $primaryTable and $targetTable into $rawData[$targetTableAlias]
+		foreach ($rawData[$primaryTableAlias] as $rowIndex => $primaryTableRow) {
+			foreach ($primaryTableRow as $fieldAlias => $fieldValue) {
+				$fieldTableAlias = strstr($fieldAlias, '.', true);
+
+				if ($fieldTableAlias !== $primaryTableAlias) {
+					$rawData[$fieldTableAlias][$rowIndex][$fieldAlias] = $fieldValue;
+				}
+			}
+		}
 
 		if (array_key_exists($targetTableAlias, $rawData)) {
 			foreach ($rawData[$targetTableAlias] as $targetTableRow) {

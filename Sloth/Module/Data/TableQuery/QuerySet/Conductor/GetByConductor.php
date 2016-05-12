@@ -20,25 +20,20 @@ class GetByConductor extends Base\AbstractConductor
 	 */
 	private $executedQuerySet;
 
-	/**
-	 * @var array
-	 */
-	private $fetchedData = array();
-
 	public function conduct()
 	{
 		$this->executedQuerySet = new MultiQueryWrapper();
+		$data = array();
+
 		while ($this->querySetToExecute->length() > 0) {
 			$queryWrapper = $this->querySetToExecute->shift();
-			$data = $this->executeQuerySetItem($queryWrapper);
-			$this->fetchedData[$queryWrapper->getTable()->getAlias()] = $data;
+
+			$data[$queryWrapper->getTable()->getAlias()] = $this->executeQuerySetItem($queryWrapper);
+
 			$this->executedQuerySet->push($queryWrapper);
-			if (empty($data)) {
-				// If no data found for this query, no point running remaining queries
-				break;
-			}
 		}
-		return $this->fetchedData;
+
+		return $data;
 	}
 
 	private function executeQuerySetItem(SingleQueryWrapperInterface $queryWrapper)
