@@ -14,6 +14,8 @@ use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLink;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper;
 use SlothMySql\Face\Value\TableInterface as QueryTableInterface;
+use SlothMySql\Face\Value\ValueListInterface;
+use SlothMySql\QueryBuilder\Value\Constant;
 
 class UpdateComposer extends Base\AbstractComposer
 {
@@ -295,8 +297,15 @@ class UpdateComposer extends Base\AbstractComposer
 		$querySubject = $table->field($fieldName);
 		$queryValue = $this->database->value()->guess($value);
 
-		$constraint->setSubject($querySubject)
-			->equals($queryValue);
+		$constraint->setSubject($querySubject);
+
+		if ($queryValue instanceof ValueListInterface) {
+			$constraint->in($queryValue);
+		} elseif ($queryValue instanceof Constant && (string)$queryValue === 'NULL') {
+			$constraint->setComparator('IS')->setValue($queryValue);
+		} else {
+			$constraint->equals($queryValue);
+		}
 
 		return $constraint;
 	}
