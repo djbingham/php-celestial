@@ -97,6 +97,13 @@ class DataParser
 		$tableAlias = $table->getAlias();
 		$primaryTableData = $this->getTableData($table, $primaryTable, $rawData);
 
+		if (
+			$parentJoin !== null &&
+			in_array($parentJoin->type, array(JoinInterface::ONE_TO_MANY, JoinInterface::MANY_TO_MANY))
+		) {
+			$primaryTable = $table;
+		}
+
 		if (!empty($primaryTableData)) {
 			if ($parentJoin === null) {
 				$tableAliasRegex = sprintf('/^%s\./', $tableAlias);
@@ -144,7 +151,7 @@ class DataParser
 					}
 				}
 			} else {
-				$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $table, $join);
+				$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $primaryTable, $join);
 
 				foreach ($descendantData as $descendantRow) {
 					$linkedParentRowIndices = $this->getIndicesOfLinkedParentRows($descendantRow, $primaryTableData, $join);

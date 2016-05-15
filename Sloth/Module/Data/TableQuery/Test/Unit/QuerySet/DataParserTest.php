@@ -820,6 +820,118 @@ class DataParserTest extends UnitTest
 		$this->assertEquals($expectedParsedData, $parsedData);
 	}
 
+	public function testFormatResourceDataWithChainedManyToOneToOneJoins()
+	{
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
+
+		$resource = $resourceDefinitionBuilder->buildFromName('Post');
+
+		$resource->links->removeByPropertyValue('name', 'comments');
+
+		$authorTable = $resource->links->getByName('author')->getChildTable();
+		$authorTable->links->removeByPropertyValue('name', 'friends');
+		$authorTable->links->removeByPropertyValue('name', 'posts');
+
+		$authorAddressTable = $authorTable->links->getByName('address')->getChildTable();
+		$authorAddressTable->links->removeByPropertyValue('name', 'landlord');
+
+		$rawData = array(
+			'Post' => array(
+				array(
+					'Post.id' => 1,
+					'Post.authorId' => 1,
+					'Post.content' => 'First post',
+					'Post_author.id' => 1,
+					'Post_author.forename' => 'David',
+					'Post_author.surname' => 'Bingham',
+					'Post_author_address.userId' => 1,
+					'Post_author_address.houseName' => 'Bingham House',
+					'Post_author_address.postcode' => 'BI34 7AM',
+					'Post_author_address.landlordId' => 3
+				),
+				array(
+					'Post.id' => 2,
+					'Post.authorId' => 3,
+					'Post.content' => 'Second post',
+					'Post_author.id' => 3,
+					'Post_author.forename' => 'Michael',
+					'Post_author.surname' => 'Hughes',
+					'Post_author_address.userId' => 3,
+					'Post_author_address.houseName' => 'Hughes House',
+					'Post_author_address.postcode' => 'HU56 3PM',
+					'Post_author_address.landlordId' => 4
+				),
+				array(
+					'Post.id' => 3,
+					'Post.authorId' => 1,
+					'Post.content' => 'Third post',
+					'Post_author.id' => 1,
+					'Post_author.forename' => 'David',
+					'Post_author.surname' => 'Bingham',
+					'Post_author_address.userId' => 1,
+					'Post_author_address.houseName' => 'Bingham House',
+					'Post_author_address.postcode' => 'BI34 7AM',
+					'Post_author_address.landlordId' => 3
+				)
+			)
+		);
+		$expectedParsedData = array(
+			array(
+				'id' => 1,
+				'authorId' => 1,
+				'content' => 'First post',
+				'author' => array(
+					'id' => 1,
+					'forename' => 'David',
+					'surname' => 'Bingham',
+					'address' => array(
+						'userId' => 1,
+						'houseName' => 'Bingham House',
+						'postcode' => 'BI34 7AM',
+						'landlordId' => 3
+					)
+				)
+			),
+			array(
+				'id' => 2,
+				'authorId' => 3,
+				'content' => 'Second post',
+				'author' => array(
+					'id' => 3,
+					'forename' => 'Michael',
+					'surname' => 'Hughes',
+					'address' => array(
+						'userId' => 3,
+						'houseName' => 'Hughes House',
+						'postcode' => 'HU56 3PM',
+						'landlordId' => 4
+					)
+				)
+			),
+			array(
+				'id' => 3,
+				'authorId' => 1,
+				'content' => 'Third post',
+				'author' => array(
+					'id' => 1,
+					'forename' => 'David',
+					'surname' => 'Bingham',
+					'address' => array(
+						'userId' => 1,
+						'houseName' => 'Bingham House',
+						'postcode' => 'BI34 7AM',
+						'landlordId' => 3
+					)
+				)
+			)
+		);
+
+		$dataParser = new DataParser();
+		$parsedData = $dataParser->formatResourceData($rawData, $resource);
+
+		$this->assertEquals($expectedParsedData, $parsedData);
+	}
+
 	public function testFormatResourceDataFiltersOutRowsWithNoRecordsInJoinedTables()
 	{
 		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
