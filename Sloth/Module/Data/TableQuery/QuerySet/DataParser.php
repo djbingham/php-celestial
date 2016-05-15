@@ -144,7 +144,7 @@ class DataParser
 					}
 				}
 			} else {
-				$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $primaryTable, $join);
+				$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $table, $join);
 
 				foreach ($descendantData as $descendantRow) {
 					$linkedParentRowIndices = $this->getIndicesOfLinkedParentRows($descendantRow, $primaryTableData, $join);
@@ -211,12 +211,14 @@ class DataParser
 		$targetData = array();
 
 		// Merge data from any link fields between $primaryTable and $targetTable into $rawData[$targetTableAlias]
-		foreach ($rawData[$primaryTableAlias] as $rowIndex => $primaryTableRow) {
-			foreach ($primaryTableRow as $fieldAlias => $fieldValue) {
-				$fieldTableAlias = strstr($fieldAlias, '.', true);
+		if (array_key_exists($primaryTableAlias, $rawData)) {
+			foreach ($rawData[$primaryTableAlias] as $rowIndex => $primaryTableRow) {
+				foreach ($primaryTableRow as $fieldAlias => $fieldValue) {
+					$fieldTableAlias = strstr($fieldAlias, '.', true);
 
-				if ($fieldTableAlias !== $primaryTableAlias) {
-					$rawData[$fieldTableAlias][$rowIndex][$fieldAlias] = $fieldValue;
+					if ($fieldTableAlias !== $primaryTableAlias) {
+						$rawData[$fieldTableAlias][$rowIndex][$fieldAlias] = $fieldValue;
+					}
 				}
 			}
 		}

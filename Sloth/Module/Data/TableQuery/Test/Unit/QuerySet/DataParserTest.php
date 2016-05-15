@@ -660,6 +660,166 @@ class DataParserTest extends UnitTest
 		$this->assertEquals($expectedParsedData, $parsedData);
 	}
 
+	public function testFormatResourceDataWithChainedOneToManyToOneJoins()
+	{
+		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
+
+		$userTable = $resourceDefinitionBuilder->buildFromName('User');
+
+		$userTable->links->removeByPropertyValue('name', 'address');
+		$userTable->links->removeByPropertyValue('name', 'posts');
+
+		$userFriendsTable = $userTable->links->getByName('friends')->getChildTable();
+		$userFriendsTable->links->removeByPropertyValue('name', 'posts');
+		$userFriendsTable->links->removeByPropertyValue('name', 'friends');
+
+		$friendsAddressTable = $userFriendsTable->links->getByName('address')->getChildTable();
+		$friendsAddressTable->links->removeByPropertyValue('name', 'landlord');
+
+		$rawData = array(
+			'User' => array(
+				array(
+					'User.id' => 1,
+					'User.forename' => 'David',
+					'User.surname' => 'Bingham'
+				),
+				array(
+					'User.id' => 2,
+					'User.forename' => 'Flic',
+					'User.surname' => 'Bingham'
+				)
+			),
+			'User_friends' => array(
+				array(
+					'User_friendLink.friendId1' => 1,
+					'User_friends.id' => 2,
+					'User_friends.forename' => 'Flic',
+					'User_friends.surname' => 'Bingham',
+					'User_friends_address.userId' => 2,
+					'User_friends_address.houseName' => 'Bingham House',
+					'User_friends_address.postcode' => 'BI34 7AM',
+					'User_friends_address.landlordId' => 3
+				),
+				array(
+					'User_friendLink.friendId1' => 1,
+					'User_friends.id' => 3,
+					'User_friends.forename' => 'Michael',
+					'User_friends.surname' => 'Hughes',
+					'User_friends_address.userId' => 3,
+					'User_friends_address.houseName' => 'Hughes House',
+					'User_friends_address.postcode' => 'HU56 3PM',
+					'User_friends_address.landlordId' => 4
+				),
+				array(
+					'User_friendLink.friendId1' => 2,
+					'User_friends.id' => 1,
+					'User_friends.forename' => 'David',
+					'User_friends.surname' => 'Bingham',
+					'User_friends_address.userId' => 1,
+					'User_friends_address.houseName' => 'Bingham House',
+					'User_friends_address.postcode' => 'BI34 7AM',
+					'User_friends_address.landlordId' => 3
+				),
+				array(
+					'User_friendLink.friendId1' => 2,
+					'User_friends.id' => 3,
+					'User_friends.forename' => 'Michael',
+					'User_friends.surname' => 'Hughes',
+					'User_friends_address.userId' => 3,
+					'User_friends_address.houseName' => 'Hughes House',
+					'User_friends_address.postcode' => 'HU56 3PM',
+					'User_friends_address.landlordId' => 4
+				),
+				array(
+					'User_friendLink.friendId1' => 2,
+					'User_friends.id' => 4,
+					'User_friends.forename' => 'Tamsin',
+					'User_friends.surname' => 'Boatman',
+					'User_friends_address.userId' => 4,
+					'User_friends_address.houseName' => 'Boatman House',
+					'User_friends_address.postcode' => 'BO89 0AM',
+					'User_friends_address.landlordId' => 5
+				)
+			)
+		);
+		$expectedParsedData = array(
+			array(
+				'id' => 1,
+				'forename' => 'David',
+				'surname' => 'Bingham',
+				'friends' => array(
+					array(
+						'id' => 2,
+						'forename' => 'Flic',
+						'surname' => 'Bingham',
+						'address' => array(
+							'userId' => 2,
+							'houseName' => 'Bingham House',
+							'postcode' => 'BI34 7AM',
+							'landlordId' => 3
+						)
+					),
+					array(
+						'id' => 3,
+						'forename' => 'Michael',
+						'surname' => 'Hughes',
+						'address' => array(
+							'userId' => 3,
+							'houseName' => 'Hughes House',
+							'postcode' => 'HU56 3PM',
+							'landlordId' => 4
+						)
+					)
+				)
+			),
+			array(
+				'id' => 2,
+				'forename' => 'Flic',
+				'surname' => 'Bingham',
+				'friends' => array(
+					array(
+						'id' => 1,
+						'forename' => 'David',
+						'surname' => 'Bingham',
+						'address' => array(
+							'userId' => 1,
+							'houseName' => 'Bingham House',
+							'postcode' => 'BI34 7AM',
+							'landlordId' => 3
+						)
+					),
+					array(
+						'id' => 3,
+						'forename' => 'Michael',
+						'surname' => 'Hughes',
+						'address' => array(
+							'userId' => 3,
+							'houseName' => 'Hughes House',
+							'postcode' => 'HU56 3PM',
+							'landlordId' => 4
+						)
+					),
+					array(
+						'id' => 4,
+						'forename' => 'Tamsin',
+						'surname' => 'Boatman',
+						'address' => array(
+							'userId' => 4,
+							'houseName' => 'Boatman House',
+							'postcode' => 'BO89 0AM',
+							'landlordId' => 5
+						)
+					)
+				)
+			)
+		);
+
+		$dataParser = new DataParser();
+		$parsedData = $dataParser->formatResourceData($rawData, $userTable);
+
+		$this->assertEquals($expectedParsedData, $parsedData);
+	}
+
 	public function testFormatResourceDataFiltersOutRowsWithNoRecordsInJoinedTables()
 	{
 		$resourceDefinitionBuilder = $this->getTableDefinitionBuilder();
