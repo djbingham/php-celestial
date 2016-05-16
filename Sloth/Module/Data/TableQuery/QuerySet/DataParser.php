@@ -132,32 +132,34 @@ class DataParser
 			}
 		}
 
-		/** @var JoinInterface $join */
-		foreach ($table->links as $join) {
-			$childTable = $join->getChildTable();
+		if (!empty($primaryTableData)) {
+			/** @var JoinInterface $join */
+			foreach ($table->links as $join) {
+				$childTable = $join->getChildTable();
 
-			foreach ($formattedData as &$formattedRow) {
-				$formattedRow[$join->name] = array();
-			}
-
-			if ($join->type === JoinInterface::MANY_TO_MANY || $join->type === JoinInterface::ONE_TO_MANY) {
-				$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $primaryTable, $join);
-
-				foreach ($descendantData as $descendantRow) {
-					$linkedParentRowIndices = $this->getIndicesOfLinkedParentRows($descendantRow, $formattedData, $join);
-
-					foreach ($linkedParentRowIndices as $parentRowIndex) {
-						$formattedData[$parentRowIndex][$join->name][] = $descendantRow;
-					}
+				foreach ($formattedData as &$formattedRow) {
+					$formattedRow[$join->name] = array();
 				}
-			} else {
-				$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $primaryTable, $join);
 
-				foreach ($descendantData as $descendantRow) {
-					$linkedParentRowIndices = $this->getIndicesOfLinkedParentRows($descendantRow, $primaryTableData, $join);
+				if ($join->type === JoinInterface::MANY_TO_MANY || $join->type === JoinInterface::ONE_TO_MANY) {
+					$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $primaryTable, $join);
 
-					foreach ($linkedParentRowIndices as $parentRowIndex) {
-						$formattedData[$parentRowIndex][$join->name] = $descendantRow;
+					foreach ($descendantData as $descendantRow) {
+						$linkedParentRowIndices = $this->getIndicesOfLinkedParentRows($descendantRow, $formattedData, $join);
+
+						foreach ($linkedParentRowIndices as $parentRowIndex) {
+							$formattedData[$parentRowIndex][$join->name][] = $descendantRow;
+						}
+					}
+				} else {
+					$descendantData = $this->formatDataForTableAndDescendants($rawData, $childTable, $primaryTable, $join);
+
+					foreach ($descendantData as $descendantRow) {
+						$linkedParentRowIndices = $this->getIndicesOfLinkedParentRows($descendantRow, $primaryTableData, $join);
+
+						foreach ($linkedParentRowIndices as $parentRowIndex) {
+							$formattedData[$parentRowIndex][$join->name] = $descendantRow;
+						}
 					}
 				}
 			}
