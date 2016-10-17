@@ -5,7 +5,6 @@ require_once dirname(__DIR__) . '/UnitTest.php';
 
 use Sloth\App;
 use Sloth\Module\Data\Resource\DefinitionBuilder\ResourceDefinitionBuilder;
-use Sloth\Module\Data\Resource\Test\Assertions;
 use Sloth\Module\Data\Resource\Test\UnitTest;
 
 class ResourceDefinitionBuilderTest extends UnitTest
@@ -171,14 +170,14 @@ class ResourceDefinitionBuilderTest extends UnitTest
 
 	protected function mockAttributeList()
 	{
-		return $this->getMockBuilder('Sloth\Module\Data\Resource\Definition\AttributeList')
+		return $this->getMockBuilder('Sloth\Module\Data\Resource\Definition\Resource\AttributeList')
 				->disableOriginalConstructor()
 				->getMock();
 	}
 
 	protected function mockValidatorList()
 	{
-		return $this->getMockBuilder('Sloth\Module\Data\Resource\Definition\ValidatorList')
+		return $this->getMockBuilder('Sloth\Module\Data\Resource\Definition\Resource\ValidatorList')
 				->disableOriginalConstructor()
 				->getMock();
 	}
