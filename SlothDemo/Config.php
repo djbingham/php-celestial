@@ -106,10 +106,11 @@ class Config extends BaseConfig
 			'mysql' => array(
 				'factoryClass' => 'Sloth\\Module\\MySql\\Factory',
 				'options' => array(
-					'host' => 'localhost',
-					'name' => 'slothDemo',
-					'password' => 'Sl0thD3m0P455',
-					'username' => 'slothDemo'
+					'host' => $_ENV['DATABASE_HOST'],
+					'port' => $_ENV['DATABASE_PORT'],
+					'name' => $_ENV['DATABASE_NAME'],
+					'password' => $_ENV['DATABASE_PASSWORD'],
+					'username' => $_ENV['DATABASE_USER']
 				)
 			),
 			'render' => array(
@@ -133,7 +134,7 @@ class Config extends BaseConfig
 				'factoryClass' => 'Sloth\\Module\\Render\\Factory',
 				'options' => array(
 					'viewDirectory' => $this->rootDirectory() . '/View/Resource',
-					'viewManifestDirectory' => null
+					'viewManifestDirectory' => $this->rootDirectory() . '/Route/Manifest'
 				)
 			),
 			'restResource' => array(
