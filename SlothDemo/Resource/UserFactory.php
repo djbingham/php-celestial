@@ -8,31 +8,31 @@ class UserFactory extends ResourceFactory
 {
     public function getBy(AttributeList $attributes, array $filters = array())
     {
-        echo "<p>CUSTOM RESOURCE FACTORY :: getBy</p>";
+        header('CustomResourceFactory: User::getBy');
         return parent::getBy($attributes, $filters);
     }
 
     public function search(AttributeList $attributesToInclude, array $filters)
     {
-        echo "<p>CUSTOM RESOURCE FACTORY :: search</p>";
+        header('CustomResourceFactory: User::search');
         return parent::search($attributesToInclude, $filters);
     }
 
     public function create(array $attributes)
     {
-        echo "<p>CUSTOM RESOURCE FACTORY :: create</p>";
+        header('CustomResourceFactory: User::create');
         return parent::create($attributes);
     }
 
     public function update(array $filters, array $attributes)
     {
-        echo "<p>CUSTOM RESOURCE FACTORY :: update</p>";
+        header('CustomResourceFactory: User::update');
         return parent::update($filters, $attributes);
     }
 
     public function delete(array $filters)
     {
-        echo "<p>CUSTOM RESOURCE FACTORY :: delete</p>";
+        header('CustomResourceFactory: User::delete');
         return parent::delete($filters);
     }
 }
