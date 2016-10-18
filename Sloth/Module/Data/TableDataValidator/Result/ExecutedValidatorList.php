@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Data\TableDataValidator\Result;
 
-use Helper\Face\ObjectListInterface;
+use Sloth\Helper\Face\ObjectListInterface;
 use Sloth\Helper\ObjectListTrait;
 use Sloth\Module\Validation\Result\ValidationErrorList;
 

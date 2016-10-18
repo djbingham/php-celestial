@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Data\ResourceDataValidator\Result;
 
-use Helper\Face\ObjectListInterface;
+use Sloth\Helper\Face\ObjectListInterface;
 use Sloth\Helper\ObjectListTrait;
 use Sloth\Module\Data\Resource\Definition\Resource\Validator as ResourceValidator;
 use Sloth\Module\Data\Table\Definition\Table\Validator as TableValidator;

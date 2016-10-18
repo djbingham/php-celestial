@@ -1,5 +1,5 @@
 <?php
-namespace Helper\Face;
+namespace Sloth\Helper\Face;
 
 interface ObjectListInterface extends \Iterator
 {

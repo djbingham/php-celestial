@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Data\TableValidation;
 
-use Helper\InternalCacheTrait;
+use Sloth\Helper\InternalCacheTrait;
 use Sloth\App;
 use Sloth\Module\Data\Table\TableModule;
 use Sloth\Module\Validation\ValidationModule;

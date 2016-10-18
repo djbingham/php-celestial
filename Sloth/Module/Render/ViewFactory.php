@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Render;
 
-use Helper\InternalCacheTrait;
+use Sloth\Helper\InternalCacheTrait;
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\DataProvider\DataProviderModule;

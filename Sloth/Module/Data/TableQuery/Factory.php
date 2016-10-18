@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Data\TableQuery;
 
-use Helper\InternalCacheTrait;
+use Sloth\Helper\InternalCacheTrait;
 use Sloth\Base\AbstractModuleFactory;
 
 class Factory extends AbstractModuleFactory

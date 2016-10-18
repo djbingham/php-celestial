@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Router\Base;
 
-use Helper\InternalCacheTrait;
+use Sloth\Helper\InternalCacheTrait;
 use Sloth\App;
 use Sloth\Base\Config\Routes;
 use Sloth\Module\Request\Request;

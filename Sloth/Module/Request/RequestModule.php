@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Request;
 
-use Helper\InternalCacheTrait;
+use Sloth\Helper\InternalCacheTrait;
 
 class RequestModule
 {

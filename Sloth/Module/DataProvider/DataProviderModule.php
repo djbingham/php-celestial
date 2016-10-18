@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\DataProvider;
 
-use Helper\InternalCacheTrait;
+use Sloth\Helper\InternalCacheTrait;
 use Sloth\Module\DataProvider\Face\DataProviderInterface;
 
 class DataProviderModule

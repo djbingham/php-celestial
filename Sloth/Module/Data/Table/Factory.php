@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Data\Table;
 
-use Helper\InternalCacheTrait;
+use Sloth\Helper\InternalCacheTrait;
 use Sloth\Base\AbstractModuleFactory;
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Module\Data\Table\DefinitionBuilder\LinkListBuilder;

@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Render\Face;
 
-use Helper\Face\ObjectListInterface;
+use Sloth\Helper\Face\ObjectListInterface;
 
 interface ViewListInterface extends ObjectListInterface
 {

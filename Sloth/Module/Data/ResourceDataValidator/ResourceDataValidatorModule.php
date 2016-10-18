@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Data\ResourceDataValidator;
 
-use Helper\InternalCacheTrait;
+use Sloth\Helper\InternalCacheTrait;
 use Sloth\Module\Data\ResourceDataValidator\Result\ExecutedValidator;
 use Sloth\Module\Data\ResourceDataValidator\Result\ExecutedValidatorList;
 use Sloth\Module\Data\Resource\Face\Definition\ResourceInterface;

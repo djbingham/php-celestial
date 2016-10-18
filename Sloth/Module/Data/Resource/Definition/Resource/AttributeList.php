@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Data\Resource\Definition\Resource;
 
-use Helper\Face\ObjectListInterface;
+use Sloth\Helper\Face\ObjectListInterface;
 use Sloth\Helper\ObjectListTrait;
 
 class AttributeList extends Attribute implements ObjectListInterface

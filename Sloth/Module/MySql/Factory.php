@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\MySql;
 
-use Helper\InternalCacheTrait;
+use Sloth\Helper\InternalCacheTrait;
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Base\AbstractModuleFactory;
 use SlothMySql\Connection\MySqli as DatabaseConnection;

@@ -1,7 +1,8 @@
 <?php
 
 namespace Sloth\Base\Config;
-use Helper\Face\ObjectListInterface;
+
+use Sloth\Helper\Face\ObjectListInterface;
 use Sloth\Base\Config\Module\Module;
 use Sloth\Exception;
 use Sloth\Helper\ObjectListTrait;

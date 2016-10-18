@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Validation\Face;
 
-use Helper\Face\ObjectListInterface;
+use Sloth\Helper\Face\ObjectListInterface;
 
 interface ValidationErrorListInterface extends ObjectListInterface
 {

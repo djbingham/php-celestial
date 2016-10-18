@@ -1,7 +1,7 @@
 <?php
 namespace Sloth\Module\Data\TableQuery\QuerySet\Face;
 
-use Helper\Face\ObjectListInterface;
+use Sloth\Helper\Face\ObjectListInterface;
 
 interface MultiQueryWrapperInterface extends QueryWrapperInterface, ObjectListInterface
 {
