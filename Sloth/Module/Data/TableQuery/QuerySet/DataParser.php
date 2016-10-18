@@ -132,7 +132,7 @@ class DataParser
 			}
 		}
 
-		if (!empty($primaryTableData)) {
+		if (!empty($formattedData)) {
 			/** @var JoinInterface $join */
 			foreach ($table->links as $join) {
 				$childTable = $join->getChildTable();
@@ -234,7 +234,9 @@ class DataParser
 
 		if (array_key_exists($targetTableAlias, $rawData)) {
 			foreach ($rawData[$targetTableAlias] as $targetTableRow) {
-				$targetData[] = $targetTableRow;
+				if (!empty($targetTableRow)) {
+					$targetData[] = $targetTableRow;
+				}
 			}
 		} elseif (array_key_exists($primaryTableAlias, $rawData)) {
 			foreach ($rawData[$primaryTableAlias] as $parentRowIndex => $parentRow) {
@@ -245,7 +247,10 @@ class DataParser
 						$childRow[$parentFieldAlias] = $parentValue;
 					}
 				}
-				$targetData[] = $childRow;
+
+				if (!empty($childRow)) {
+					$targetData[] = $childRow;
+				}
 			}
 		}
 
