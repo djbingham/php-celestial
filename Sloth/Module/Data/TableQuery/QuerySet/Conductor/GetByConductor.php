@@ -25,12 +25,18 @@ class GetByConductor extends Base\AbstractConductor
 		$this->executedQuerySet = new MultiQueryWrapper();
 		$data = array();
 
+		$countExecuted = 0;
 		while ($this->querySetToExecute->length() > 0) {
 			$queryWrapper = $this->querySetToExecute->shift();
 
 			$data[$queryWrapper->getTable()->getAlias()] = $this->executeQuerySetItem($queryWrapper);
 
 			$this->executedQuerySet->push($queryWrapper);
+			$countExecuted++;
+
+			if ($countExecuted === 1 && empty($data[$queryWrapper->getTable()->getAlias()])) {
+				break;
+			}
 		}
 
 		return $data;
