@@ -2,12 +2,22 @@
 
 Celestial is a PHP framework aiming to provide restful APIs which map to complex database structures, without requiring any application-specific code beyond JSON configuration files.
 
+Celestial is highly configurable, with a modular, extensible architecture to meet a wide range of requirements. However, in its default configuration Celestial already provides a convenient restful API to the tables of a MySQL database. This enables Celestial to be used in service-oriented architectures to remove query building logic from other services, separating the concerns of business/application logic and database query building.
+
 ## Work in progress
-Please do not attempt to use this work-in-progress framework for any real-world projects yet. It is currently far from a v1 release and all of its structure and functionality are subject to change.
+**NOT PRODUCTION READY**
 
-The demo folder shows a working demonstration of most currently supported functionality. The step-by-step guide below shows configuration and request formats that are not yet supported. Active development is in progress to convert Celestial's parsing of configuration and requests to match the below formats. Following this, the formats will be converted from JSON to YAML so that the redundant `true` values for fields and attributes (particularly in resource declarations) can be omitted.
+This project is an experimental work-in-progress, not fully tested and likely to change significantly.
 
-## Basic Example
+The formatting of configuration files and requests is a little cumbersome, but can be seen in the demo project, which is a rather convoluted example showing most of the currently supported functionality. Planned refinements to the framework's configuration and request parsing should match the step-by-step example below, after which a possible next step would be to switch from JSON to YAML so that the redundant `true` values for properties would not be necessary.
+
+Further work is planned to reorganise Celestial's modules, particularly those in `Module/Data`, to better isolate and clarify the scope of each module.
+
+One of Celestial's long-term goals is to support the GraphQL request syntax, mapping GraphQL requests to Celestial resources. This would enable a GraphQL API to be built around a MySQL database simply by providing JSON (or YAML) representations of the tables to be exposed.
+
+## Step-By-Step Example
+*Note that the following example does not work with the current version of the framework. All functionality described is supported, but the required formatting of JSON files is a little more verbose and a PHP configuration is required to supply database credentials and specify module dependencies.*
+
 Consider a scenario in which we need to store users and their addresses.
 
 ### Declare database tables
@@ -114,7 +124,7 @@ Consider a scenario in which we need to store users and their addresses.
 ```
 
 ### Declare a resource
-Resources are the logical business entities required by our application
+Resources are the logical business entities required by our application.
 
 **User resource** - *user combined with their address*
 ```
@@ -336,8 +346,3 @@ GET /users
 ```
 GET /users/first_user_updated
 ```
-
-## Extensibility
-Celestial is designed with extensibility in mind. It's structure is highly modular and configurable to meet a wide range of requirements.
-
-However, a suggested use-case for Celestial in its default configuration is in service-oriented architectures, where Celestial can provide a restful API interface in front of a MySQL database and other services can handle application-specific logic.
