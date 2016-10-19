@@ -3,7 +3,7 @@ namespace Sloth\Module\Data\TableQuery\QuerySet\Base;
 
 use Sloth\Module\Data\Table\Face\TableInterface;
 use Sloth\Module\Data\TableQuery\QuerySet\Face\MultiQueryWrapperInterface;
-use SlothMySql\DatabaseWrapper;
+use PhpMySql\DatabaseWrapper;
 
 abstract class AbstractComposer
 {

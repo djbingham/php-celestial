@@ -12,7 +12,7 @@ use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Data\TableQuery\QuerySet\Base;
-use SlothMySql\Face\Value\TableInterface as QueryTableInterface;
+use PhpMySql\Face\Value\TableInterface as QueryTableInterface;
 
 class InsertComposer extends Base\AbstractComposer
 {

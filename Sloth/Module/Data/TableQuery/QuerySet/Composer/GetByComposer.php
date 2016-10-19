@@ -16,7 +16,7 @@ use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\MultiQueryWrapper;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLink;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper;
-use SlothMySql\DatabaseWrapper;
+use PhpMySql\DatabaseWrapper;
 
 class GetByComposer extends Base\AbstractComposer
 {
@@ -150,7 +150,7 @@ class GetByComposer extends Base\AbstractComposer
 	/**
 	 * @param string $tableName
 	 * @param string $tableAlias
-	 * @return \SlothMySql\Face\Value\TableInterface
+	 * @return \PhpMySql\Face\Value\TableInterface
 	 */
 	private function getQueryTable($tableName, $tableAlias)
 	{

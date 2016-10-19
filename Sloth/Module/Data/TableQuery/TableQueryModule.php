@@ -2,7 +2,7 @@
 namespace Sloth\Module\Data\TableQuery;
 
 use Sloth\App;
-use SlothMySql\DatabaseWrapper;
+use PhpMySql\DatabaseWrapper;
 
 class TableQueryModule
 {

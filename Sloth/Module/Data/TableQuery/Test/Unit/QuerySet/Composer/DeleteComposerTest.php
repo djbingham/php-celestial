@@ -45,7 +45,7 @@ EOT;
 		$queryWrapper = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $queryWrapper);
 		$this->assertSame($table, $queryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $queryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $queryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $queryWrapper->getChildLinks());
 		$this->assertEquals(0, $queryWrapper->getChildLinks()->length());
 
@@ -121,7 +121,7 @@ EOT;
 		/** @var SingleQueryWrapperInterface $firstQueryWrapper */
 		$firstQueryWrapper = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $firstQueryWrapper);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $firstQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $firstQueryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $firstQueryWrapper->getChildLinks());
 
 		$firstQuery = $firstQueryWrapper->getQuery();
@@ -132,7 +132,7 @@ EOT;
 		/** @var SingleQueryWrapperInterface $secondQueryWrapper */
 		$secondQueryWrapper = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $secondQueryWrapper);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $secondQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $secondQueryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $secondQueryWrapper->getChildLinks());
 
 		$secondQuery = $secondQueryWrapper->getQuery();
@@ -193,7 +193,7 @@ EOT;
 		/** @var SingleQueryWrapperInterface $firstQueryWrapper */
 		$firstQueryWrapper = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $firstQueryWrapper);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $firstQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $firstQueryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $firstQueryWrapper->getChildLinks());
 
 		$firstQuery = $firstQueryWrapper->getQuery();
@@ -204,7 +204,7 @@ EOT;
 		/** @var SingleQueryWrapperInterface $secondQueryWrapper */
 		$secondQueryWrapper = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $secondQueryWrapper);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $secondQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $secondQueryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $secondQueryWrapper->getChildLinks());
 
 		$secondQuery = $secondQueryWrapper->getQuery();
@@ -379,7 +379,7 @@ EOT;
 		/** @var SingleQueryWrapperInterface $firstQueryWrapper */
 		$firstQueryWrapper = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $firstQueryWrapper);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $firstQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $firstQueryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $firstQueryWrapper->getChildLinks());
 
 		$firstQuery = $firstQueryWrapper->getQuery();
@@ -394,7 +394,7 @@ EOT;
 		$this->assertSame($postTable, $secondQueryWrapper->getTable());
 
 		$secondQuery = $secondQueryWrapper->getQuery();
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $secondQuery);
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $secondQuery);
 		$this->assertEquals($expectedQueries[1], (string)$secondQuery);
 		$this->assertEquals(0, $secondQueryWrapper->getChildLinks()->length());
 	}
@@ -461,7 +461,7 @@ EOT;
 		/** @var SingleQueryWrapperInterface $userDeleteQueryWrapper */
 		$userDeleteQueryWrapper = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $userDeleteQueryWrapper);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $userDeleteQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $userDeleteQueryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $userDeleteQueryWrapper->getChildLinks());
 
 		$userDeleteQuery = $userDeleteQueryWrapper->getQuery();
@@ -472,13 +472,13 @@ EOT;
 		/** @var SingleQueryWrapperInterface $addressDeleteQueryWrapper */
 		$addressDeleteQueryWrapper = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $addressDeleteQueryWrapper);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $addressDeleteQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $addressDeleteQueryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $addressDeleteQueryWrapper->getChildLinks());
 
 		/** @var SingleQueryWrapperInterface $postDeleteQueryWrapper */
 		$postDeleteQueryWrapper = $querySet->getByIndex(2);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $postDeleteQueryWrapper);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $postDeleteQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $postDeleteQueryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $postDeleteQueryWrapper->getChildLinks());
 
 		$addressDeleteQuery = $addressDeleteQueryWrapper->getQuery();
@@ -564,13 +564,13 @@ EOT;
 
 		/** @var SingleQueryWrapperInterface $deleteUserQueryWrapper */
 		$deleteUserQueryWrapper = $querySet->getbyIndex(0);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $deleteUserQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $deleteUserQueryWrapper->getQuery());
 		$this->assertSame($table, $deleteUserQueryWrapper->getTable());
 
 		/** @var SingleQueryWrapperInterface $deletePostsQueryWrapper */
 		$deletePostsQueryWrapper = $querySet->getbyIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $deletePostsQueryWrapper);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $deletePostsQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $deletePostsQueryWrapper->getQuery());
 
 		$deletePostsChildLinks = $deletePostsQueryWrapper->getChildLinks();
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $deletePostsChildLinks);
@@ -581,7 +581,7 @@ EOT;
 		$deleteCommentsQueryWrapper = $querySet->getbyIndex(2);
 		$deleteCommentsChildLinks = $deleteCommentsQueryWrapper->getChildLinks();
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $deleteCommentsQueryWrapper);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $deleteCommentsQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $deleteCommentsQueryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $deleteCommentsChildLinks);
 		$this->assertSame($commentTable, $deleteCommentsQueryWrapper->getTable());
 		$this->assertEquals(0, $deleteCommentsChildLinks->length());
@@ -647,7 +647,7 @@ EOT;
 		/** @var SingleQueryWrapperInterface $deleteUserQueryWrapper */
 		$deleteUserQueryWrapper = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $deleteUserQueryWrapper);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $deleteUserQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $deleteUserQueryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList', $deleteUserQueryWrapper->getChildLinks());
 
 		$deleteUserQuery = $deleteUserQueryWrapper->getQuery();
@@ -658,7 +658,7 @@ EOT;
 		/** @var SingleQueryWrapperInterface $deleteFriendsQueryWrapper */
 		$deleteFriendsQueryWrapper = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper', $deleteFriendsQueryWrapper);
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Delete', $deleteFriendsQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Delete', $deleteFriendsQueryWrapper->getQuery());
 		$this->assertEquals(0, $deleteFriendsQueryWrapper->getChildLinks()->length());
 
 		$deleteFriendsQuery = $deleteFriendsQueryWrapper->getQuery();

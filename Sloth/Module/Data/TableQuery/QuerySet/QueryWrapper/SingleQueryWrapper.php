@@ -3,12 +3,12 @@ namespace Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper;
 
 use Sloth\Module\Data\TableQuery\QuerySet\Base\AbstractQueryWrapper;
 use Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface;
-use SlothMySql;
+use PhpMySql;
 
 class SingleQueryWrapper extends AbstractQueryWrapper implements SingleQueryWrapperInterface
 {
 	/**
-	 * @var SlothMySql\Face\QueryInterface
+	 * @var PhpMySql\Face\QueryInterface
 	 */
 	private $query;
 
@@ -22,7 +22,7 @@ class SingleQueryWrapper extends AbstractQueryWrapper implements SingleQueryWrap
 	 */
 	private $filters;
 
-	public function setQuery(SlothMySql\Face\QueryInterface $query)
+	public function setQuery(PhpMySql\Face\QueryInterface $query)
 	{
 		$this->query = $query;
 		return $this;

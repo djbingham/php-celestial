@@ -11,15 +11,20 @@
 	],
 	"repositories": [
 		{
-			"type": "composer",
-			"url": "http://toran.djhodgkinson.co.uk/app.php/repo/private/"
+			"type": "vcs",
+			"url": "git@github.com:djbingham/php-celestial-mysql.git"
 		}
 	],
 	"require": {
-		"favicon/autoload": "dev-master",
-		"favicon/slothmysql": "dev-master",
+		"djbingham/php-celestial-mysql": "dev-master",
 		"mustache/mustache": "v2.7.0",
 		"phpunit/phpunit": "4.6.4",
 		"zordius/lightncandy": "dev-master"
+	},
+	"autoload": {
+		"psr-4": {
+			"Sloth\\": "Sloth/",
+			"SlothDemo\\": "SlothDemo/"
+		}
 	}
 }

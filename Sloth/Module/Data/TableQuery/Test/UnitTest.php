@@ -34,7 +34,7 @@ abstract class UnitTest extends \PHPUnit_Framework_TestCase
 		if (is_null($connection)) {
 			$connection = new Connection();
 		}
-        $queryBuilderFactory = new \SlothMySql\QueryBuilder\Wrapper($connection);
+        $queryBuilderFactory = new \PhpMySql\QueryBuilder\Wrapper($connection);
         return new DatabaseWrapper($connection, $queryBuilderFactory);
     }
 

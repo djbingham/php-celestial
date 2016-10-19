@@ -5,7 +5,7 @@ use Sloth\Module\Data\Table\Face\TableInterface;
 use Sloth\Module\Data\TableQuery\QuerySet\Base\AbstractComposer;
 use Sloth\Module\Data\TableQuery\QuerySet\Base\AbstractConductor;
 use Sloth\Module\Data\TableQuery\QuerySet\Face\FilterParserInterface;
-use SlothMySql\DatabaseWrapper;
+use PhpMySql\DatabaseWrapper;
 
 class Orchestrator
 {

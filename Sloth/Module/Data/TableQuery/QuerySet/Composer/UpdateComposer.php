@@ -13,9 +13,9 @@ use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\MultiQueryWrapper;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLink;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper;
-use SlothMySql\Face\Value\TableInterface as QueryTableInterface;
-use SlothMySql\Face\Value\ValueListInterface;
-use SlothMySql\QueryBuilder\Value\Constant;
+use PhpMySql\Face\Value\TableInterface as QueryTableInterface;
+use PhpMySql\Face\Value\ValueListInterface;
+use PhpMySql\QueryBuilder\Value\Constant;
 
 class UpdateComposer extends Base\AbstractComposer
 {
@@ -277,7 +277,7 @@ class UpdateComposer extends Base\AbstractComposer
 		if (empty($filters)) {
 			$constraint = $this->database->query()->constraint();
 		} else {
-			/** @var \SlothMySql\Face\Query\ConstraintInterface $constraint */
+			/** @var \PhpMySql\Face\Query\ConstraintInterface $constraint */
 			$constraint = null;
 			foreach ($filters as $fieldName => $value) {
 				if ($constraint === null) {

@@ -4,9 +4,9 @@ namespace Sloth\Module\MySql;
 use Sloth\Helper\InternalCacheTrait;
 use Sloth\Exception\InvalidArgumentException;
 use Sloth\Base\AbstractModuleFactory;
-use SlothMySql\Connection\MySqli as DatabaseConnection;
-use SlothMySql\DatabaseWrapper;
-use SlothMySql\QueryBuilder\Wrapper as QueryBuilderWrapper;
+use PhpMySql\Connection\PdoWrapper as DatabaseConnection;
+use PhpMySql\DatabaseWrapper;
+use PhpMySql\QueryBuilder\Wrapper as QueryBuilderWrapper;
 
 class Factory extends AbstractModuleFactory
 {
@@ -59,14 +59,18 @@ class Factory extends AbstractModuleFactory
 	protected function getConnection()
 	{
 		if (!$this->isCached('connection')) {
-			$this->setCached('connection', new DatabaseConnection(
-				$this->options['host'],
+			$options = [
+				'dbname=' . $this->options['name'],
+				'host=' . $this->options['host'],
+				'port=' . $this->options['port'],
+				'unix_socket=' . $this->options['socket']
+			];
+			$dsn = 'mysql:' . implode(';', $options);
+			$this->setCached('connection', new DatabaseConnection(new \PDO(
+				$dsn,
 				$this->options['username'],
-				$this->options['password'],
-				$this->options['name'],
-				array_key_exists('port', $this->options) ? $this->options['port'] : null,
-				array_key_exists('socket', $this->options) ? $this->options['socket'] : null
-			));
+				$this->options['password']
+			)));
 		}
 
 		return $this->getCached('connection');

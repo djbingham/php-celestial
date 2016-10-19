@@ -2,8 +2,6 @@
 
 require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'autoload.php';
 
-new Sloth\Utility\Autoload(dirname(__DIR__), 'SlothDemo');
-
 $init = new \SlothDemo\Initialisation();
 $app = $init->getApp();
 

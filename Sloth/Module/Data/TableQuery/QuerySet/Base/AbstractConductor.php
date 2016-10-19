@@ -3,7 +3,7 @@ namespace Sloth\Module\Data\TableQuery\QuerySet\Base;
 
 use Sloth\Module\Data\TableQuery\QuerySet\DataParser;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\MultiQueryWrapper;
-use SlothMySql\DatabaseWrapper;
+use PhpMySql\DatabaseWrapper;
 
 abstract class AbstractConductor
 {

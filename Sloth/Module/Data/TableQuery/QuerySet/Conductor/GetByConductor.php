@@ -10,8 +10,8 @@ use Sloth\Module\Data\TableQuery\QuerySet\Base;
 use Sloth\Module\Data\TableQuery\QuerySet\Face\MultiQueryWrapperInterface;
 use Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\MultiQueryWrapper;
-use SlothMySql\QueryBuilder\Query\Constraint;
-use SlothMySql\QueryBuilder\Query\Select;
+use PhpMySql\QueryBuilder\Query\Constraint;
+use PhpMySql\QueryBuilder\Query\Select;
 
 class GetByConductor extends Base\AbstractConductor
 {

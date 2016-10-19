@@ -1,9 +1,9 @@
 <?php
 namespace Sloth\Module\Data\Resource\Test\Mock;
 
-use SlothMySql\Face\QueryInterface;
+use PhpMySql\Face\QueryInterface;
 
-class Connection extends \SlothMySql\Connection\MySqli
+class Connection extends \PhpMySql\Connection\MySqli
 {
 	/**
 	 * @var array

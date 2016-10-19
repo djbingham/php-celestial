@@ -11,7 +11,7 @@ use Sloth\Module\Data\TableQuery\QuerySet\Base;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\MultiQueryWrapper;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\QueryLinkList;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\SingleQueryWrapper;
-use SlothMySql\Face\Value\TableInterface as QueryTableInterface;
+use PhpMySql\Face\Value\TableInterface as QueryTableInterface;
 
 class DeleteComposer extends Base\AbstractComposer
 {

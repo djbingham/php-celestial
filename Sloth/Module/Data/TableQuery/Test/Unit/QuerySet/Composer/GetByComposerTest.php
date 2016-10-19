@@ -42,7 +42,7 @@ EOT;
 		$queryWrapper = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $queryWrapper);
 		$this->assertSame($table, $queryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $queryWrapper->getChildLinks());
 		$this->assertEquals(0, $queryWrapper->getChildLinks()->length());
 
@@ -88,7 +88,7 @@ EOT;
 		$queryWrapper = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $queryWrapper);
 		$this->assertSame($table, $queryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $queryWrapper->getChildLinks());
 		$this->assertEquals(0, $queryWrapper->getChildLinks()->length());
 
@@ -134,7 +134,7 @@ EOT;
 		$queryWrapper = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $queryWrapper);
 		$this->assertSame($table, $queryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $queryWrapper->getChildLinks());
 		$this->assertEquals(0, $queryWrapper->getChildLinks()->length());
 
@@ -201,7 +201,7 @@ EOT;
 		$queryWrapper = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $queryWrapper);
 		$this->assertSame($table, $queryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $queryWrapper->getChildLinks());
 		$this->assertEquals(0, $queryWrapper->getChildLinks()->length());
 
@@ -251,7 +251,7 @@ EOT;
 		$queryWrapper = $querySet->getByIndex(0);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $queryWrapper);
 		$this->assertSame($table, $queryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $queryWrapper->getQuery());
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $queryWrapper->getChildLinks());
 		$this->assertEquals(0, $queryWrapper->getChildLinks()->length());
 
@@ -303,14 +303,14 @@ EOT;
 		$this->assertSame($table->links->getByName('posts'), $userLinks->getByIndex(0)->getJoinDefinition());
 
 		$userQuery = $userQueryWrapper->getQuery();
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
 		/** @var SingleQueryWrapperInterface $postQueryWrapper */
 		$postQueryWrapper = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $postQueryWrapper);
 		$this->assertSame($postTable, $postQueryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $postQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $postQueryWrapper->getQuery());
 
 		$postLinks = $postQueryWrapper->getChildLinks();
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $postLinks);
@@ -376,14 +376,14 @@ EOT;
 		$this->assertSame($table->links->getByName('posts'), $userLinks->getByIndex(0)->getJoinDefinition());
 
 		$userQuery = $userQueryWrapper->getQuery();
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
 		/** @var SingleQueryWrapperInterface $postAndAuthorQueryWrapper */
 		$postAndAuthorQueryWrapper = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $postAndAuthorQueryWrapper);
 		$this->assertSame($postTable, $postAndAuthorQueryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $postAndAuthorQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $postAndAuthorQueryWrapper->getQuery());
 
 		$postAndAuthorLinks = $postAndAuthorQueryWrapper->getChildLinks();
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $postAndAuthorLinks);
@@ -397,7 +397,7 @@ EOT;
 		$authorPostQueryWrapper = $querySet->getByIndex(2);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $authorPostQueryWrapper);
 		$this->assertSame($authorPostTable, $authorPostQueryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $authorPostQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $authorPostQueryWrapper->getQuery());
 
 		$authorPostLinks = $authorPostQueryWrapper->getChildLinks();
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $authorPostLinks);
@@ -456,14 +456,14 @@ EOT;
 		$this->assertSame($table->links->getByName('friends'), $userFriendLink->getJoinDefinition());
 
 		$userQuery = $userQueryWrapper->getQuery();
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
 		/** @var SingleQueryWrapperInterface $friendQueryWrapper */
 		$friendQueryWrapper = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $friendQueryWrapper);
 		$this->assertSame($friendTable, $friendQueryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
 
 		$friendLinks = $friendQueryWrapper->getChildLinks();
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $friendLinks);
@@ -535,7 +535,7 @@ EOT;
 		$friendQueryWrapper = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $friendQueryWrapper);
 		$this->assertSame($friendTable, $friendQueryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
 
 		$friendLinks = $friendQueryWrapper->getChildLinks();
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $friendLinks);
@@ -549,7 +549,7 @@ EOT;
 		$friendOfFriendQueryWrapper = $querySet->getByIndex(2);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $friendOfFriendQueryWrapper);
 		$this->assertSame($friendOfFriendTable, $friendOfFriendQueryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $friendOfFriendQueryWrapper->getQuery());
 
 		$friendOfFriendLinks = $friendOfFriendQueryWrapper->getChildLinks();
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $friendOfFriendLinks);
@@ -557,15 +557,15 @@ EOT;
 
 		// Test built query for each query-set item
 		$userQuery = $userQueryWrapper->getQuery();
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
 		$friendQuery = $friendQueryWrapper->getQuery();
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuery);
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $friendQuery);
 		$this->assertEquals($expectedQueries[1], (string)$friendQuery);
 
 		$friendOfFriendQuery = $friendOfFriendQueryWrapper->getQuery();
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQuery);
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $friendOfFriendQuery);
 		$this->assertEquals($expectedQueries[2], (string)$friendOfFriendQuery);
 	}
 
@@ -648,7 +648,7 @@ EOT;
 		$friendQueryWrapper = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $friendQueryWrapper);
 		$this->assertSame($friendTable, $friendQueryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
 
 		$friendLinks = $friendQueryWrapper->getChildLinks();
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $friendLinks);
@@ -662,7 +662,7 @@ EOT;
 		$friendOfFriendQueryWrapper = $querySet->getByIndex(2);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $friendOfFriendQueryWrapper);
 		$this->assertSame($friendOfFriendTable, $friendOfFriendQueryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $friendOfFriendQueryWrapper->getQuery());
 
 		$friendOfFriendLinks = $friendOfFriendQueryWrapper->getChildLinks();
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $friendOfFriendLinks);
@@ -670,15 +670,15 @@ EOT;
 
 		// Test built query for each query-set item
 		$userQuery = $userQueryWrapper->getQuery();
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
 		$friendQuery = $friendQueryWrapper->getQuery();
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQuery);
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $friendQuery);
 		$this->assertEquals($expectedQueries[1], (string)$friendQuery);
 
 		$friendOfFriendQuery = $friendOfFriendQueryWrapper->getQuery();
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendOfFriendQuery);
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $friendOfFriendQuery);
 		$this->assertEquals($expectedQueries[2], (string)$friendOfFriendQuery);
 	}
 
@@ -746,14 +746,14 @@ EOT;
 		$this->assertSame($table->links->getByName('friends'), $userFriendLink->getJoinDefinition());
 
 		$userQuery = $userQueryWrapper->getQuery();
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
 		/** @var SingleQueryWrapperInterface $friendQueryWrapper */
 		$friendQueryWrapper = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $friendQueryWrapper);
 		$this->assertSame($friendTable, $friendQueryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
 
 		$friendLinks = $friendQueryWrapper->getChildLinks();
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $friendLinks);
@@ -828,14 +828,14 @@ EOT;
 		$this->assertSame($table->links->getByName('friends'), $userFriendLink->getJoinDefinition());
 
 		$userQuery = $userQueryWrapper->getQuery();
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $userQuery);
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $userQuery);
 		$this->assertEquals($expectedQueries[0], (string)$userQuery);
 
 		/** @var SingleQueryWrapperInterface $friendQueryWrapper */
 		$friendQueryWrapper = $querySet->getByIndex(1);
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface', $friendQueryWrapper);
 		$this->assertSame($friendTable, $friendQueryWrapper->getTable());
-		$this->assertInstanceOf('SlothMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
+		$this->assertInstanceOf('PhpMySql\QueryBuilder\Query\Select', $friendQueryWrapper->getQuery());
 
 		$friendLinks = $friendQueryWrapper->getChildLinks();
 		$this->assertInstanceOf('Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkListInterface', $friendLinks);

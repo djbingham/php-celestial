@@ -7,8 +7,8 @@ use Sloth\Module\Data\TableQuery\QuerySet\Face\QueryLinkInterface;
 use Sloth\Module\Data\TableQuery\QuerySet\Face\QueryWrapperInterface;
 use Sloth\Module\Data\TableQuery\QuerySet\Face\SingleQueryWrapperInterface;
 use Sloth\Module\Data\TableQuery\QuerySet\QueryWrapper\MultiQueryWrapper;
-use SlothMySql\QueryBuilder\Query\Insert;
-use SlothMySql\QueryBuilder\Query\Update;
+use PhpMySql\QueryBuilder\Query\Insert;
+use PhpMySql\QueryBuilder\Query\Update;
 
 class UpdateConductor extends Base\AbstractConductor
 {

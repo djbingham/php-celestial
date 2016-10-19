@@ -1,18 +1,18 @@
 <?php
 namespace Sloth\Module\Data\TableQuery\QuerySet\Face;
 
-use SlothMySql;
+use PhpMySql;
 
 interface SingleQueryWrapperInterface extends QueryWrapperInterface
 {
 	/**
-	 * @param SlothMySql\Face\QueryInterface $query
+	 * @param PhpMySql\Face\QueryInterface $query
 	 * @return $this
 	 */
-	public function setQuery(SlothMySql\Face\QueryInterface $query);
+	public function setQuery(PhpMySql\Face\QueryInterface $query);
 
 	/**
-	 * @return SlothMySql\Face\QueryInterface
+	 * @return PhpMySql\Face\QueryInterface
 	 */
 	public function getQuery();
 
