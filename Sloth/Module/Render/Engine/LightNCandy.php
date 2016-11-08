@@ -20,12 +20,7 @@ class LightNCandy implements RenderEngineInterface
 
 	protected function getTemplate($viewPath)
 	{
-		ob_start();
-		require $viewPath;
-		$template = ob_get_contents();
-		ob_clean();
-
-		return $template;
+		return file_get_contents($viewPath);
 	}
 
 	protected function getCompilerOptions()
