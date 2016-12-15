@@ -49,7 +49,7 @@ class DataProvider
 		return $this->engine;
 	}
 
-	public function setOptions($options)
+	public function setOptions(array $options)
 	{
 		$this->options = $options;
 		return $this;

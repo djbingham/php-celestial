@@ -20,10 +20,11 @@ class DataProviderModule
 	public function buildProvider(array $providerManifest)
 	{
 		$providerEngine = $this->getProviderEngine($providerManifest['engine']);
+		$providerOptions = isset($providerManifest['options']) ? $providerManifest['options'] : [];
 
 		$provider = new DataProvider();
-		$provider->setEngine($providerEngine)
-			->setOptions($providerManifest['options']);
+		$provider->setEngine($providerEngine);
+		$provider->setOptions($providerOptions);
 
 		return $provider;
 	}
