@@ -90,6 +90,7 @@ class Config extends BaseConfig
 					'providers' => array(
 						'authentication' => 'Sloth\\Module\\DataProvider\\Provider\\AuthenticationDataProvider',
 						'request.getProperty' => 'Sloth\\Module\\DataProvider\\Provider\\Request\\GetParameterDataProvider',
+						'request' => 'Sloth\\Module\\DataProvider\\Provider\\RequestProvider',
 						'resource' => 'Sloth\\Module\\DataProvider\\Provider\\ResourceProvider',
 						'resourceList' => 'Sloth\\Module\\DataProvider\\Provider\\ResourceListProvider',
 						'session' => 'Sloth\\Module\\DataProvider\\Provider\\SessionDataProvider',

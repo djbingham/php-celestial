@@ -1,0 +1,27 @@
+<h1>Using Request Parameters</h1>
+<table>
+	<tr>
+		<th>Parameter</th>
+		<th>Value</th>
+	</tr>
+	<tr>
+		<td>URI:</td>
+		<td>{{data.request.uri}}</td>
+	</tr>
+	<tr>
+		<td>Method:</td>
+		<td>{{data.request.method}}</td>
+	</tr>
+	<tr>
+		<td>Path:</td>
+		<td>{{data.request.path}}</td>
+	</tr>
+	<tr>
+		<td>Query String:</td>
+		<td>{{data.request.queryString}}</td>
+	</tr>
+	<tr>
+		<td>GET 'prop' Parameter:</td>
+		<td>{{data.request.params.get.prop}}</td>
+	</tr>
+</table>

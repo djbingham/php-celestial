@@ -3,6 +3,15 @@
 		"engine": "mustache",
 		"path": "home.html"
 	},
+	"using/request/params": {
+		"engine": "mustache",
+		"path": "usingRequest.html",
+		"dataProviders": {
+			"request": {
+				"engine": "request"
+			}
+		}
+	},
 	"options": {
 		"engine": "handlebars",
 		"path": "optionsDemo.html",
