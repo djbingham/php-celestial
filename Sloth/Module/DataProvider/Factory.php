@@ -37,7 +37,8 @@ class Factory extends AbstractModuleFactory
 			'dataProviderModule' => $module,
 			'resourceModule' => $this->getResourceModule(),
 			'sessionModule' => $this->getSessionModule(),
-			'authenticationModule' => $this->getAuthenticationModule()
+			'authenticationModule' => $this->getAuthenticationModule(),
+			'requestModule' => $this->getRequestModule()
 		);
 	}
 
@@ -54,6 +55,11 @@ class Factory extends AbstractModuleFactory
 	protected function getAuthenticationModule()
 	{
 		return $this->app->module('authentication');
+	}
+
+	protected function getRequestModule()
+	{
+		return $this->app->module('request');
 	}
 
 	/**

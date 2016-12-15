@@ -5,6 +5,7 @@ use Sloth\Module\Authentication\AuthenticationModule;
 use Sloth\Module\DataProvider\DataProviderModule;
 use Sloth\Module\DataProvider\Face\DataProviderInterface;
 use Sloth\Module\Data\Resource\ResourceModule;
+use Sloth\Module\Request\RequestModule;
 use Sloth\Module\Session\SessionModule;
 
 abstract class AbstractDataProvider implements DataProviderInterface
@@ -29,6 +30,11 @@ abstract class AbstractDataProvider implements DataProviderInterface
 	 */
 	protected $authenticationModule;
 
+	/**
+	 * @var RequestModule
+	 */
+	protected $requestModule;
+
 	abstract protected function validateDependencies(array $dependencies);
 
 	public function __construct(array $dependencies)
@@ -38,5 +44,6 @@ abstract class AbstractDataProvider implements DataProviderInterface
 		$this->dataProviderModule = $dependencies['dataProviderModule'];
 		$this->sessionModule = $dependencies['sessionModule'];
 		$this->authenticationModule = $dependencies['authenticationModule'];
+		$this->requestModule = $dependencies['requestModule'];
 	}
 }
