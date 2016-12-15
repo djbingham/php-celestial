@@ -7,6 +7,9 @@ class RequestModule
 {
 	use InternalCacheTrait;
 
+	/**
+	 * @return Request
+	 */
 	public function fromServerVars()
 	{
 		if (!$this->isCached('fromServerVars')) {
@@ -15,15 +18,11 @@ class RequestModule
 			if (!array_key_exists('query', $urlParts)) {
 				$urlParts['query'] = '';
 			}
-			if (!array_key_exists('fragment', $urlParts)) {
-				$urlParts['fragment'] = '';
-			}
 			$properties = array(
 				'method' => strtolower($_SERVER['REQUEST_METHOD']),
 				'uri' => urldecode($requestUri),
 				'path' => $urlParts['path'],
 				'queryString' => $urlParts['query'],
-				'fragment' => $urlParts['fragment'],
 				'params' => array(
 					'get' => $_GET,
 					'post' => $_POST,

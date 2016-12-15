@@ -31,11 +31,6 @@ interface RequestInterface
 	public function getQueryString();
 
 	/**
-	 * @return string
-	 */
-	public function getFragment();
-
-	/**
 	 * @return Params
 	 */
 	public function getParams();

@@ -28,11 +28,6 @@ class Request implements RequestInterface
 	protected $queryString;
 
 	/**
-	 * @var string
-	 */
-	protected $fragment;
-
-	/**
 	 * @var Params
 	 */
 	protected $params;
@@ -85,11 +80,6 @@ class Request implements RequestInterface
 		return $this->queryString;
 	}
 
-	public function getFragment()
-	{
-		return $this->fragment;
-	}
-
 	public function getParams()
 	{
 		return $this->params;
@@ -102,14 +92,13 @@ class Request implements RequestInterface
             'uri' => $this->getUri(),
             'path' => $this->getPath(),
             'queryString' => $this->getQueryString(),
-            'fragment' => $this->getFragment(),
             'params' => $this->getParams()->toArray()
         );
     }
 
 	protected function validateProperties(array $properties)
 	{
-		$required = array('method', 'uri', 'path', 'queryString', 'fragment', 'params');
+		$required = array('method', 'uri', 'path', 'queryString', 'params');
 		$missing = array_diff($required, array_keys($properties));
 		if (!empty($missing)) {
 			throw new InvalidArgumentException(
@@ -125,7 +114,7 @@ class Request implements RequestInterface
 			}
 		}
 
-		$stringProperties = array('method', 'uri', 'path', 'queryString', 'fragment');
+		$stringProperties = array('method', 'uri', 'path', 'queryString');
 		foreach ($stringProperties as $propertyName) {
 			if (!is_string($properties[$propertyName])) {
 				throw new InvalidArgumentException(
