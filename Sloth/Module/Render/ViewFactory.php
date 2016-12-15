@@ -84,11 +84,13 @@ class ViewFactory implements ViewFactoryInterface
 		$viewManifest = $this->getViewManifest($viewName);
 		$viewManifest = $this->padViewManifest($viewManifest);
 
+		$dataProviders = isset($viewManifest['dataProviders']) ? $viewManifest['dataProviders'] : [];
+
 		$view = new \Sloth\Module\Render\View();
 		$view->name = $viewName;
 		$view->path = $this->viewDirectory . DIRECTORY_SEPARATOR . str_replace('/', DIRECTORY_SEPARATOR, $viewManifest['path']);
 		$view->engine = $this->engineManager->getByName($viewManifest['engine']);
-		$view->dataProviders = $this->buildDataProviders($viewManifest['dataProviders']);
+		$view->dataProviders = $this->buildDataProviders($dataProviders);
 
 		return $view;
 	}
