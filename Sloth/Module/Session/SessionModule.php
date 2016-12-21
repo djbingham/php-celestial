@@ -5,6 +5,11 @@ use Sloth\Exception\InvalidArgumentException;
 
 class SessionModule
 {
+	public function getId()
+	{
+		return session_id();
+	}
+
 	public function exists($name)
 	{
 		return array_key_exists($name, $_SESSION);
