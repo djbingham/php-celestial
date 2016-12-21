@@ -10,4 +10,4 @@ RUN ln -s /etc/apache2/mods-available/rewrite.load /etc/apache2/mods-enabled/rew
 COPY ./web/vhosts/celestial.conf /etc/apache2/sites-available/celestial.conf
 RUN ln -s /etc/apache2/sites-available/celestial.conf /etc/apache2/sites-enabled/celestial.conf
 
-WORKDIR /usr/share/app
+WORKDIR /app

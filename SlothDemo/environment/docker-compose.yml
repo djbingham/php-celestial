@@ -10,12 +10,12 @@ web:
   links:
     - "database"
   ports:
-    - "180:80"
+    - "80:80"
   volumes:
-    - "../../:/usr/share/app/"
+    - "../../:/app/"
 
 database:
   build: .
   dockerfile: ./database/Dockerfile
   ports:
-    - "13306:3306"
+    - "3306:3306"
