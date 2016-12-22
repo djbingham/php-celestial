@@ -3,10 +3,22 @@ namespace SlothDemo\Resource;
 
 use Sloth\Module\Data\Resource\Definition\Resource\AttributeList;
 use Sloth\Module\Data\Resource\ResourceFactory;
+use Sloth\Module\Session\SessionModule;
 
 class UserFactory extends ResourceFactory
 {
-    public function getBy(AttributeList $attributes, array $filters = array())
+	/**
+	 * @var SessionModule
+	 */
+	private $session;
+
+	public function initialise()
+	{
+		$this->session = $this->app->module('session');
+		$this->session->set('foo', 'bar');
+	}
+
+	public function getBy(AttributeList $attributes, array $filters = array())
     {
         header('CustomResourceFactory: User::getBy');
         return parent::getBy($attributes, $filters);
@@ -14,7 +26,7 @@ class UserFactory extends ResourceFactory
 
     public function search(AttributeList $attributesToInclude, array $filters)
     {
-        header('CustomResourceFactory: User::search');
+        header('CustomResourceFactory: User::search - session: foo = ' . $this->session->get('foo'));
         return parent::search($attributesToInclude, $filters);
     }
 

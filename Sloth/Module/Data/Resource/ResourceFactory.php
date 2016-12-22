@@ -1,6 +1,7 @@
 <?php
 namespace Sloth\Module\Data\Resource;
 
+use Sloth\App;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Data\ResourceDataValidator\ResourceDataValidatorModule;
 use Sloth\Module\Data\Table\Face\FieldInterface;
@@ -13,6 +14,11 @@ use Sloth\Module\Data\Resource\Face\Definition\ResourceInterface;
 
 class ResourceFactory implements ResourceFactoryInterface
 {
+	/**
+	 * @var App
+	 */
+	protected $app;
+
 	/**
 	 * @var ResourceInterface
 	 */
@@ -29,13 +35,21 @@ class ResourceFactory implements ResourceFactoryInterface
 	private $dataValidator;
 
 	public function __construct(
+		App $app,
 		ResourceInterface $definition,
 		TableQueryModule $tableQueryModule,
 		ResourceDataValidatorModule $dataValidator
 	) {
+		$this->app = $app;
 		$this->resourceDefinition = $definition;
 		$this->tableQueryModule = $tableQueryModule;
 		$this->dataValidator = $dataValidator;
+		$this->initialise();
+	}
+
+	public function initialise()
+	{
+		// Custom resource factories can overwrite this method to define instantiation behaviour
 	}
 
 	public function getResourceDefinition()

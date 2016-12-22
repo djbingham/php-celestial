@@ -1,6 +1,7 @@
 <?php
 namespace Sloth\Module\Data\Resource\Face;
 
+use Sloth\App;
 use Sloth\Module\Data\ResourceDataValidator\ResourceDataValidatorModule;
 use Sloth\Module\Data\TableDataValidator\Result\ExecutedValidatorList;
 use Sloth\Module\Data\TableQuery\TableQueryModule;
@@ -11,11 +12,13 @@ use Sloth\Module\Data\Resource\ResourceList;
 interface ResourceFactoryInterface
 {
 	/**
+	 * @param App $app
 	 * @param Definition\ResourceInterface $definition
 	 * @param TableQueryModule $tableQueryModule
 	 * @param ResourceDataValidatorModule $dataValidator
 	 */
 	public function __construct(
+		App $app,
 		Definition\ResourceInterface $definition,
 		TableQueryModule $tableQueryModule,
 		ResourceDataValidatorModule $dataValidator

@@ -165,6 +165,7 @@ class ResourceModule
 		}
 
 		$factory = new $factoryClass(
+			$this->app,
 			$resourceDefinition,
 			$this->tableQueryModule,
 			$this->dataValidator
