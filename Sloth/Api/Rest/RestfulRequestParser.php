@@ -51,9 +51,8 @@ class RestfulRequestParser implements RequestParserInterface
 			}
 		}
 
-		$resourceName = implode('/', $resourcePathParts);
-		$resourceFactory = $this->resourceModule->getResourceFactory($resourceName);
-		$resourceDefinition = $this->resourceModule->resourceDefinitionBuilder()->buildFromName($resourceName);
+		$resourceFactory = $this->resourceModule->getResourceFactory($resourcePath);
+		$resourceDefinition = $this->resourceModule->resourceDefinitionBuilder()->buildFromName($resourcePath);
 
 		$requestProperties = $request->toArray();
 		$requestProperties['originalRequest'] = $request;
