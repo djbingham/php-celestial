@@ -40,7 +40,9 @@ class RestfulRequestParser implements RequestParserInterface
 		}
 
 		if (!$this->resourceModule->resourceExists($resourcePath)) {
-			$resourceId = array_pop($resourcePathParts);
+			if (count($resourcePathParts) > 1) {
+				$resourceId = array_pop($resourcePathParts);
+			}
 			$resourcePath = implode('/', $resourcePathParts);
 			if (!$this->resourceModule->resourceExists($resourcePath)) {
 				throw new Exception\InvalidRequestException(
