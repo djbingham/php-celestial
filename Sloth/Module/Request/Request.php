@@ -37,6 +37,11 @@ class Request implements RequestInterface
 	 */
 	protected $params;
 
+	/**
+	 * @var string
+	 */
+	protected $sessionId;
+
 	public function __construct(array $properties)
 	{
 		$this->validateProperties($properties);
@@ -95,17 +100,23 @@ class Request implements RequestInterface
 		return $this->params;
 	}
 
-    public function toArray()
-    {
-        return array(
-            'method' => $this->getMethod(),
+	public function getSessionId()
+	{
+		return $this->sessionId;
+	}
+
+	public function toArray()
+	{
+		return array(
+			'method' => $this->getMethod(),
 			'protocol' => $this->getProtocol(),
-            'uri' => $this->getUri(),
-            'path' => $this->getPath(),
-            'queryString' => $this->getQueryString(),
-            'params' => $this->getParams()->toArray()
-        );
-    }
+			'uri' => $this->getUri(),
+			'path' => $this->getPath(),
+			'queryString' => $this->getQueryString(),
+			'params' => $this->getParams()->toArray(),
+			'sessionId' => $this->getSessionId()
+		);
+	}
 
 	protected function validateProperties(array $properties)
 	{

@@ -5,6 +5,9 @@ require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'autoload.php';
 $init = new \SlothDemo\Initialisation();
 $app = $init->getApp();
 
+// Initialise a session
+$sessionModule = $app->module('session');
+
 /**
  * @var \Sloth\Module\Router\RouterModule $routerModule
  */

@@ -31,7 +31,8 @@ class RequestModule
 					'post' => $_POST,
 					'cookie' => $_COOKIE,
 					'server' => $_SERVER
-				)
+				),
+				'sessionId' => session_id()
 			);
 			$request = $this->buildRequest($properties);
 			$this->setCached('fromServerVars', $request);
