@@ -11,9 +11,13 @@ class RequestProvider extends AbstractDataProvider
 	{
 		$this->validateOptions($options);
 
-		$value = null;
+		$value = $this->requestModule->fromServerVars()->toArray();
 
-		return $this->requestModule->fromServerVars()->toArray();
+		if (isset($options['item'])) {
+			$value = $value[$options['item']];
+		}
+
+		return $value;
 	}
 
 	protected function validateDependencies(array $dependencies)
