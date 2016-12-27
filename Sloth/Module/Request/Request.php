@@ -15,6 +15,11 @@ class Request implements RequestInterface
 	/**
 	 * @var string
 	 */
+	protected $protocol;
+
+	/**
+	 * @var string
+	 */
 	protected $uri;
 
 	/**
@@ -65,6 +70,11 @@ class Request implements RequestInterface
 		return $this->method;
 	}
 
+	public function getProtocol()
+	{
+		return $this->protocol;
+	}
+
 	public function getUri()
 	{
 		return $this->uri;
@@ -89,6 +99,7 @@ class Request implements RequestInterface
     {
         return array(
             'method' => $this->getMethod(),
+			'protocol' => $this->getProtocol(),
             'uri' => $this->getUri(),
             'path' => $this->getPath(),
             'queryString' => $this->getQueryString(),
@@ -98,7 +109,7 @@ class Request implements RequestInterface
 
 	protected function validateProperties(array $properties)
 	{
-		$required = array('method', 'uri', 'path', 'queryString', 'params');
+		$required = array('method', 'protocol', 'uri', 'path', 'queryString', 'params');
 		$missing = array_diff($required, array_keys($properties));
 		if (!empty($missing)) {
 			throw new InvalidArgumentException(

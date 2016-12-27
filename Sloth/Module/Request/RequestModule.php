@@ -14,12 +14,15 @@ class RequestModule
 	{
 		if (!$this->isCached('fromServerVars')) {
 			$requestUri = urldecode($_SERVER['REQUEST_URI']);
+
 			$urlParts = parse_url(urldecode($requestUri));
 			if (!array_key_exists('query', $urlParts)) {
 				$urlParts['query'] = '';
 			}
+
 			$properties = array(
 				'method' => strtolower($_SERVER['REQUEST_METHOD']),
+				'protocol' => strtolower(isset($_SERVER['HTTPS'])) && $_SERVER['HTTPS'] !== 'Off' ? 'https' : 'http',
 				'uri' => urldecode($requestUri),
 				'path' => $urlParts['path'],
 				'queryString' => $urlParts['query'],
