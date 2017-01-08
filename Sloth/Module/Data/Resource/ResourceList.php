@@ -68,11 +68,11 @@ class ResourceList implements ResourceListInterface
 	 * @param int $index
 	 * @return ResourceInterface
 	 */
-	public function getByIndex($index)
+	public function &getByIndex($index)
 	{
 		$item = null;
 		if (array_key_exists($index, $this->resources)) {
-			$item = $this->resources[$index];
+			$item = &$this->resources[$index];
 		}
 		return $item;
 	}

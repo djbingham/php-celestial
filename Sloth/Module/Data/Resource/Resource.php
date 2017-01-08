@@ -55,7 +55,7 @@ class Resource implements ResourceInterface
 		return $this;
 	}
 
-	public function getAttribute($name)
+	public function &getAttribute($name)
 	{
 		if (!$this->hasAttribute($name)) {
 			$attributeList = json_encode(array_keys($this->getAttributes()));
