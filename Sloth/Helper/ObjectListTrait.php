@@ -15,6 +15,18 @@ trait ObjectListTrait
 	 */
 	protected $position = 0;
 
+	public function __clone()
+	{
+		$originalItems = $this->items;
+
+		$this->items = array();
+		$this->position = 0;
+
+		foreach ($originalItems as $item) {
+			$this->append(clone $item);
+		}
+	}
+
 	public function current()
 	{
 		return $this->getByIndex($this->position);
