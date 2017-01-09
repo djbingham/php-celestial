@@ -73,7 +73,7 @@ class UpdateController extends RestfulController
 				$primaryAttributeName => $primaryAttributeValue
 			);
 
-			$resource = $resourceFactory->getBy($resourceDefinition->attributes, $filters)->current();
+			$resource = $resourceFactory->getBy($resourceDefinition->attributes, $filters)->getByIndex(0);
 
 			$resourceFactory->update($resource->getAttributes(), $attributes);
 
