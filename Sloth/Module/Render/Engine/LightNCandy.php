@@ -33,7 +33,7 @@ class LightNCandy implements RenderEngineInterface
 
 	protected function getFlags()
 	{
-		return LightNCandyEngine::FLAG_PARENT;
+		return LightNCandyEngine::FLAG_PARENT | LightNCandyEngine::FLAG_SPVARS;
 	}
 
 	protected function getHelpers()
