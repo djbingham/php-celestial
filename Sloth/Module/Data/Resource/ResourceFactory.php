@@ -105,7 +105,7 @@ class ResourceFactory implements ResourceFactoryInterface
 
 		if ($validation->isValid()) {
 			$data = $this->tableQueryModule->update()->execute($this->resourceDefinition->table, $filters, $attributes);
-			$resource = $this->instantiateResource($data);
+			$resource = $this->instantiateResourceList($data);
 		} else {
 			$errors = implode(" \r\n", $validation->getErrors()->getMessages());
 			throw new InvalidRequestException(
