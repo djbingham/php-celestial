@@ -17,9 +17,10 @@
 	],
 	"require": {
 		"djbingham/php-celestial-mysql": "dev-master",
-		"mustache/mustache": "v2.7.0",
-		"phpunit/phpunit": "4.6.4",
-		"zordius/lightncandy": "dev-master"
+		"mustache/mustache": "*",
+		"phpunit/phpunit": "*",
+		"zordius/lightncandy": "*",
+		"monolog/monolog": "*"
 	},
 	"autoload": {
 		"psr-4": {
