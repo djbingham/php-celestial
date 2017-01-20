@@ -26,7 +26,7 @@ class LogModule
 	}
 
 	/**
-	 * Write to all logs with a common message (and optional data)
+	 * Write to all logs with a common message, contextual data and reporting level
 	 *
 	 * @param string $message
 	 * @param array $context
@@ -40,5 +40,45 @@ class LogModule
 			$logger->log($level, $message, $context);
 		}
 		return $this;
+	}
+
+	public function logDebug($message, array $context = [])
+	{
+		return $this->log($message, $context, Logger::DEBUG);
+	}
+
+	public function logInfo($message, array $context = [])
+	{
+		return $this->log($message, $context, Logger::INFO);
+	}
+
+	public function logNotice($message, array $context = [])
+	{
+		return $this->log($message, $context, Logger::NOTICE);
+	}
+
+	public function logWarning($message, array $context = [])
+	{
+		return $this->log($message, $context, Logger::WARNING);
+	}
+
+	public function logError($message, array $context = [])
+	{
+		return $this->log($message, $context, Logger::ERROR);
+	}
+
+	public function logCritical($message, array $context = [])
+	{
+		return $this->log($message, $context, Logger::CRITICAL);
+	}
+
+	public function logAlert($message, array $context = [])
+	{
+		return $this->log($message, $context, Logger::ALERT);
+	}
+
+	public function logEmergency($message, array $context = [])
+	{
+		return $this->log($message, $context, Logger::EMERGENCY);
 	}
 }
