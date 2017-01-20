@@ -17,10 +17,11 @@
 	],
 	"require": {
 		"djbingham/php-celestial-mysql": "dev-master",
+		"monolog/monolog": "*",
 		"mustache/mustache": "*",
 		"phpunit/phpunit": "*",
-		"zordius/lightncandy": "*",
-		"monolog/monolog": "*"
+		"theorchard/monolog-cascade": "*",
+		"zordius/lightncandy": "*"
 	},
 	"autoload": {
 		"psr-4": {

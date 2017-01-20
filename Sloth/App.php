@@ -1,6 +1,7 @@
 <?php
 namespace Sloth;
 
+use Sloth\Module\Log\LogModule;
 use Sloth\Module\ModuleLoader;
 
 class App
@@ -15,6 +16,11 @@ class App
 	 */
 	protected $config;
 
+	/**
+	 * @var LogModule
+	 */
+	protected $logger;
+
 	public function __construct(Base\Config $config)
 	{
 		$this->config = $config;
@@ -24,6 +30,14 @@ class App
 	{
 		$this->moduleLoader = $moduleLoader;
 		return $this;
+	}
+
+	public function getLogModule()
+	{
+		if ($this->logger === null) {
+			$this->logger = $this->module($this->config->logModule());
+		}
+		return $this->logger;
 	}
 
 	public function module($name)

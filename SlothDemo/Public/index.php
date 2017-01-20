@@ -9,6 +9,11 @@ $app = $init->getApp();
 $sessionModule = $app->module('session');
 
 /**
+ * @var \Sloth\Module\Log\LogModule $logModule
+ */
+$logModule = $app->module('log');
+
+/**
  * @var \Sloth\Module\Router\RouterModule $routerModule
  */
 $routerModule = $app->module('router');
@@ -21,6 +26,8 @@ $requestModule = $app->module('request');
 $request = $requestModule->fromServerVars();
 $routedRequest = $routerModule->route($request);
 $controller = $routedRequest->getController();
+
+$logModule->log('Executing request', $request->toArray());
 
 echo $controller->execute($routedRequest);
 

@@ -26,6 +26,11 @@ class Config extends BaseConfig
 		return 'SlothDemo';
 	}
 
+	public function logModule()
+	{
+		return 'log';
+	}
+
     public function modules()
     {
         return new BaseConfig\Modules(array(
@@ -104,6 +109,7 @@ class Config extends BaseConfig
 					'salt' => 'SlothDemoHashingSalt'
 				)
 			),
+			'log' => require('Config/Module/log.php'),
 			'mysql' => array(
 				'factoryClass' => 'Sloth\\Module\\MySql\\Factory',
 				'options' => array(

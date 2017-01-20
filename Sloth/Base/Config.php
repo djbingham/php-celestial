@@ -2,6 +2,8 @@
 
 namespace Sloth\Base;
 
+use Monolog\Logger;
+
 abstract class Config
 {
 	/**
@@ -18,6 +20,11 @@ abstract class Config
 	 * @return string
 	 */
 	abstract public function rootNamespace();
+
+    /**
+     * @return Logger
+     */
+    abstract public function logModule();
 
     /**
      * @return Config\Modules
