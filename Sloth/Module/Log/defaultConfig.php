@@ -25,13 +25,13 @@ return [
 				'class' => 'Monolog\Handler\StreamHandler',
 				'level' => 'INFO',
 				'formatter' => 'dashed',
-				'stream' => '../../log/info.log'
+				'stream' => 'log/info.log'
 			],
 
 			'error_file_handler' => [
 				'class' => 'Monolog\Handler\StreamHandler',
 				'level' => 'ERROR',
-				'stream' => '../../log/error.log',
+				'stream' => 'log/error.log',
 				'formatter' => 'spaced'
 			]
 		],
