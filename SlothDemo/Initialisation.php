@@ -40,13 +40,4 @@ class Initialisation implements \Sloth\Face\Initialisation
 		}
 		return $moduleLoader;
 	}
-
-	/**
-	 * @param App $app
-	 * @return Router
-	 */
-	protected function getRouter(App $app)
-	{
-		return $app->module('router');
-	}
 }
