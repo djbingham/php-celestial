@@ -39,6 +39,6 @@ class TableDefinitionBuilderTest extends UnitTest
 
 	public function testConnectedTablesHaveUniqueAliases()
     {
-
+		$this->markTestIncomplete();
     }
 }
