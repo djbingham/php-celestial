@@ -1,5 +1,7 @@
 <?php
 
+date_default_timezone_set('UTC');
+
 require dirname(__DIR__) . DIRECTORY_SEPARATOR . 'autoload.php';
 
 $init = new \SlothDemo\Initialisation();
@@ -24,10 +26,11 @@ $routerModule = $app->module('router');
 $requestModule = $app->module('request');
 
 $request = $requestModule->fromServerVars();
+
 $routedRequest = $routerModule->route($request);
 $controller = $routedRequest->getController();
 
-$logModule->log('Executing request', $request->toArray());
+$logModule->logInfo(sprintf('Executing request using controller `%s`', get_class($controller)), $routedRequest->toArray());
 
 echo $controller->execute($routedRequest);
 
