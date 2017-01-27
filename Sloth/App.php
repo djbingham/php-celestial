@@ -72,6 +72,7 @@ class App
 
 	public function redirect($newUrl)
 	{
+		$this->getLogModule()->logInfo(sprintf('Redirecting to `%s`', $newUrl));
 		header(sprintf('Location: %s', $newUrl));
 		exit;
 	}
