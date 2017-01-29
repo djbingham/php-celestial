@@ -10,7 +10,7 @@ web:
   links:
     - "database"
   ports:
-    - "80:80"
+    - "8000:80"
   volumes:
     - "../../:/app/"
 
@@ -18,4 +18,4 @@ database:
   build: .
   dockerfile: ./database/Dockerfile
   ports:
-    - "3306:3306"
+    - "33061:3306"
