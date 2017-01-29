@@ -16,6 +16,7 @@
 		}
 	],
 	"require": {
+		"bramus/monolog-colored-line-formatter": "^2.0",
 		"djbingham/php-celestial-mysql": "dev-master",
 		"monolog/monolog": "*",
 		"mustache/mustache": "*",

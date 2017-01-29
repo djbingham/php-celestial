@@ -45,12 +45,21 @@ abstract class RestfulController extends Controller
 	 */
     public function execute(RoutedRequestInterface $request)
     {
+		$logger = $this->app->getLogModule()->createLogger($this);
+
+		$logger->debug('Controller executing request.', ['controller' => get_class($this)]);
+
 		$parsedRequest = $this->parseRequest($request);
+
+		$logger->debug('Parsed request.', ['result' => $parsedRequest->toArray()]);
+
 		$method = 'handle' . ucfirst($parsedRequest->getMethod());
 
 		if (!method_exists($this, $method)) {
 			throw new Exception\InvalidRequestException(sprintf('Method not found: %s', $method));
 		}
+
+		$logger->debug(sprintf('Passing parsed request to method `%s`.', $method));
 
 		return $this->$method($parsedRequest);
     }

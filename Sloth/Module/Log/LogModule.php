@@ -1,7 +1,6 @@
 <?php
 namespace Sloth\Module\Log;
 
-use Monolog\Logger;
 use Sloth\Exception\InvalidArgumentException;
 
 class LogModule
@@ -9,76 +8,45 @@ class LogModule
 	/**
 	 * @var array
 	 */
-	private $loggers = [];
+	private $logWriters = [];
 
-	public function setLogger($name, Logger $logger)
+	public function setLogWriter($name, \Monolog\Logger $writer)
 	{
-		$this->loggers[$name] = $logger;
+		$this->logWriters[$name] = $writer;
 		return $this;
 	}
 
-	public function getLogger($name = 'default')
+	public function getLogWriter($name = 'default')
 	{
-		if (!isset($this->loggers[$name])) {
-			throw new InvalidArgumentException('No log found with name `%s`.', $name);
+		if (!isset($this->logWriters[$name])) {
+
+			throw new InvalidArgumentException('No log writer found with name `%s`.', $name);
 		}
-		return $this->loggers[$name];
+
+		return $this->logWriters[$name];
 	}
 
-	/**
-	 * Write to all logs with a common message, contextual data and reporting level
-	 *
-	 * @param string $message
-	 * @param array $context
-	 * @param int $level
-	 * @return $this
-	 */
-	public function log($message, array $context = [], $level = Logger::INFO)
+	public function createLogger($context = [])
 	{
-		/** @var Logger $logger */
-		foreach ($this->loggers as $logger) {
-			$logger->log($level, $message, $context);
+		switch (true) {
+
+			case $context === []:
+				$contextArray = [];
+				break;
+
+			case is_array($context) || ($context instanceof \StdClass):
+				$contextArray = (array) $context;
+				break;
+
+			case is_object($context) && !($context instanceof \StdClass):
+				$contextArray = ['logSource' => get_class($context)];
+				break;
+
+			default:
+				$contextArray = ['logSource' => (string) $context];
+				break;
 		}
-		return $this;
-	}
 
-	public function logDebug($message, array $context = [])
-	{
-		return $this->log($message, $context, Logger::DEBUG);
-	}
-
-	public function logInfo($message, array $context = [])
-	{
-		return $this->log($message, $context, Logger::INFO);
-	}
-
-	public function logNotice($message, array $context = [])
-	{
-		return $this->log($message, $context, Logger::NOTICE);
-	}
-
-	public function logWarning($message, array $context = [])
-	{
-		return $this->log($message, $context, Logger::WARNING);
-	}
-
-	public function logError($message, array $context = [])
-	{
-		return $this->log($message, $context, Logger::ERROR);
-	}
-
-	public function logCritical($message, array $context = [])
-	{
-		return $this->log($message, $context, Logger::CRITICAL);
-	}
-
-	public function logAlert($message, array $context = [])
-	{
-		return $this->log($message, $context, Logger::ALERT);
-	}
-
-	public function logEmergency($message, array $context = [])
-	{
-		return $this->log($message, $context, Logger::EMERGENCY);
+		return new Logger\ContextLogger($this->logWriters, $contextArray);
 	}
 }

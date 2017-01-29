@@ -2,6 +2,7 @@
 namespace Sloth\Module\Router;
 
 use Sloth\Base;
+use Sloth\Module\Log\Face\LoggerInterface;
 use Sloth\Module\Request\Request;
 use Sloth\Exception\InvalidRequestException;
 use Sloth\Module\Request\RequestModule;
@@ -13,30 +14,54 @@ class RouterModule extends \Sloth\Module\Router\Base\Router
 	 */
 	private $requestModule;
 
+	/**
+	 * @var LoggerInterface
+	 */
+	private $logger;
+
 	public function __construct(array $properties)
 	{
 		parent::__construct($properties);
+
 		$this->requestModule = $properties['requestModule'];
+		$this->logger = $properties['app']->getLogModule()->createContextLogger($this);
 	}
 
 	public function route(Request $request)
 	{
+		$requestProperties = $request->toArray();
+
+		$this->logger->info('Searching routes.', ['request' => $requestProperties]);
+
 		$routeData = $this->searchRoutes($request);
+
 		if (empty($routeData['controller'])) {
+			$this->logger->debug('Route not found. Searching controllers.');
+
 			$routeData = $this->searchControllers($request);
 		}
 
-		if (!array_key_exists('controller', $routeData) && !array_key_exists('namespace', $routeData)) {
+		if (array_key_exists('controller', $routeData) || array_key_exists('namespace', $routeData)) {
+			$this->logger->info('Route found', ['routeData' => $routeData]);
+		} else {
 			throw new InvalidRequestException(
 				sprintf('No controller or namespace found for request: %s', $request->getUri())
 			);
 		}
 
-		$requestProperties = $request->toArray();
 		$requestProperties['controllerPath'] = $routeData['route'];
 		$requestProperties['controller'] = $this->instantiateController($routeData['controller']);
 
-		return $this->requestModule->buildRoutedRequest($requestProperties);
+		$this->logger->debug(
+			'Controller found and instantiated.',
+			['controllerClass' => get_class($requestProperties['controller'])]
+		);
+
+		$routedRequest = $this->requestModule->buildRoutedRequest($requestProperties);
+
+		$this->logger->debug('Request routed successfully.', ['routedRequest' => $routedRequest->toArray()]);
+
+		return $routedRequest;
 	}
 
 	protected function searchRoutes(Request $request)

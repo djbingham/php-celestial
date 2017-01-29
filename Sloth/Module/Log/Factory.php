@@ -12,8 +12,8 @@ class Factory extends AbstractModuleFactory
 
 		Cascade::fileConfig($this->options);
 
-		foreach (array_keys($this->options['loggers']) as $loggerName) {
-			$module->setLogger($loggerName, Cascade::logger($loggerName));
+		foreach (array_keys($this->options['loggers']) as $logWriterName) {
+			$module->setLogWriter($logWriterName, Cascade::logger($logWriterName));
 		}
 
 		return $module;

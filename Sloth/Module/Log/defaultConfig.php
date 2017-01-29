@@ -5,34 +5,40 @@ return [
 		// Monolog-Cascade config
 		'version' => 1,
 		'formatters' => [
-			'spaced' => [
-				'format' => "%datetime% %channel%.%level_name%  %message%\n",
+			'with_context' => [
+				'class' => 'Bramus\Monolog\Formatter\ColoredLineFormatter',
+				'format' => "%datetime% %channel%.%level_name%  %message%  %context%\n",
 				'include_stacktraces' => true
 			],
-			'dashed' => [
-				'format' => "%datetime%-%channel%.%level_name% - %message%\n"
+			'with_message_source' => [
+				'class' => 'Bramus\Monolog\Formatter\ColoredLineFormatter',
+				'format' => "%datetime% %channel%.%level_name%  %message%  (source: %context.logSource%)\n"
 			],
+			'without_context' => [
+				'class' => 'Bramus\Monolog\Formatter\ColoredLineFormatter',
+				'format' => "%datetime% %channel%.%level_name%  %message%\n"
+			]
 		],
 		'handlers' => [
 			'console' => [
 				'class' => 'Monolog\Handler\StreamHandler',
-				'level' => 'DEBUG',
-				'formatter' => 'spaced',
+				'level' => 'INFO',
+				'formatter' => 'with_message_source',
 				'stream' => 'php://stdout'
 			],
 
-			'info_file_handler' => [
+			'debug_file' => [
 				'class' => 'Monolog\Handler\StreamHandler',
-				'level' => 'INFO',
-				'formatter' => 'dashed',
-				'stream' => 'log/info.log'
+				'level' => 'DEBUG',
+				'stream' => 'log/debug.log',
+				'formatter' => 'with_context'
 			],
 
-			'error_file_handler' => [
+			'error_file' => [
 				'class' => 'Monolog\Handler\StreamHandler',
 				'level' => 'ERROR',
 				'stream' => 'log/error.log',
-				'formatter' => 'spaced'
+				'formatter' => 'with_message_source'
 			]
 		],
 		'processors' => [
@@ -42,7 +48,7 @@ return [
 		],
 		'loggers' => [
 			'default' => [
-				'handlers' => ['console', 'info_file_handler', 'error_file_handler']
+				'handlers' => ['console', 'debug_file', 'error_file']
 			]
 		]
 	]

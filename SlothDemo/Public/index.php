@@ -15,6 +15,8 @@ $sessionModule = $app->module('session');
  */
 $logModule = $app->module('log');
 
+$logger = $logModule->createLogger(__FILE__);
+
 /**
  * @var \Sloth\Module\Router\RouterModule $routerModule
  */
@@ -30,8 +32,15 @@ $request = $requestModule->fromServerVars();
 $routedRequest = $routerModule->route($request);
 $controller = $routedRequest->getController();
 
-$logModule->logInfo(sprintf('Executing request using controller `%s`', get_class($controller)), $routedRequest->toArray());
+$logger->info('Executing request', [
+	'request' => $routedRequest->toArray(),
+	'controller' => get_class($controller)
+]);
 
-echo $controller->execute($routedRequest);
+$response = $controller->execute($routedRequest);
+
+$logger->info('Responding', ['response' => $response]);
+
+echo $response;
 
 echo sprintf('<link rel="stylesheet" type="text/css" href="%s/public/css/theme.css">', $app->rootUrl());

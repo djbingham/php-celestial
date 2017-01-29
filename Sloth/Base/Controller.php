@@ -12,6 +12,7 @@ abstract class Controller
 	public function __construct(Sloth\App $app)
 	{
 		$this->app = $app;
+		$this->app->getLogModule()->createLogger(__FILE__)->debug(sprintf('Initialised controller'));
 	}
 
     protected function module($name)
