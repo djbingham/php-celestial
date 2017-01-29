@@ -19,7 +19,7 @@ interface ViewInterface
 	public function getEngine();
 
 	/**
-	 * @return DataProviderListInterface
+	 * @return array
 	 */
 	public function getDataProviders();
 }

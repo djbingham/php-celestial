@@ -1,7 +1,6 @@
 <?php
 namespace Sloth\Module\Render;
 
-use Sloth\Module\Render\Face\DataProviderListInterface;
 use Sloth\Module\Render\Face\RenderEngineInterface;
 use Sloth\Module\Render\Face\ViewInterface;
 
@@ -23,7 +22,7 @@ class View implements ViewInterface
 	public $engine;
 
 	/**
-	 * @var DataProviderListInterface
+	 * @var array
 	 */
 	public $dataProviders;
 
