@@ -1,6 +1,7 @@
 <?php
 namespace Sloth\Module\Router;
 
+use Sloth\App;
 use Sloth\Base;
 use Sloth\Module\Log\Face\LoggerInterface;
 use Sloth\Module\Request\Request;
@@ -23,8 +24,11 @@ class RouterModule extends \Sloth\Module\Router\Base\Router
 	{
 		parent::__construct($properties);
 
+		/** @var App $app */
+		$app = $properties['app'];
+
 		$this->requestModule = $properties['requestModule'];
-		$this->logger = $properties['app']->getLogModule()->createContextLogger($this);
+		$this->logger = $app->getLogModule()->createLogger($this);
 	}
 
 	public function route(Request $request)
