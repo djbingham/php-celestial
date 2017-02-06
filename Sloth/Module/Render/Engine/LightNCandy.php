@@ -77,7 +77,7 @@ class LightNCandy implements RenderEngineInterface
 
 	private function compileFlags(array $flags)
 	{
-		$compiledFlags = $flags[0];
+		$compiledFlags = 0;
 
 		foreach ($flags as $flagName) {
 			$flagConstant = sprintf('LightnCandy\LightnCandy::FLAG_%s', $flagName);
