@@ -1,0 +1,13 @@
+<h2>Helper Demo</h2>
+
+<p>This page demonstrates the use of a helper function with Handlebars. Modify the GET parameters `greater` and `lesser` in the request URL to see the `MathComparison.ifLessThan` helper in action.</p>
+
+<p>
+	Is {{data.lesser}} less than {{data.greater}}?
+
+	{{#ifLessThan data.lesser data.greater}}
+		Yes
+	{{else}}
+		No
+	{{/ifLessThan}}
+</p>

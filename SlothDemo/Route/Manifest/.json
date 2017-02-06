@@ -12,6 +12,29 @@
 			}
 		}
 	},
+	"using/helper/functions": {
+		"engine": "handlebars",
+		"path": "helperDemo.html",
+		"dataProviders": {
+			"greater": {
+				"engine": "request.getProperty",
+				"options": {
+					"property": "greater"
+				}
+			},
+			"lesser": {
+				"engine": "request.getProperty",
+				"options": {
+					"property": "lesser"
+				}
+			}
+		},
+		"options": {
+			"helpers": {
+				"ifLessThan": "SlothDemo\\ViewHelper\\MathComparison::ifLessThan"
+			}
+		}
+	},
 	"options": {
 		"engine": "handlebars",
 		"path": "optionsDemo.html",
