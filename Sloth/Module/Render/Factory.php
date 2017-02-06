@@ -66,7 +66,7 @@ class Factory extends AbstractModuleFactory
 		}
 
 		foreach ($engines as $engineName => $engineClass) {
-			$instances[$engineName] = new $engineClass();
+			$instances[$engineName] = new $engineClass([]);
 		}
 
 		return $instances;

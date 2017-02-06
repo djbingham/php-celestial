@@ -68,7 +68,7 @@ class RenderModule implements RendererInterface
 			$parameters['data'] = $this->getViewData($view);
 		}
 
-		return $engine->render($view->getPath(), $parameters);
+		return $engine->render($view, $parameters);
 	}
 
 	protected function getViewData(ViewInterface $view)

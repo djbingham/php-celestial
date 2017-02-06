@@ -22,4 +22,9 @@ interface ViewInterface
 	 * @return array
 	 */
 	public function getDataProviders();
+
+	/**
+	 * @return array
+	 */
+	public function getOptions();
 }

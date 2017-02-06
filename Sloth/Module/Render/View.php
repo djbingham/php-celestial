@@ -26,6 +26,11 @@ class View implements ViewInterface
 	 */
 	public $dataProviders;
 
+	/**
+	 * @var array
+	 */
+	public $options;
+
 	public function getName()
 	{
 		return $this->name;
@@ -44,6 +49,11 @@ class View implements ViewInterface
 	public function getDataProviders()
 	{
 		return $this->dataProviders;
+	}
+
+	public function getOptions()
+	{
+		return $this->options;
 	}
 
 	public function getFunctionName()
