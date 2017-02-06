@@ -31,7 +31,7 @@
 		},
 		"options": {
 			"helpers": {
-				"ifLessThan": "SlothDemo\\ViewHelper\\MathComparison::ifLessThan"
+				"ifLessThan": "SlothDemo\\ViewHelper\\Handlebars\\MathComparison::ifLessThan"
 			}
 		}
 	},

@@ -1,5 +1,5 @@
 <?php
-namespace SlothDemo\ViewHelper;
+namespace SlothDemo\ViewHelper\Handlebars;
 
 class MathComparison
 {
@@ -17,7 +17,21 @@ class MathComparison
 		return $output;
 	}
 
-	public function ifLessThan($lesserValue, $greaterValue, $context)
+	public function ifNotEqual($a, $b, $context)
+	{
+		$args = func_get_args();
+		$context = $args[count($args) - 1];
+
+		if ((float) $a !== (float) $b) {
+			$output = isset($context['fn']) ? $context['fn']($this) : '';
+		} else {
+			$output = isset($context['inverse']) ? $context['inverse']($this) : '';
+		}
+
+		return $output;
+	}
+
+	public function ifLessThan($greaterValue, $lesserValue, $context)
 	{
 		if ($lesserValue < $greaterValue) {
 			$output = isset($context['fn']) ? $context['fn']($this) : '';
@@ -28,9 +42,9 @@ class MathComparison
 		return $output;
 	}
 
-	public function ifLessThanOrEqual($lesserValue, $greaterValue, $context)
+	public function ifNotLessThan($lesserValue, $greaterValue, $context)
 	{
-		if ($lesserValue <= $greaterValue) {
+		if ($greaterValue >= $lesserValue) {
 			$output = isset($context['fn']) ? $context['fn']($this) : '';
 		} else {
 			$output = isset($context['inverse']) ? $context['inverse']($this) : '';
@@ -39,7 +53,7 @@ class MathComparison
 		return $output;
 	}
 
-	public function ifGreaterThan($greaterValue, $lesserValue, $context)
+	public function ifGreaterThan($lesserValue, $greaterValue, $context)
 	{
 		if ($greaterValue > $lesserValue) {
 			$output = isset($context['fn']) ? $context['fn']($this) : '';
@@ -50,9 +64,9 @@ class MathComparison
 		return $output;
 	}
 
-	public function ifGreaterThanOrEqual($greaterValue, $lesserValue, $context)
+	public function ifNotGreaterThan($greaterValue, $lesserValue, $context)
 	{
-		if ($greaterValue >= $lesserValue) {
+		if ($lesserValue <= $greaterValue) {
 			$output = isset($context['fn']) ? $context['fn']($this) : '';
 		} else {
 			$output = isset($context['inverse']) ? $context['inverse']($this) : '';
