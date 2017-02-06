@@ -1,6 +1,7 @@
 <?php
 namespace Sloth;
 
+use Sloth\Module\Log\Face\LoggerInterface;
 use Sloth\Module\Log\LogModule;
 use Sloth\Module\ModuleLoader;
 
@@ -19,6 +20,11 @@ class App
 	/**
 	 * @var LogModule
 	 */
+	protected $logModule;
+
+	/**
+	 * @var Module\Log\Face\LoggerInterface
+	 */
 	protected $logger;
 
 	public function __construct(Base\Config $config)
@@ -33,14 +39,16 @@ class App
 	}
 
 	/**
-	 * @return LogModule
+	 * @return LoggerInterface
 	 */
 	public function getLogModule()
 	{
 		if ($this->logger === null) {
-			$this->logger = $this->module($this->config->logModule());
+			$this->logModule = $this->module($this->config->logModule());
+
+			$this->logger = $this->logModule->createLogger($this);
 		}
-		return $this->logger;
+		return $this->logModule;
 	}
 
 	public function module($name)
@@ -75,7 +83,7 @@ class App
 
 	public function redirect($newUrl)
 	{
-		$this->getLogModule()->logInfo(sprintf('Redirecting to `%s`', $newUrl));
+		$this->logger->info(sprintf('Redirecting to `%s`', $newUrl));
 		header(sprintf('Location: %s', $newUrl));
 		exit;
 	}
