@@ -32,6 +32,9 @@ class App
 		return $this;
 	}
 
+	/**
+	 * @return LogModule
+	 */
 	public function getLogModule()
 	{
 		if ($this->logger === null) {
