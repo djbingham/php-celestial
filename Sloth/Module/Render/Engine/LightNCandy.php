@@ -62,8 +62,6 @@ class LightNCandy implements RenderEngineInterface
 		if (!isset($options['flags'])) {
 			$options['flags'] = [
 				'HANDLEBARSJS',
-				'METHOD',
-				'NAMEDARG',
 				'ERROR_EXCEPTION'
 			];
 		}
