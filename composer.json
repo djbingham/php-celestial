@@ -26,8 +26,8 @@
 	},
 	"autoload": {
 		"psr-4": {
-			"Sloth\\": "Sloth/",
-			"SlothDemo\\": "SlothDemo/"
+			"Celestial\\": "Celestial/",
+			"CelestialDemo\\": "CelestialDemo/"
 		}
 	}
 }
