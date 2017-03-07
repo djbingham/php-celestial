@@ -1,0 +1,10 @@
+{
+	"name": "item",
+	"table": "Item",
+	"primaryAttribute": "id",
+	"attributes": {
+		"id": true,
+		"description": true,
+		"completed": true
+	}
+}

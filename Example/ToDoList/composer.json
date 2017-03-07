@@ -1,0 +1,16 @@
+{
+	"repositories": [
+		{
+			"type": "vcs",
+			"url": "git@github.com:djbingham/php-celestial.git"
+		},
+		{
+			"type": "vcs",
+			"url": "git@github.com:djbingham/php-celestial-mysql.git"
+		}
+	],
+	"require": {
+		"djbingham/php-celestial": "dev-master",
+		"djbingham/php-celestial-mysql": "dev-master"
+	}
+}

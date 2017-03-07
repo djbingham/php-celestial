@@ -21,6 +21,7 @@ The features listed above are likely to be removed in future so that Celestial d
 ## To Do
 The following is not an exhausted list of planned work on this project, but reflects the current focus on achieving high levels of testing and documentation:
 
+- Tidy up instantiation of module configurations and allow defaults to be set within each module
 - Write detailed documentation for each of the following:
 	- configuration
 	- resource manifest
@@ -30,6 +31,7 @@ The following is not an exhausted list of planned work on this project, but refl
 - Add API integration tests
 - Create the JavaScript library for client applications
 - Implement a well-known OAuth solution instead of custom authentication logic
+- Refactor `Data` modules into submodules of a single parent module
 
 
 ## Known Issues

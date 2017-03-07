@@ -1,0 +1,7 @@
+CREATE DATABASE `ToDoList`;
+
+CREATE TABLE `item` (
+	`id` INT(11) AUTO_INCREMENT PRIMARY KEY,
+	`description` VARCHAR(200) NOT NULL,
+	`completed` BOOLEAN
+)

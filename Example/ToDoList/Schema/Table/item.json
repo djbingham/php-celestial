@@ -1,0 +1,18 @@
+{
+	"fields": {
+		"id": {
+			"type": "number(11)",
+			"field": "id",
+			"autoIncrement": true,
+			"isUnique": true
+		},
+		"description": {
+			"type": "text(200)",
+			"field": "description"
+		},
+		"completed": {
+			"type": "boolean",
+			"field": "completed"
+		}
+	}
+}
