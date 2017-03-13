@@ -12,5 +12,10 @@
 	"require": {
 		"djbingham/php-celestial": "dev-master",
 		"djbingham/php-celestial-mysql": "dev-master"
+	},
+	"autoload": {
+		"psr-4": {
+			"ToDoList\\": "./"
+		}
 	}
 }

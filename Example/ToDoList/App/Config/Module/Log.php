@@ -30,14 +30,14 @@ return [
 			'debug_file' => [
 				'class' => 'Monolog\Handler\StreamHandler',
 				'level' => 'DEBUG',
-				'stream' => '../../log/debug.log',
+				'stream' => $this->rootDirectory() . '/log/debug.log',
 				'formatter' => 'with_context'
 			],
 
 			'error_file' => [
 				'class' => 'Monolog\Handler\StreamHandler',
 				'level' => 'ERROR',
-				'stream' => '../../log/error.log',
+				'stream' => $this->rootDirectory() . '/log/error.log',
 				'formatter' => 'with_message_source'
 			]
 		],

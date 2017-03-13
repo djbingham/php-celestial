@@ -1,0 +1,5 @@
+# Redirect all requests not to public or vendor directories to index.php
+<ifmodule mod_rewrite.c>
+	RewriteEngine on
+	RewriteRule ^(?!(index.php)) index.php
+</ifmodule>

@@ -1,7 +1,14 @@
-# Example: To Do List API
-In this example, we'll walk through creating an API to support a simple To Do list. Please note that this example is a work in progress and not yet tested.
+# Example: To Do List
+In this example, we'll walk through creating a simple To Do list using the Celestial framework. If you'd prefer to simply explore a working example, rather than follow the steps below, feel free to download this folder and run it on your machine by entering the `./run.sh` in your terminal.
 
+The only requirement of your system is that you have Docker and Docker-Compose installed. The run script uses a temporary container to install dependencies, then brings up further containers to serve the application. As soon as the containers are started, you should see log output from the `docker-compose up` command. Abort that command (`ctrl` + `c` on most terminals) to halt the containers.
+ 
+Please note that this example is a work in progress and not yet tested.
+
+## Preparation
 For each item in the list, we'll store a description and completion status:
+
+We'll need a working database for our API project to interact with.
 
 ```
 {
@@ -10,9 +17,6 @@ For each item in the list, we'll store a description and completion status:
 	"completed": boolean
 }
 ```
-
-## Preparation
-We'll need a working database for our API project to interact with.
 
 ### Database
 Before we can have a working API, we will of course require a database. Use the following SQL to create a database with a single table to contain items in our To Do list:
@@ -32,7 +36,7 @@ CREATE TABLE `item` (
 ### Framework Configuration
 First, we create a configuration file to instruct the framework which modules we'll be using and where our project is on the local file system. Configuration will be explained in a separate document, not yet written. For now, just use the files provided within this example project, in `/Config` as a starting point. The same applies to app initialisation, which is handled by `/index.php` and `/AppInitialisation.php`.
 
-## Project
+## Development
 
 ### Resource Manifest
 Celestial creates restful APIs based on resources, which are defined by a set of JSON manifest files. A resource manifest tells Celestial which table (or set of tables) should be written to and read from by requests to that resource. It also specifies the names of resource attributes and which table field each refers to. In this example, we're working with a single table so we'll only need one resource manifest, which we'll call `item`, to represent items in the To Do list:
@@ -78,10 +82,10 @@ In order for Celestial to interpret API requests and build database queries, we'
 }
 ```
 
-### API Endpoints
+## Testing
 We're done! The following API endpoints will now be provided by Celestial, with no further development work.
 
-#### Create an item
+### Create an item
 ```
 # request
 POST /resource/item {
@@ -97,7 +101,7 @@ POST /resource/item {
 }
 ```
 
-#### Get an item
+### Get an item
 ```
 # request
 GET /resource/item/2
@@ -110,7 +114,7 @@ GET /resource/item/2
 }
 ```
 
-#### Get a list of items
+### Get a list of items
 ```
 # request
 GET /resource/item
@@ -135,7 +139,7 @@ GET /resource/item
 ]
 ```
 
-#### Update an item
+### Update an item
 ```
 # request
 PUT /resource/item/2 {
@@ -157,7 +161,7 @@ POST /resource/update/item/2 {
 }
 ```
 
-#### Delete an item
+### Delete an item
 ```
 # request
 DELETE /resource/item/3

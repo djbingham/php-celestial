@@ -3,9 +3,6 @@ return [
 	'factoryClass' => 'Celestial\\Module\\Router\\Factory',
 	'options' => [
 		'routes' => new \Celestial\Base\Config\Routes([
-			'auth' => [
-				'namespace' => 'Celestial\\Api\\Authentication'
-			],
 			'resource' => [
 				'namespace' => 'Celestial\\Api\\Rest\\Controller'
 			]

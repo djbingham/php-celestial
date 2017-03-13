@@ -1,0 +1,21 @@
+web:
+  build: .
+  dockerfile: ./Environment/Web/Dockerfile
+  environment:
+    DATABASE_HOST: "database"
+    DATABASE_PORT: "3306"
+    DATABASE_NAME: "Celestial"
+    DATABASE_USER: "celestial"
+    DATABASE_PASSWORD: "sphere"
+  links:
+    - "database"
+  ports:
+    - "8000:80"
+  volumes:
+    - "./App/:/app/"
+
+database:
+  build: .
+  dockerfile: ./Environment/Database/Dockerfile
+  ports:
+    - "33061:3306"

@@ -1,0 +1,36 @@
+{{! Handlebars template: to do list }}
+
+<html>
+	<body>
+		<h1>It works!</h1>
+
+		<p>If you can see this message in your browser, then the project is up and running. Use the forms below to test out the Celestial APIs.</p>
+
+		<h2>To Do List</h2>
+			{{#each data.todo}}
+				<div>
+					<form action="/resource/update/item?redirect=" method="post">
+						<input name="attributes[id]" value="{{id}}" type="hidden">
+						<input name="attributes[description]" value="{{description}}" type="text">
+						<input name="attributes[completed]" value="0" type="hidden">
+						<input name="attributes[completed]" value="1" type="checkbox" {{#if completed}}checked{{/if}}>
+						<button type="submit">Update</button>
+						<a href="/resource/delete/item/{{id}}?redirect=">Delete</a>
+					</form>
+				</div>
+			{{/each}}
+
+		<h2>Create Item</h2>
+		<form action="/resource/create/item?redirect=" method="post">
+			<div>
+				<label>Description: <input name="attributes[description]" type="text"></label>
+			</div>
+			<div>
+				<label>Completed? <input name="attributes[completed]" type="checkbox" value="1"></label>
+			</div>
+			<div>
+				<button type="submit">Create</button>
+			</div>
+		</form>
+	</body>
+</html>

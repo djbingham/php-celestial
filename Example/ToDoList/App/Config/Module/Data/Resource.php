@@ -2,7 +2,7 @@
 return [
 	'factoryClass' => 'Celestial\\Module\\Data\\Resource\\Factory',
 	'options' => [
-		'resourceManifestDirectory' => $this->rootDirectory() . '/Resource/ResourceManifest',
+		'resourceManifestDirectory' => $this->rootDirectory() . '/Schema/Resource',
 		'resourceNamespace' => $this->rootNamespace() . '\\Resource'
 	]
 ];

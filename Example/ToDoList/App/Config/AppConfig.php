@@ -1,5 +1,5 @@
 <?php
-namespace Example\ToDoList;
+namespace ToDoList\Config;
 
 use Celestial\Base\Config as BaseConfig;
 
@@ -26,12 +26,12 @@ class AppConfig extends BaseConfig
 
 	public function rootDirectory()
 	{
-		return __DIR__;
+		return dirname(__DIR__);
 	}
 
 	public function rootNamespace()
 	{
-		return 'Example\ToDoList';
+		return 'ToDoList';
 	}
 
 	public function logModule()
@@ -53,7 +53,7 @@ class AppConfig extends BaseConfig
 				'data.tableDataValidator' => 'Data/TableDataValidator',
 				'data.tableQuery' => 'Data/TableQuery',
 				'dataProvider' => 'DataProvider',
-				'hashing' => 'Hasing',
+				'hashing' => 'Hashing',
 				'log' => 'Log',
 				'mysql' => 'MySql',
 				'render' => 'Render',

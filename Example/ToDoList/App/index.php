@@ -4,7 +4,7 @@ date_default_timezone_set('UTC');
 
 require __DIR__ . DIRECTORY_SEPARATOR . 'vendor' . DIRECTORY_SEPARATOR . 'autoload.php';
 
-$init = new \Example\ToDoList\AppInitialisation();
+$init = new ToDoList\AppInitialisation();
 $app = $init->getApp();
 
 // Initialise a session

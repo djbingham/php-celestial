@@ -1,9 +1,10 @@
 <?php
-namespace Example\ToDoList;
+namespace ToDoList;
 
 use Celestial\App;
 use Celestial\Base\Config\Module\Module as ModuleConfig;
 use Celestial\Module\ModuleLoader;
+use ToDoList\Config\AppConfig;
 
 class AppInitialisation implements \Celestial\Face\Initialisation
 {
@@ -15,33 +16,25 @@ class AppInitialisation implements \Celestial\Face\Initialisation
 	public function getApp()
 	{
 		if (!isset($this->app)) {
-			$this->app = $this->buildApp($this->getConfig());
+			$this->app = $this->buildApp();
 		}
+
 		return $this->app;
 	}
 
-	protected function getConfig()
+	protected function buildApp()
 	{
-		return new AppConfig();
-	}
-
-	protected function buildApp(AppConfig $config)
-	{
+		$config = new AppConfig();
 		$app = new App($config);
-		$app->setModuleLoader($this->getModuleLoader($app, $config));
-
-		return $app;
-	}
-
-	protected function getModuleLoader(App $app, AppConfig $config)
-	{
 		$moduleLoader = new ModuleLoader($app);
 
 		foreach ($config->modules() as $moduleConfig) {
 			$this->registerModuleConfig($moduleLoader, $moduleConfig);
 		}
 
-		return $moduleLoader;
+		$app->setModuleLoader($moduleLoader);
+
+		return $app;
 	}
 
 	protected function registerModuleConfig(ModuleLoader $moduleLoader, ModuleConfig $config)

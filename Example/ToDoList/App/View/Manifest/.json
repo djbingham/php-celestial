@@ -1,0 +1,15 @@
+{
+	"": {
+		"engine": "handlebars",
+		"path": "index.html",
+		"options": {},
+		"dataProviders": {
+			"todo": {
+				"engine": "resourceList",
+				"options": {
+					"resourceName": "Item"
+				}
+			}
+		}
+	}
+}

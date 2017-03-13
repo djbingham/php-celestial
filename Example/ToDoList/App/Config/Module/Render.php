@@ -2,8 +2,8 @@
 return [
 	'factoryClass' => 'Celestial\\Module\\Render\\Factory',
 	'options' => [
-		'viewDirectory' => $this->rootDirectory() . '/Route/View',
-		'viewManifestDirectory' => $this->rootDirectory() . '/Route/Manifest',
+		'viewDirectory' => $this->rootDirectory() . '/View/Template',
+		'viewManifestDirectory' => $this->rootDirectory() . '/View/Manifest',
 		'engines' => [
 			'handlebars' => 'Celestial\\Module\\Render\\Engine\\LightNCandy',
 			'json' => 'Celestial\\Module\\Render\\Engine\\Json',
