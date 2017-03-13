@@ -4,6 +4,7 @@ namespace Celestial\Module\Data\Resource;
 use Celestial\App;
 use Celestial\Exception\InvalidRequestException;
 use Celestial\Module\Data\ResourceDataValidator\ResourceDataValidatorModule;
+use Celestial\Module\Data\Table\Definition\Table;
 use Celestial\Module\Data\Table\Face\FieldInterface;
 use Celestial\Module\Data\Table\Face\JoinInterface;
 use Celestial\Module\Data\Table\Face\TableInterface;
@@ -78,7 +79,7 @@ class ResourceFactory implements ResourceFactoryInterface
 
 	public function create(array $attributes)
 	{
-		$attributes = $this->encodeAttributes($attributes);
+		$attributes = $this->encodeAttributes($attributes, $this->resourceDefinition->table);
 		$validation = $this->dataValidator->validateInsertData($this->resourceDefinition, $attributes);
 		if ($validation->isValid()) {
 			$data = $this->tableQueryModule->insert()->execute($this->resourceDefinition->table, array(), $attributes);
@@ -100,7 +101,7 @@ class ResourceFactory implements ResourceFactoryInterface
 
 	public function update(array $filters, array $attributes)
 	{
-		$attributes = $this->encodeAttributes($attributes);
+		$attributes = $this->encodeAttributes($attributes, $this->resourceDefinition->table);
 		$validation = $this->dataValidator->validateUpdateData($this->resourceDefinition, $attributes);
 
 		if ($validation->isValid()) {
@@ -133,35 +134,71 @@ class ResourceFactory implements ResourceFactoryInterface
 	{
 		$resourceList = new ResourceList($this);
 		foreach ($data as $row) {
-			$row = $this->decodeAttributes($row);
+			$row = $this->decodeAttributes($row, $this->resourceDefinition->table);
 			$resourceList->push($this->instantiateResource($row));
 		}
 		return $resourceList;
 	}
 
-	protected function encodeAttributes(array $attributes)
+	protected function encodeAttributes(array $attributes, Table $tableDefinition)
 	{
 		foreach ($attributes as $name => $value) {
 			if (is_array($value)) {
-				$attributes[$name] = $this->encodeAttributes($value);
-			} elseif (in_array($value, [null, true, false])) {
-				$attributes[$name] = $value;
+				$childTable = $tableDefinition->links->getByName($name);
+
+				$attributes[$name] = $this->encodeAttributes($value, $childTable);
 			} else {
-				$attributes[$name] = utf8_encode($value);
+				$field = $tableDefinition->fields->getByName($name);
+
+				switch ($field->type) {
+					case 'boolean':
+						if (in_array($value, [true, 'true', '1', 1])) {
+							$attributes[$name] = true;
+						} elseif (in_array($value, [false, 'false', '0', 0])) {
+							$attributes[$name] = false;
+						}
+						break;
+
+					default:
+						if (in_array($value, [null, true, false])) {
+							$attributes[$name] = $value;
+						} else {
+							$attributes[$name] = utf8_encode($value);
+						}
+						break;
+				}
 			}
 		}
 		return $attributes;
 	}
 
-	protected function decodeAttributes(array $attributes)
+	protected function decodeAttributes(array $attributes, Table $tableDefinition)
 	{
 		foreach ($attributes as $name => $value) {
 			if (is_array($value)) {
-				$attributes[$name] = $this->decodeAttributes($value);
-			} elseif (in_array($value, [null, true, false])) {
-				$attributes[$name] = $value;
+				$childTable = $tableDefinition->links->getByName($name);
+
+				$attributes[$name] = $this->decodeAttributes($value, $childTable);
 			} else {
-				$attributes[$name] = utf8_decode($value);
+				$field = $tableDefinition->fields->getByName($name);
+
+				switch ($field->type) {
+					case 'boolean':
+						if (in_array($value, [true, 'true', '1', 1])) {
+							$attributes[$name] = true;
+						} elseif (in_array($value, [false, 'false', '0', 0])) {
+							$attributes[$name] = false;
+						}
+						break;
+
+					default:
+						if (in_array($value, [null, true, false])) {
+							$attributes[$name] = $value;
+						} else {
+							$attributes[$name] = utf8_decode($value);
+						}
+						break;
+				}
 			}
 		}
 		return $attributes;
