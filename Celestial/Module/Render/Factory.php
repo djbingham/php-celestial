@@ -65,8 +65,15 @@ class Factory extends AbstractModuleFactory
 			);
 		}
 
-		foreach ($engines as $engineName => $engineClass) {
-			$instances[$engineName] = new $engineClass([]);
+		foreach ($engines as $engineName => $engineConfig) {
+			if (is_array($engineConfig)) {
+				$engineClass = $engineConfig['class'];
+				$engineOptions = $engineConfig['options'];
+			} else {
+				$engineClass = $engineConfig;
+				$engineOptions = [];
+			}
+			$instances[$engineName] = new $engineClass($engineOptions);
 		}
 
 		return $instances;
@@ -99,13 +106,27 @@ class Factory extends AbstractModuleFactory
 				throw new InvalidArgumentException('Invalid engines option given to Render module. Must be an array.');
 			}
 
-			foreach ($this->options['engines'] as $engineName => $engineClass) {
+			foreach ($this->options['engines'] as $engineName => $engineConfig) {
+				if (is_array($engineConfig)) {
+					$engineClass = $engineConfig['class'];
+					$engineOptions = $engineConfig['options'];
+				} else {
+					$engineClass = $engineConfig;
+					$engineOptions = [];
+				}
+
 				if (!is_a($engineClass, 'Celestial\\Module\\Render\\Face\\RenderEngineInterface', true)) {
 					throw new InvalidArgumentException(
 						sprintf(
 							'Invalid class specified for render engine `%s` - must implement RenderEngineInterface.',
 							$engineName
 						)
+					);
+				}
+
+				if (!is_array($engineOptions)) {
+					throw new InvalidArgumentException(
+						sprintf('Invalid options provided for render engine `%s` - must be an array.', $engineOptions)
 					);
 				}
 			}

@@ -38,12 +38,33 @@ class LightNCandy implements RenderEngineInterface
 
 		$options['flags'] = $this->compileFlags($options['flags']);
 		$options['helpers'] = $this->compileHelpers($options['helpers']);
+		$options['partials'] = $this->compilePartials($options['partials']);
 
 		return $options;
 	}
 
 	private function validateOptions(array $options)
 	{
+		if (isset($options['partials'])) {
+			if (!isset($options['partialsDirectory'])) {
+				throw new InvalidArgumentException(
+					'Missing `partialsDirectory` option for render engine `LightNCandy`. Required when partials are provided.'
+				);
+			}
+
+			if (!is_dir($options['partialsDirectory'])) {
+				throw new InvalidArgumentException(
+					'Invalid `partialsDirectory` option given to render engine `LightNCandy`. Must be a directory.'
+				);
+			}
+
+			if (!is_array($options['partials'])) {
+				throw new InvalidArgumentException(
+					'Invalid `partials` option given to render engine `LightNCandy`. Must be an array.'
+				);
+			}
+		}
+
 		if (isset($options['flags']) && !is_array($options['flags'])) {
 			throw new InvalidArgumentException(
 				'Invalid `flags` option given to render engine `LightNCandy`. Must be an array.'
@@ -68,6 +89,10 @@ class LightNCandy implements RenderEngineInterface
 
 		if (!isset($options['helpers'])) {
 			$options['helpers'] = [];
+		}
+
+		if (!isset($options['partials'])) {
+			$options['partials'] = [];
 		}
 
 		return $options;
@@ -101,6 +126,29 @@ class LightNCandy implements RenderEngineInterface
 		}
 
 		return $helpers;
+	}
+
+	private function compilePartials(array $partialFilePaths)
+	{
+		$partials = [];
+
+		foreach ($partialFilePaths as $partialName => $filePath) {
+			$fullFilePath = $this->options['partialsDirectory'] . DIRECTORY_SEPARATOR . $filePath;
+
+			if (file_exists($fullFilePath)) {
+				$partials[$partialName] = file_get_contents($fullFilePath);
+			} else {
+				throw new InvalidConfigurationException(
+					sprintf(
+						'No file found for configured Handlebars partial `%s`. Looking for path: `%s`.',
+						$partialName,
+						$fullFilePath
+					)
+				);
+			}
+		}
+
+		return $partials;
 	}
 
 	private function functionOrMethodExists($name)
