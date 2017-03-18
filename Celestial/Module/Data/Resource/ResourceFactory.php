@@ -143,8 +143,10 @@ class ResourceFactory implements ResourceFactoryInterface
 	protected function encodeAttributes(array $attributes, Table $tableDefinition)
 	{
 		foreach ($attributes as $name => $value) {
-			if (is_array($value)) {
-				$childTable = $tableDefinition->links->getByName($name);
+			if (is_numeric($name)) {
+				$attributes[$name] = $this->encodeAttributes($value, $tableDefinition);
+			} elseif (is_array($value)) {
+				$childTable = $tableDefinition->links->getByName($name)->getChildTable();
 
 				$attributes[$name] = $this->encodeAttributes($value, $childTable);
 			} else {
@@ -175,8 +177,10 @@ class ResourceFactory implements ResourceFactoryInterface
 	protected function decodeAttributes(array $attributes, Table $tableDefinition)
 	{
 		foreach ($attributes as $name => $value) {
-			if (is_array($value)) {
-				$childTable = $tableDefinition->links->getByName($name);
+			if (is_numeric($name)) {
+				$attributes[$name] = $this->decodeAttributes($value, $tableDefinition);
+			} elseif (is_array($value)) {
+				$childTable = $tableDefinition->links->getByName($name)->getChildTable();
 
 				$attributes[$name] = $this->decodeAttributes($value, $childTable);
 			} else {
