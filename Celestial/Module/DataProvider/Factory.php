@@ -34,6 +34,7 @@ class Factory extends AbstractModuleFactory
 	protected function getDependencies(DataProviderModule $module)
 	{
 		return array(
+			'app' => $this->app,
 			'dataProviderModule' => $module,
 			'resourceModule' => $this->getResourceModule(),
 			'sessionModule' => $this->getSessionModule(),

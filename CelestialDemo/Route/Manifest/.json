@@ -12,6 +12,19 @@
 			}
 		}
 	},
+	"using/json/file": {
+		"engine": "handlebars",
+		"path": "usingJsonFile.html",
+		"dataProviders": {
+			"sample": {
+				"engine": "jsonFile",
+				"options": {
+					"filePath": "Data/Static/sample.json"
+				}
+			}
+		},
+		"options": {}
+	},
 	"using/helper/functions": {
 		"engine": "handlebars",
 		"path": "helperDemo.html",

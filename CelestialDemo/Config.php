@@ -94,6 +94,7 @@ class Config extends BaseConfig
 				'options' => array(
 					'providers' => array(
 						'authentication' => 'Celestial\\Module\\DataProvider\\Provider\\AuthenticationDataProvider',
+						'jsonFile' => 'Celestial\\Module\\DataProvider\\Provider\\JsonFileProvider',
 						'request.getProperty' => 'Celestial\\Module\\DataProvider\\Provider\\Request\\GetParameterDataProvider',
 						'request' => 'Celestial\\Module\\DataProvider\\Provider\\RequestProvider',
 						'resource' => 'Celestial\\Module\\DataProvider\\Provider\\ResourceProvider',
